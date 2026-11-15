@@ -88,7 +88,7 @@ function pintarMenus() {
   const listos = MENUS.filter(m => m.listo && HERRAMIENTAS[m.tecla]);
   const total = listos.reduce((n, m) => n + contarHerramientas(m.tecla), 0);
   document.getElementById("hero-meta").textContent =
-    `Nivel inicial · ${listos.map(m => m.tecla).join(" y ")} disponibles · ${total} herramientas`;
+    `Nivel inicial · ${listos.map(m => m.tecla).join(", ").replace(/, ([^,]*)$/, " y $1")} disponibles · ${total} herramientas`;
 }
 
 /* ---------- Consejo de la patronista (sale de los tips de cada ficha) ---------- */
