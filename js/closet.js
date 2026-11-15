@@ -11,7 +11,7 @@
    encaje al ponerla encima.
      id        -> nombre único sin espacios
      nombre    -> como se muestra
-     categoria -> "superior" | "inferior" | "vestido" | "zapatos" | "accesorio"
+     categoria -> "torso" | "inferior" | "calzado" | "encima" | "accesorio"
      modelo    -> "mujer" | "hombre" | "ambos"
      img       -> ruta del PNG (vista de frente)
      vistas    -> (opcional) imágenes para las otras vistas, ej.
@@ -20,7 +20,7 @@
      costo     -> puntos necesarios para desbloquearla (0 = gratis)
 
    Ejemplo:
-     { id: "blusa-azul", nombre: "Blusa azul", categoria: "superior",
+     { id: "blusa-azul", nombre: "Blusa azul", categoria: "torso",
        modelo: "mujer", img: "img/ropa/blusa-azul.png", costo: 0 },
    ===================================================================== */
 
@@ -53,12 +53,33 @@ const MODELOS = {
                        vistas: { "frente": 0, "perfil-izq": 9, "atras": 18, "perfil-der": 29 } } }
 };
 
+/* Secciones del closet (en este orden se dibujan las capas: de abajo hacia arriba) */
 const CATEGORIAS = [
-  { id: "superior",  nombre: "Blusas y camisas" },
-  { id: "inferior",  nombre: "Pantalones y faldas" },
-  { id: "vestido",   nombre: "Vestidos" },
-  { id: "zapatos",   nombre: "Zapatos" },
-  { id: "accesorio", nombre: "Accesorios" }
+  { id: "luces",     nombre: "Color de luces",
+    vacio: "" },
+  { id: "torso",     nombre: "Torso",
+    vacio: "Aquí irán camisetas, playeras, tops, sudaderas y camisas." },
+  { id: "inferior",  nombre: "Parte baja",
+    vacio: "Aquí irán pantalones, pants, mezclilla, de vestir, shorts y faldas." },
+  { id: "calzado",   nombre: "Calzado",
+    vacio: "Aquí irán tenis, botas, botines y zapatos." },
+  { id: "encima",    nombre: "Chamarras y chalecos",
+    vacio: "Aquí irán chamarras, chalecos, abrigos, sacos y camisas abiertas." },
+  { id: "accesorio", nombre: "Accesorios",
+    vacio: "Aquí irán accesorios para el cabello, audífonos, lentes, cadenas y paliacates." }
+];
+
+/* Color de luces del personaje: cambia el color de todo lo que brilla
+   (visor, cabello y detalles azules). "giro" = grados de cambio de tono.
+   costo = puntos necesarios para desbloquearlo. */
+const LUCES = [
+  { id: "azul",    nombre: "Azul original", color: "#29b6ff", filtro: "none",                                  costo: 0 },
+  { id: "blanco",  nombre: "Blanco",        color: "#e8eef5", filtro: "saturate(0) brightness(1.05)",          costo: 0 },
+  { id: "verde",   nombre: "Verde neón",    color: "#3ee88a", filtro: "hue-rotate(-75deg) saturate(1.15)",      costo: 30 },
+  { id: "morado",  nombre: "Morado",        color: "#a35cff", filtro: "hue-rotate(70deg) saturate(1.1)",       costo: 60 },
+  { id: "rosa",    nombre: "Rosa",          color: "#ff4fb8", filtro: "hue-rotate(118deg) saturate(1.15)",      costo: 90 },
+  { id: "rojo",    nombre: "Rojo",          color: "#ff3b3b", filtro: "hue-rotate(160deg) saturate(1.25)",      costo: 120 },
+  { id: "dorado",  nombre: "Dorado",        color: "#ffc93c", filtro: "hue-rotate(-160deg) saturate(1.3)",     costo: 200 }
 ];
 
 const PRENDAS = [

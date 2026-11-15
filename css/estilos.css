@@ -601,3 +601,16 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 .escenario.estudio-3d .modelo-base { object-fit: cover; }
 .sello-3d { position: absolute; right: 10px; top: 10px; font-size: .7rem; font-weight: 700; letter-spacing: .06em;
             color: #a9dbe2; background: rgba(255,255,255,.08); border: 1px solid rgba(169,219,226,.35); padding: 4px 10px; border-radius: 99px; }
+
+/* Color de luces del personaje */
+.closet-ayuda { grid-column: 1 / -1; color: var(--texto-2); font-size: .88rem; line-height: 1.5; }
+.luz { position: relative; display: grid; justify-items: center; gap: 8px; padding: 14px 8px; cursor: pointer; font: inherit; font-size: .8rem; font-weight: 600;
+       background: #0e1626; color: #fff; border: 2px solid transparent; border-radius: 14px; }
+.foco-luz { width: 34px; height: 34px; border-radius: 50%; background: var(--luz);
+            box-shadow: 0 0 10px var(--luz), 0 0 24px var(--luz), inset 0 0 6px rgba(255,255,255,.6); }
+.luz.activa { border-color: var(--luz); box-shadow: 0 0 0 3px rgba(255,255,255,.08); }
+.luz:disabled { cursor: default; opacity: .55; }
+.luz:disabled .foco-luz { box-shadow: none; filter: grayscale(.6); }
+.modelo-base { transition: filter .35s ease; }
+
+.closet-tabs { flex-wrap: wrap; overflow-x: visible; }

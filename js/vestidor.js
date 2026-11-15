@@ -9,6 +9,9 @@
 let modeloActual = P.vestidor.modelo;        // se guarda en la cuenta (js/cuenta.js)
 let categoriaActual = CATEGORIAS[0].id;
 const ropa = m => P.vestidor.puesto[m];      // categoría -> id de prenda, por modelo
+const ORDEN_CAPAS = ["inferior", "torso", "calzado", "encima", "accesorio"];   // de abajo hacia arriba
+const luzDe = m => LUCES.find(l => l.id === P.vestidor.luces[m]) || LUCES[0];
+const filtroLuz = () => { const f = luzDe(modeloActual).filtro; return f === "none" ? "" : `style="filter:${f}"`; };
 
 /* Al entrar a una cuenta: recuperar el modelo y la ropa que tenía puesta */
 function cargarVestidorGuardado() {
@@ -200,7 +203,7 @@ function pintarEscenario(entraCerrada) {
     const conRopa = Object.keys(ropa(modeloActual)).length;
     esc.style.aspectRatio = `${g.ancho} / ${g.alto}`;
     esc.innerHTML = `
-      <img id="img360" class="modelo-base" src="${srcCuadro(g, cuadro360[modeloActual])}" alt="${m.nombre} en 3D. Arrastra para girarlo." draggable="false">
+      <img id="img360" class="modelo-base" ${filtroLuz()} src="${srcCuadro(g, cuadro360[modeloActual])}" alt="${m.nombre} en 3D. Arrastra para girarlo." draggable="false">
       <span class="sello-3d">3D · 360°</span>
       ${conRopa ? `<span class="aviso-vista">La ropa en 3D estará disponible pronto</span>` : ""}`;
     document.getElementById("indicador-vistas").innerHTML = ORDEN_VISTAS.map((v, i) =>
@@ -215,9 +218,9 @@ function pintarEscenario(entraCerrada) {
 
   esc.style.aspectRatio = `${m.ancho} / ${m.alto}`;
 
-  let capas = `<img class="modelo-base" src="${m.vistas[vista]}" alt="${m.nombre}, vista ${NOMBRE_VISTA[vista].toLowerCase()}" draggable="false">`;
+  let capas = `<img class="modelo-base" ${filtroLuz()} src="${m.vistas[vista]}" alt="${m.nombre}, vista ${NOMBRE_VISTA[vista].toLowerCase()}" draggable="false">`;
   let ocultas = 0;
-  ["inferior", "superior", "vestido", "zapatos", "accesorio"].forEach(cat => {
+  ORDEN_CAPAS.forEach(cat => {
     const pr = PRENDAS.find(p => p.id === ropa(modeloActual)[cat]);
     if (!pr) return;
     const src = imagenPrenda(pr, vista);
@@ -252,11 +255,13 @@ function pintarTabs() {
 
 function pintarPrendas() {
   const cont = document.getElementById("closet-prendas");
+  if (categoriaActual === "luces") return pintarLuces(cont);
   const lista = prendasDelModelo().filter(p => p.categoria === categoriaActual);
   if (!lista.length) {
+    const cat = CATEGORIAS.find(c => c.id === categoriaActual);
     cont.innerHTML = `<div class="closet-vacio">
       <span>🧵</span>
-      <p><b>Este cajón está vacío.</b><br>Aquí aparecerá la ropa de esta categoría en cuanto se agreguen las imágenes del closet.</p>
+      <p><b>Próximamente en 3D.</b><br>${cat.vacio}</p>
     </div>`;
     return;
   }
@@ -279,9 +284,27 @@ function ponerPrenda(id) {
   if (r[p.categoria] === id) delete r[p.categoria];             // tocar otra vez = quitar
   else {
     r[p.categoria] = id;
-    if (p.categoria === "vestido") { delete r.superior; delete r.inferior; }
-    if (p.categoria === "superior" || p.categoria === "inferior") delete r.vestido;
   }
   cambioProgreso();
   pintarVestidor();
+}
+
+/* ---------- Color de luces ---------- */
+function pintarLuces(cont) {
+  const puntos = leerPuntos();
+  const actual = luzDe(modeloActual).id;
+  cont.innerHTML = `<p class="closet-ayuda">Cambia el color de todo lo que brilla: visor, cabello y detalles. Gana puntos en <b>Practicar</b> para desbloquear más colores.</p>` +
+    LUCES.map(l => {
+      const bloqueada = l.costo > puntos;
+      return `<button class="luz ${l.id === actual ? "activa" : ""}" data-luz="${l.id}" ${bloqueada ? "disabled" : ""} style="--luz:${l.color}">
+        <span class="foco-luz"></span>
+        <span>${l.nombre}</span>
+        ${bloqueada ? `<span class="candado">🔒 ${l.costo} ⭐</span>` : ""}
+      </button>`;
+    }).join("");
+  cont.querySelectorAll(".luz:not([disabled])").forEach(b => b.addEventListener("click", () => {
+    P.vestidor.luces[modeloActual] = b.dataset.luz;
+    cambioProgreso();
+    pintarVestidor();
+  }));
 }

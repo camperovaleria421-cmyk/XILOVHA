@@ -20,7 +20,7 @@ const CLAVE_INVITADO = "xilovha-invitado";
 /* ---------- El avance de quien está usando la app ---------- */
 function progresoVacio() {
   return { puntos: 0, segundos: 0, fichas: [], videos: [], juegos: {},
-           vestidor: { modelo: "mujer", puesto: { mujer: {}, hombre: {} } } };
+           vestidor: { modelo: "mujer", puesto: { mujer: {}, hombre: {} }, luces: { mujer: "azul", hombre: "azul" } } };
 }
 function normalizar(p) {
   p = p || {};
@@ -33,7 +33,8 @@ function normalizar(p) {
     juegos: p.juegos && typeof p.juegos === "object" ? p.juegos : {},
     vestidor: {
       modelo: v.modelo === "hombre" ? "hombre" : "mujer",
-      puesto: { mujer: (v.puesto && v.puesto.mujer) || {}, hombre: (v.puesto && v.puesto.hombre) || {} }
+      puesto: { mujer: (v.puesto && v.puesto.mujer) || {}, hombre: (v.puesto && v.puesto.hombre) || {} },
+      luces: { mujer: (v.luces && v.luces.mujer) || "azul", hombre: (v.luces && v.luces.hombre) || "azul" }
     }
   };
 }
