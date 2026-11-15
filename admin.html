@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>XILOVHA Administración</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    body { background: var(--fondo); }
+    .admin { max-width: 1200px; margin: 0 auto; padding: 20px max(16px, env(safe-area-inset-right, 0px)) 60px max(16px, env(safe-area-inset-left, 0px)); }
+    .admin-barra { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .admin-barra img { height: 56px; width: auto; mix-blend-mode: darken; }
+    .admin-barra .acciones { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+    .admin-barra .btn-secundario { margin-top: 0; padding: 9px 16px; font-size: .9rem; }
+    .caja-login { max-width: 420px; margin: 40px auto; }
+    .resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin: 14px 0 18px; }
+    .tarjeta-dato { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 14px 16px; }
+    .tarjeta-dato small { color: var(--texto-2); display: block; }
+    .tarjeta-dato b { font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+    .tabla-caja { background: #fff; border: 1px solid var(--borde); border-radius: 18px; overflow-x: auto; }
+    table.jugadores { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 900px; }
+    .jugadores th { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--texto-2);
+                    padding: 12px 10px; border-bottom: 1px solid var(--borde); white-space: nowrap; cursor: pointer; user-select: none; }
+    .jugadores th[aria-sort] { color: var(--texto); }
+    .jugadores td { padding: 11px 10px; border-bottom: 1px solid #eef2f6; vertical-align: middle; }
+    .jugadores td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .jugadores tr.fila:hover td { background: #f8fafc; }
+    .nombre-celda b { display: block; }
+    .nombre-celda small { color: var(--texto-2); }
+    .etiqueta-dup { display: inline-block; margin-top: 3px; font-size: .68rem; font-weight: 700; background: #fff4d6; color: #7a5b00; padding: 2px 8px; border-radius: 99px; }
+    .linea { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .btn-mini { font: inherit; font-size: .8rem; font-weight: 600; padding: 6px 10px; border-radius: 99px; cursor: pointer; border: 1px solid var(--borde); background: #fff; color: var(--texto); white-space: nowrap; }
+    .btn-mini.peligro { color: #b91c1c; border-color: #f3c4c4; }
+    .btn-mini.peligro-lleno { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+    .acciones-celda { display: flex; gap: 6px; justify-content: flex-end; }
+    .detalle-fila td { background: #f8fafc; }
+    .detalle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; padding: 6px 4px; }
+    .detalle-grid h4 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--texto-2); margin-bottom: 6px; }
+    .detalle-grid ul { padding-left: 18px; line-height: 1.6; }
+    .vacio { color: var(--texto-2); font-style: italic; }
+    .buscar { width: 100%; max-width: 360px; padding: 10px 14px; border-radius: 12px; border: 2px solid #d5dde8; font: inherit; margin-bottom: 12px; }
+    .nota-admin { color: var(--texto-2); font-size: .85rem; margin-top: 12px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="admin">
+    <div class="admin-barra">
+      <img src="img/logo.jpg" alt="XILOVHA Patronista Digital">
+      <div>
+        <p class="eyebrow">Panel de administración</p>
+        <strong>Jugadores de XILOVHA</strong>
+      </div>
+      <div class="acciones" id="acciones" hidden>
+        <button class="btn-secundario" id="btn-actualizar">Actualizar</button>
+        <button class="btn-secundario" id="btn-salir">Cerrar sesión</button>
+      </div>
+    </div>
+
+    <!-- Entrar -->
+    <section id="vista-login" class="caja-login" hidden>
+      <h1 class="titulo">Entrar como administradora</h1>
+      <p class="subtitulo">Usa la misma cuenta de administración de Patronista Digital.</p>
+      <form id="form-login" class="form-cuenta">
+        <label>Correo<input id="login-correo" type="email" autocomplete="username" required></label>
+        <label>Contraseña<input id="login-clave" type="password" autocomplete="current-password" required></label>
+        <button class="btn-principal" id="btn-login" type="submit">Entrar</button>
+        <p id="login-msg" class="cuenta-msg" role="status"></p>
+      </form>
+    </section>
+
+    <!-- Panel -->
+    <section id="vista-panel" hidden>
+      <div class="resumen" id="resumen"></div>
+      <input id="buscar" class="buscar" type="search" placeholder="Buscar por nombre o correo…">
+      <div class="tabla-caja">
+        <table class="jugadores">
+          <thead>
+            <tr>
+              <th data-orden="lugar">#</th>
+              <th data-orden="nombre">Jugador</th>
+              <th data-orden="puntos">Puntos</th>
+              <th data-orden="segundos">Tiempo de uso</th>
+              <th data-orden="ultima_vez">Última conexión</th>
+              <th data-orden="fichas">Fichas</th>
+              <th data-orden="videos">Videos</th>
+              <th data-orden="juegos">Juegos</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cuerpo"></tbody>
+        </table>
+      </div>
+      <p class="nota-admin">Se actualiza solo cada 30 segundos. «En línea» = usó la app en los últimos 2 minutos.
+        Al eliminar un perfil se borran su nombre, puntos y avance; si esa persona vuelve a entrar con su correo, empieza de cero con un nombre nuevo.</p>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL = "https://ljmavqsijlcqcqihuqxi.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_HzaqS1Ud2wGLdHwoPyGyhA_mwCFWqzc";
+    const NOMBRE_JUEGO = { quien: "¿Qué herramienta es?", atajos: "Atajo correcto", pasos: "Ordena los pasos" };
+    const $ = id => document.getElementById(id);
+    let db = null, jugadores = [], orden = { campo: "puntos", desc: true }, abierto = null, confirmando = null, refresco = null;
+
+    const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    function tiempo(s) { s = s || 0; const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60); return h ? `${h} h ${m} min` : `${m} min`; }
+    function hace(f) {
+      const min = Math.round((Date.now() - new Date(f).getTime()) / 60000);
+      if (min < 2) return null;
+      if (min < 60) return `hace ${min} min`;
+      const h = Math.round(min / 60); if (h < 24) return `hace ${h} h`;
+      const d = Math.round(h / 24); return `hace ${d} día${d === 1 ? "" : "s"}`;
+    }
+    const clave = n => n.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+
+    function mostrar(vista) {
+      $("vista-login").hidden = vista !== "login";
+      $("vista-panel").hidden = vista !== "panel";
+      $("acciones").hidden = vista !== "panel";
+    }
+
+    async function iniciar() {
+      if (!window.supabase) { mostrar("login"); $("login-msg").textContent = "No hay conexión. Revisa tu internet y recarga."; return; }
+      db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: "xilovha-admin" } });
+      const { data } = await db.auth.getSession();
+      if (data.session && await esAdmin()) abrirPanel(); else mostrar("login");
+    }
+    async function esAdmin() { const { data, error } = await db.rpc("es_admin"); return !error && data === true; }
+
+    $("form-login").addEventListener("submit", async e => {
+      e.preventDefault();
+      const msg = $("login-msg"); msg.classList.remove("error"); msg.textContent = "Verificando…";
+      $("btn-login").disabled = true;
+      const { error } = await db.auth.signInWithPassword({ email: $("login-correo").value.trim(), password: $("login-clave").value });
+      $("btn-login").disabled = false;
+      if (error) { msg.textContent = "Correo o contraseña incorrectos."; msg.classList.add("error"); return; }
+      if (!(await esAdmin())) { await db.auth.signOut(); msg.textContent = "Esta cuenta no tiene permisos de administración."; msg.classList.add("error"); return; }
+      $("login-clave").value = ""; msg.textContent = "";
+      abrirPanel();
+    });
+
+    $("btn-salir").addEventListener("click", async () => { clearInterval(refresco); await db.auth.signOut(); jugadores = []; mostrar("login"); });
+    $("btn-actualizar").addEventListener("click", cargar);
+    $("buscar").addEventListener("input", pintar);
+    document.querySelectorAll("th[data-orden]").forEach(th => th.addEventListener("click", () => {
+      const c = th.dataset.orden;
+      orden = { campo: c === "lugar" ? "puntos" : c, desc: orden.campo === c ? !orden.desc : c !== "nombre" };
+      pintar();
+    }));
+
+    async function abrirPanel() { mostrar("panel"); await cargar(); clearInterval(refresco); refresco = setInterval(cargar, 30000); }
+
+    async function cargar() {
+      const { data, error } = await db.from("xilovha_perfiles")
+        .select("user_id,nombre,correo,puntos,segundos,progreso,ultima_vez,creado");
+      if (error) { $("cuerpo").innerHTML = `<tr><td colspan="9">No se pudo cargar: ${esc(error.message)}</td></tr>`; return; }
+      const porPuntos = [...data].sort((a, b) => b.puntos - a.puntos || a.segundos - b.segundos);
+      const conteo = {};
+      data.forEach(j => { const k = clave(j.nombre); conteo[k] = (conteo[k] || 0) + 1; });
+      jugadores = data.map(j => {
+        const p = j.progreso || {};
+        const juegos = p.juegos || {};
+        return { ...j,
+          lugar: porPuntos.indexOf(j) + 1,
+          fichas: (p.fichas || []).length, videos: (p.videos || []).length,
+          juegos: Object.values(juegos).reduce((n, x) => n + (x.veces || 0), 0),
+          enLinea: !hace(j.ultima_vez), duplicado: conteo[clave(j.nombre)] > 1 };
+      });
+      pintar();
+    }
+
+    function pintar() {
+      const total = jugadores.length;
+      const enLinea = jugadores.filter(j => j.enLinea).length;
+      const tiempoTotal = jugadores.reduce((n, j) => n + j.segundos, 0);
+      const prom = total ? Math.round(jugadores.reduce((n, j) => n + j.puntos, 0) / total) : 0;
+      $("resumen").innerHTML = [
+        ["Jugadores registrados", total], ["En línea ahora", `<span class="punto-linea"></span>${enLinea}`],
+        ["Tiempo total de uso", tiempo(tiempoTotal)], ["Puntos promedio", prom]
+      ].map(([t, v]) => `<div class="tarjeta-dato"><small>${t}</small><b>${v}</b></div>`).join("");
+
+      const q = $("buscar").value.trim().toLowerCase();
+      const lista = jugadores.filter(j => !q || j.nombre.toLowerCase().includes(q) || (j.correo || "").toLowerCase().includes(q));
+      const { campo, desc } = orden;
+      lista.sort((a, b) => {
+        const x = a[campo], y = b[campo];
+        const r = typeof x === "string" ? x.localeCompare(y, "es") : (x > y) - (x < y);
+        return desc ? -r : r;
+      });
+      document.querySelectorAll("th[data-orden]").forEach(th => {
+        const c = th.dataset.orden === "lugar" ? "puntos" : th.dataset.orden;
+        if (c === campo) th.setAttribute("aria-sort", desc ? "descending" : "ascending"); else th.removeAttribute("aria-sort");
+      });
+
+      if (!lista.length) { $("cuerpo").innerHTML = `<tr><td colspan="9" class="vacio">${total ? "Nadie coincide con la búsqueda." : "Todavía no hay jugadores registrados."}</td></tr>`; return; }
+      $("cuerpo").innerHTML = lista.map(j => {
+        const ultima = j.enLinea ? `<span class="linea"><span class="punto-linea"></span>En línea</span>` : hace(j.ultima_vez);
+        const acciones = confirmando === j.user_id
+          ? `<button class="btn-mini peligro-lleno" data-borrar-si="${j.user_id}">Sí, eliminar</button><button class="btn-mini" data-cancelar>Cancelar</button>`
+          : `<button class="btn-mini" data-ver="${j.user_id}">${abierto === j.user_id ? "Ocultar" : "Ver avance"}</button><button class="btn-mini peligro" data-borrar="${j.user_id}">Eliminar</button>`;
+        let html = `<tr class="fila">
+          <td class="num">${j.lugar <= 3 ? ["🥇", "🥈", "🥉"][j.lugar - 1] : j.lugar}</td>
+          <td class="nombre-celda"><b>${esc(j.nombre)}</b><small>${esc(j.correo)}</small>${j.duplicado ? `<br><span class="etiqueta-dup">Posible repetido</span>` : ""}</td>
+          <td class="num">${j.puntos} ⭐</td>
+          <td class="num">${tiempo(j.segundos)}</td>
+          <td class="num">${ultima}</td>
+          <td class="num">${j.fichas}</td>
+          <td class="num">${j.videos}</td>
+          <td class="num">${j.juegos}</td>
+          <td><div class="acciones-celda">${acciones}</div></td>
+        </tr>`;
+        if (abierto === j.user_id) html += `<tr class="detalle-fila"><td colspan="9">${detalle(j)}</td></tr>`;
+        return html;
+      }).join("");
+    }
+
+    function detalle(j) {
+      const p = j.progreso || {};
+      const lista = (arr, vacio) => arr && arr.length ? `<ul>${arr.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : `<p class="vacio">${vacio}</p>`;
+      const juegos = Object.entries(p.juegos || {}).map(([k, v]) =>
+        `${NOMBRE_JUEGO[k] || k}: ${v.veces} ${v.veces === 1 ? "vez" : "veces"} · ${v.aciertos}/${v.preguntas} aciertos · mejor ${v.mejor}%`);
+      const modelo = p.vestidor ? (p.vestidor.modelo === "hombre" ? "Modelo hombre" : "Modelo mujer") : "—";
+      return `<div class="detalle-grid">
+        <div><h4>Fichas que abrió</h4>${lista(p.fichas, "Todavía no abre ninguna ficha.")}</div>
+        <div><h4>Videos que vio</h4>${lista(p.videos, "Todavía no ve ningún video.")}</div>
+        <div><h4>Juegos</h4>${lista(juegos, "Todavía no juega.")}
+             <h4 style="margin-top:12px">Su modelo</h4><p>${modelo}</p>
+             <h4 style="margin-top:12px">Se registró</h4><p>${new Date(j.creado).toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })}</p></div>
+      </div>`;
+    }
+
+    $("cuerpo").addEventListener("click", async e => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.ver) { abierto = abierto === b.dataset.ver ? null : b.dataset.ver; pintar(); }
+      if (b.dataset.borrar) { confirmando = b.dataset.borrar; pintar(); }
+      if (b.hasAttribute("data-cancelar")) { confirmando = null; pintar(); }
+      if (b.dataset.borrarSi) {
+        b.disabled = true;
+        const { error } = await db.from("xilovha_perfiles").delete().eq("user_id", b.dataset.borrarSi);
+        confirmando = null;
+        if (error) alert("No se pudo eliminar: " + error.message);
+        await cargar();
+      }
+    });
+
+    iniciar();
+  </script>
+</body>
+</html>

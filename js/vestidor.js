@@ -6,9 +6,17 @@
    cambia de vista y se vuelve a abrir.
    ===================================================================== */
 
-let modeloActual = "mujer";
+let modeloActual = P.vestidor.modelo;        // se guarda en la cuenta (js/cuenta.js)
 let categoriaActual = CATEGORIAS[0].id;
-const puesto = { mujer: {}, hombre: {} };      // categoría -> id de prenda
+const ropa = m => P.vestidor.puesto[m];      // categoría -> id de prenda, por modelo
+
+/* Al entrar a una cuenta: recuperar el modelo y la ropa que tenía puesta */
+function cargarVestidorGuardado() {
+  modeloActual = P.vestidor.modelo;
+  document.querySelectorAll(".tab-modelo").forEach(x => x.classList.toggle("activo", x.dataset.modelo === modeloActual));
+  if (document.getElementById("pantalla-vestidor").classList.contains("activa")) pintarVestidor();
+}
+cargarVestidorGuardado();
 const vistaIdx = { mujer: 0, hombre: 0 };      // posición en ORDEN_VISTAS
 let girando = false;
 let autoGiro = null;
@@ -20,12 +28,15 @@ Object.values(MODELOS).forEach(m => Object.values(m.vistas).forEach(src => { con
 /* ---------- Cambiar de modelo ---------- */
 document.querySelectorAll(".tab-modelo").forEach(b => b.addEventListener("click", () => {
   modeloActual = b.dataset.modelo;
+  P.vestidor.modelo = modeloActual;
+  cambioProgreso();
   document.querySelectorAll(".tab-modelo").forEach(x => x.classList.toggle("activo", x === b));
   pintarVestidor();
 }));
 
 document.getElementById("btn-quitar").addEventListener("click", () => {
-  puesto[modeloActual] = {};
+  P.vestidor.puesto[modeloActual] = {};
+  cambioProgreso();
   pintarVestidor();
 });
 
@@ -130,7 +141,7 @@ function pintarEscenario(entraCerrada) {
   let capas = `<img class="modelo-base" src="${m.vistas[vista]}" alt="${m.nombre}, vista ${NOMBRE_VISTA[vista].toLowerCase()}" draggable="false">`;
   let ocultas = 0;
   ["inferior", "superior", "vestido", "zapatos", "accesorio"].forEach(cat => {
-    const pr = PRENDAS.find(p => p.id === puesto[modeloActual][cat]);
+    const pr = PRENDAS.find(p => p.id === ropa(modeloActual)[cat]);
     if (!pr) return;
     const src = imagenPrenda(pr, vista);
     if (src) capas += `<img class="capa" src="${src}" alt="${pr.nombre}" draggable="false">`;
@@ -175,7 +186,7 @@ function pintarPrendas() {
   const puntos = leerPuntos();
   cont.innerHTML = lista.map(p => {
     const bloqueada = p.costo > puntos;
-    const activa = puesto[modeloActual][p.categoria] === p.id;
+    const activa = ropa(modeloActual)[p.categoria] === p.id;
     return `<button class="prenda ${activa ? "activa" : ""}" data-id="${p.id}" ${bloqueada ? "disabled" : ""}>
       <img src="${p.img}" alt="">
       <span>${p.nombre}</span>
@@ -187,12 +198,13 @@ function pintarPrendas() {
 
 function ponerPrenda(id) {
   const p = PRENDAS.find(x => x.id === id);
-  const ropa = puesto[modeloActual];
-  if (ropa[p.categoria] === id) delete ropa[p.categoria];       // tocar otra vez = quitar
+  const r = ropa(modeloActual);
+  if (r[p.categoria] === id) delete r[p.categoria];             // tocar otra vez = quitar
   else {
-    ropa[p.categoria] = id;
-    if (p.categoria === "vestido") { delete ropa.superior; delete ropa.inferior; }
-    if (p.categoria === "superior" || p.categoria === "inferior") delete ropa.vestido;
+    r[p.categoria] = id;
+    if (p.categoria === "vestido") { delete r.superior; delete r.inferior; }
+    if (p.categoria === "superior" || p.categoria === "inferior") delete r.vestido;
   }
+  cambioProgreso();
   pintarVestidor();
 }

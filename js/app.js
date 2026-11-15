@@ -4,14 +4,11 @@
 
 let menuActual = null;
 
-/* ---------- Puntos (se guardan en este dispositivo) ---------- */
-const CLAVE_PUNTOS = "xilovha-puntos";
-function leerPuntos() {
-  try { return parseInt(localStorage.getItem(CLAVE_PUNTOS), 10) || 0; } catch (e) { return window._puntos || 0; }
-}
+/* ---------- Puntos (forman parte del avance de js/cuenta.js) ---------- */
+function leerPuntos() { return P.puntos; }
 function guardarPuntos(n) {
-  window._puntos = n;
-  try { localStorage.setItem(CLAVE_PUNTOS, String(n)); } catch (e) {}
+  P.puntos = Math.max(0, n);
+  cambioProgreso();
   pintarPuntos();
 }
 function sumarPuntos(n) { guardarPuntos(leerPuntos() + n); }
@@ -167,6 +164,13 @@ function abrirDetalle(menu, gi, hi) {
   if (h.pendiente) html += `<span class="aviso-provisional">Información pendiente – no viene en el manual ${menu}</span>`;
   document.getElementById("detalle-contenido").innerHTML = html;
   document.getElementById("detalle").classList.remove("oculto");
+
+  // Registro de avance: ficha abierta y video visto
+  registrarFicha(menu, h.nombre);
+  const video = document.querySelector("#detalle-contenido video");
+  if (video) video.addEventListener("play", () => registrarVideo(menu, h.nombre), { once: true });
+  const enlace = document.querySelector("#detalle-contenido .video-enlace");
+  if (enlace) enlace.addEventListener("click", () => registrarVideo(menu, h.nombre), { once: true });
 }
 function cerrarDetalle() {
   document.querySelectorAll("#detalle video").forEach(v => v.pause());
@@ -218,6 +222,7 @@ function todasLasHerramientas(menu) {
 
 pintarMenus();
 pintarPuntos();
+iniciarCuenta();
 
 /* Abrir una sección directo desde el enlace, ej. xilovha.vercel.app/#actividades */
 window.addEventListener("load", () => {

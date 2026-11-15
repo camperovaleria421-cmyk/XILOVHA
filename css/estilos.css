@@ -540,3 +540,55 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 /* Mi modelo: el robot cabe en la pantalla (sin tener que bajar para girarlo) */
 .escenario { width: auto; height: min(62vh, 600px); max-width: 100%; }
 @media (min-width: 900px) { .escenario { height: min(58vh, 640px); } }
+
+/* =====================================================================
+   CUENTA Y RANKING
+   ===================================================================== */
+.hub-card-ranking { grid-column: 1 / -1; }
+.hub-card-ranking .hub-ico { color: #b7791f; background: #fdf3df; }
+@media (min-width: 900px) { .hub { grid-template-columns: repeat(5, minmax(0, 1fr)); } .hub-card-ranking { grid-column: auto; } }
+
+.cuenta-caja { max-width: 520px; }
+.pestanas-cuenta { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--fondo); border: 1px solid var(--borde);
+                   border-radius: 14px; padding: 4px; margin-top: 8px; }
+.pestana-cuenta { border: 0; background: none; font: inherit; font-weight: 600; color: var(--texto-2); padding: 10px; border-radius: 10px; cursor: pointer; }
+.pestana-cuenta.activo { background: #fff; color: var(--texto); box-shadow: var(--sombra-suave); }
+.form-cuenta { display: grid; gap: 14px; margin-top: 18px; background: #fff; border: 1px solid var(--borde); border-radius: 18px; padding: 18px; }
+.form-cuenta label { display: grid; gap: 6px; font-weight: 600; font-size: .9rem; }
+.form-cuenta input { font: inherit; font-weight: 400; padding: 12px 14px; border-radius: 12px; border: 2px solid #d5dde8; background: #fff; color: var(--texto); width: 100%; }
+.form-cuenta input:focus { outline: none; border-color: var(--cian); }
+.form-cuenta .btn-principal { justify-self: stretch; }
+.form-cuenta .btn-principal:disabled { opacity: .6; cursor: wait; }
+.cuenta-msg { min-height: 1.2em; font-size: .9rem; color: var(--tile-ico); line-height: 1.4; }
+.cuenta-msg.error { color: #b91c1c; }
+#btn-sin-cuenta { margin-top: 16px; display: block; text-align: left; line-height: 1.4; }
+#btn-sin-cuenta small { font-weight: 400; color: var(--texto-2); }
+.perfil-datos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin: 6px 0 18px; }
+.dato { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 14px; display: grid; gap: 2px; }
+.dato span { font-size: 1.3rem; }
+.dato b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.dato small { color: var(--texto-2); }
+.fin-botones.izquierda { justify-content: flex-start; }
+
+.ranking { list-style: none; display: grid; gap: 8px; padding: 0; }
+.fila-ranking { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--borde);
+                border-radius: 16px; padding: 12px 14px; }
+.fila-ranking .lugar { width: 36px; text-align: center; font-weight: 700; font-size: 1.05rem; color: var(--texto-2); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.fila-ranking .jugador { display: grid; gap: 3px; min-width: 0; }
+.fila-ranking .jugador b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fila-ranking .jugador em { font-style: normal; color: var(--tile-ico); font-weight: 600; }
+.fila-ranking .jugador small { color: var(--texto-2); font-size: .8rem; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.fila-ranking .puntaje { margin-left: auto; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.podio .lugar { font-size: 1.7rem; }
+.podio-1 { background: linear-gradient(90deg, #fff6dc, #fff); border-color: #f0d48a; padding-block: 16px; }
+.podio-2 { background: linear-gradient(90deg, #eef1f6, #fff); border-color: #cfd6e2; }
+.podio-3 { background: linear-gradient(90deg, #fbeee3, #fff); border-color: #e9c4a3; }
+.podio-1 .jugador b { font-size: 1.1rem; }
+.fila-ranking.yo { box-shadow: inset 0 0 0 2px var(--cian); }
+.punto-linea { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.2); margin-right: 6px; vertical-align: middle; }
+.ranking-vacio { background: #fff; border: 2px dashed var(--borde); border-radius: 16px; padding: 22px; color: var(--texto-2); text-align: center; line-height: 1.5; }
+.tu-lugar { margin: 16px 0 8px; font-weight: 700; color: var(--texto-2); }
+.pista-ranking { margin-top: 18px; font-size: .85rem; }
+
+/* Lo que tiene el atributo hidden siempre se oculta */
+[hidden] { display: none !important; }

@@ -115,6 +115,7 @@ function finJuego() {
   const p = partida;
   const total = p.preguntas.length;
   const estrellas = p.aciertos === total ? "🌟🌟🌟" : p.aciertos >= total / 2 ? "🌟🌟" : "🌟";
+  registrarJuego(p.tipo, p.aciertos, total);
   document.getElementById("juego-progreso").textContent = "";
   document.getElementById("juego-area").innerHTML = `
     <div class="fin-juego">
