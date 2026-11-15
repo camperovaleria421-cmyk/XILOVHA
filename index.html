@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XILOVHA Patronista Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- ============ ÍCONOS (se usan con <use href="#i-...">) ============ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.2-4.2"/></symbol>
+      <symbol id="i-libro" viewBox="0 0 24 24"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></symbol>
+      <symbol id="i-diana" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+      <symbol id="i-playera" viewBox="0 0 24 24"><path d="M20.4 3.5 16 2a4 4 0 0 1-8 0L3.6 3.5a2 2 0 0 0-1.3 2.2l.6 3.5a1 1 0 0 0 1 .8H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.1a1 1 0 0 0 1-.8l.6-3.5a2 2 0 0 0-1.3-2.2z"/></symbol>
+      <symbol id="i-foco" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4"/><path d="M15 14c.2-1 .7-1.7 1.5-2.5A4.7 4.7 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/></symbol>
+      <symbol id="i-gorro" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></symbol>
+      <symbol id="i-casa" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h14V9"/><path d="M10 20v-6h4v6"/></symbol>
+      <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+      <symbol id="i-portada" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></symbol>
+      <symbol id="i-flecha" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+      <symbol id="i-cerrar" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ============ NAVEGACIÓN LATERAL (computadora) / CAJÓN (teléfono) ============ -->
+  <nav id="lateral" class="lateral" aria-label="Secciones">
+    <div class="lateral-marca">
+      <img src="img/icono.png" alt="" class="marca-icono">
+      <div class="marca-texto"><strong>Patronista Digital</strong><small>Aprendizaje interactivo CAD</small></div>
+      <button class="btn-cerrar-lateral" aria-label="Cerrar menú"><svg class="ico"><use href="#i-cerrar"/></svg></button>
+    </div>
+    <button class="lateral-item" data-ir="hub"><svg class="ico"><use href="#i-casa"/></svg>Inicio</button>
+    <button class="lateral-item" data-ir="menu" data-incluye="herramientas"><svg class="ico"><use href="#i-buscar"/></svg>Explorar herramientas</button>
+    <button class="lateral-item" data-ir="videos"><svg class="ico"><use href="#i-libro"/></svg>Aprender paso a paso</button>
+    <button class="lateral-item" data-ir="actividades" data-incluye="juego"><svg class="ico"><use href="#i-diana"/></svg>Practicar</button>
+    <button class="lateral-item" data-ir="vestidor"><svg class="ico"><use href="#i-playera"/></svg>Mi modelo</button>
+    <div class="lateral-sep"></div>
+    <button class="lateral-item" data-ir="config"><svg class="ico"><use href="#i-ajustes"/></svg>Configuración</button>
+    <button class="lateral-item" data-ir="inicio"><svg class="ico"><use href="#i-portada"/></svg>Portada XILOVHA</button>
+    <div class="lateral-pie">
+      <img src="img/logo.jpg" alt="XILOVHA Patronista Digital" class="lateral-logo">
+      <span class="puntos-chip">⭐ <b class="puntos-valor">0</b> puntos</span>
+    </div>
+  </nav>
+  <div id="velo" class="velo"></div>
+
+  <!-- ============ INICIO (imagen original tal cual) ============ -->
+  <section id="pantalla-inicio" class="pantalla activa">
+    <div class="inicio-lienzo">
+      <img src="img/inicio.jpg" alt="XILOVHA Patronista Digital. Aprende. Diseña. Crea." class="inicio-img">
+      <button class="zona" style="left:91%;top:2.5%;width:7%;height:5%"   aria-label="Menú"          data-ir="hub"></button>
+      <button class="zona" style="left:3%;top:54%;width:27.5%;height:7%"  aria-label="Comenzar"      data-ir="hub"></button>
+      <button class="zona" style="left:3%;top:85%;width:14%;height:11%"   aria-label="Patrones"      data-ir="menu"></button>
+      <button class="zona" style="left:18%;top:85%;width:14%;height:11%"  aria-label="Guías"         data-ir="videos"></button>
+      <button class="zona" style="left:33%;top:85%;width:14%;height:11%"  aria-label="Tips"          data-ir="actividades"></button>
+      <button class="zona" style="left:48%;top:85%;width:18%;height:11%"  aria-label="Configuración" data-ir="config"></button>
+    </div>
+  </section>
+
+  <!-- ============ HUB: secciones principales ============ -->
+  <section id="pantalla-hub" class="pantalla">
+    <header class="barra barra-marca">
+      <img src="img/icono.png" alt="" class="marca-icono">
+      <div class="marca-texto"><strong>Patronista Digital</strong><small>Aprendizaje interactivo CAD</small></div>
+      <span class="puntos-chip" title="Tus puntos">⭐ <b class="puntos-valor">0</b></span>
+    </header>
+    <main class="contenido ancho">
+      <section class="hero">
+        <p class="hero-eyebrow">Tu espacio de aprendizaje</p>
+        <h1>Aprende patronaje digital paso a paso</h1>
+        <p class="hero-texto">Explora las herramientas de Modaris, practica con juegos y viste a tu modelo con los puntos que ganes.</p>
+        <p class="hero-meta"><svg class="ico"><use href="#i-gorro"/></svg><span id="hero-meta">Nivel inicial · Modaris</span></p>
+      </section>
+
+      <h2 class="seccion-titulo">¿Qué quieres hacer hoy?</h2>
+      <div class="hub">
+        <button class="hub-card" data-ir="menu">
+          <span class="hub-ico"><svg class="ico"><use href="#i-buscar"/></svg></span>
+          <strong>Explorar herramientas</strong><small>Menús y funciones</small>
+        </button>
+        <button class="hub-card" data-ir="videos">
+          <span class="hub-ico"><svg class="ico"><use href="#i-libro"/></svg></span>
+          <strong>Aprender paso a paso</strong><small>Videos por herramienta</small>
+        </button>
+        <button class="hub-card" data-ir="actividades">
+          <span class="hub-ico"><svg class="ico"><use href="#i-diana"/></svg></span>
+          <strong>Practicar</strong><small>Juegos y puntos</small>
+        </button>
+        <button class="hub-card" data-ir="vestidor">
+          <span class="hub-ico"><svg class="ico"><use href="#i-playera"/></svg></span>
+          <strong>Mi modelo</strong><small>Viste a tu robot</small>
+        </button>
+      </div>
+
+      <div class="hub-extra">
+        <section class="panel">
+          <h2 class="panel-titulo">Menús de Modaris</h2>
+          <p class="panel-sub">Cada color es un menú, igual que en el software.</p>
+          <div id="chips-menus" class="chips-menus"></div>
+        </section>
+        <section class="consejo-card">
+          <h2><svg class="ico"><use href="#i-foco"/></svg>Consejo de la patronista</h2>
+          <p id="consejo-texto"></p>
+          <button id="btn-consejo" class="enlace-btn">Otro consejo <svg class="ico"><use href="#i-flecha"/></svg></button>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ MENÚ DE MODARIS ============ -->
+  <section id="pantalla-menu" class="pantalla">
+    <header class="barra">
+      <button class="btn-volver" data-ir="hub" aria-label="Volver">&#8592;</button>
+      <img src="img/logo.jpg" alt="XILOVHA" class="barra-logo">
+    </header>
+    <main class="contenido">
+      <p class="eyebrow">Explorar herramientas</p>
+      <h1 class="titulo">Menús y funciones</h1>
+      <p class="subtitulo">Elige un menú de Modaris. Cada uno tiene su color, igual que en el software, y se abre con las teclas F1 a F8.</p>
+      <div id="lista-menus" class="lista-menus"></div>
+    </main>
+  </section>
+
+  <!-- ============ HERRAMIENTAS DE UN MENÚ ============ -->
+  <section id="pantalla-herramientas" class="pantalla">
+    <header class="barra">
+      <button class="btn-volver" data-ir="menu" aria-label="Volver">&#8592;</button>
+      <img src="img/logo.jpg" alt="XILOVHA" class="barra-logo">
+    </header>
+    <main class="contenido">
+      <div id="cabecera-menu" class="cabecera-menu"></div>
+      <input id="buscador" class="buscador" type="search" placeholder="Buscar herramienta o atajo…">
+      <div id="lista-herramientas"></div>
+    </main>
+  </section>
+
+  <!-- ============ ACTIVIDADES ============ -->
+  <section id="pantalla-actividades" class="pantalla">
+    <header class="barra">
+      <button class="btn-volver" data-ir="hub" aria-label="Volver">&#8592;</button>
+      <img src="img/logo.jpg" alt="XILOVHA" class="barra-logo">
+      <span class="puntos-chip" title="Tus puntos">⭐ <b class="puntos-valor">0</b></span>
+    </header>
+    <main class="contenido">
+      <p class="eyebrow">Practicar</p>
+      <h1 class="titulo">Actividades F1</h1>
+      <p class="subtitulo">Cada respuesta correcta te da puntos. Con los puntos desbloqueas ropa para tu modelo.</p>
+      <div class="lista-juegos">
+        <button class="juego-card" data-juego="quien">
+          <span class="hub-ico grande">?</span>
+          <span class="juego-texto"><strong>¿Qué herramienta es?</strong><small>Lee para qué sirve y adivina cuál es</small></span>
+          <span class="premio">+10 ⭐</span>
+        </button>
+        <button class="juego-card" data-juego="atajos">
+          <span class="hub-ico grande">⌨</span>
+          <span class="juego-texto"><strong>Atajo correcto</strong><small>Relaciona cada herramienta con su tecla</small></span>
+          <span class="premio">+10 ⭐</span>
+        </button>
+        <button class="juego-card" data-juego="pasos">
+          <span class="hub-ico grande">1·2·3</span>
+          <span class="juego-texto"><strong>Ordena los pasos</strong><small>Toca los pasos en el orden correcto</small></span>
+          <span class="premio">+15 ⭐</span>
+        </button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ PANTALLA DE JUEGO ============ -->
+  <section id="pantalla-juego" class="pantalla">
+    <header class="barra">
+      <button class="btn-volver" data-ir="actividades" aria-label="Salir del juego">&#8592;</button>
+      <img src="img/logo.jpg" alt="XILOVHA" class="barra-logo">
+      <span class="puntos-chip" title="Tus puntos">⭐ <b class="puntos-valor">0</b></span>
+    </header>
+    <main class="contenido">
+      <div class="juego-cabecera">
+        <h1 id="juego-titulo" class="titulo"></h1>
+        <span id="juego-progreso" class="juego-progreso"></span>
+      </div>
+      <div id="juego-area"></div>
+    </main>
+  </section>
+
+  <!-- ============ VESTIDOR ============ -->
+  <section id="pantalla-vestidor" class="pantalla">
+    <header class="barra">
+      <button class="btn-volver" data-ir="hub" aria-label="Volver">&#8592;</button>
+      <img src="img/logo.jpg" alt="XILOVHA" class="barra-logo">
+      <span class="puntos-chip" title="Tus puntos">⭐ <b class="puntos-valor">0</b></span>
+    </header>
+    <main class="contenido">
+      <h1 class="titulo">Mi modelo</h1>
+      <div class="selector-modelo" role="tablist">
+        <button class="tab-modelo activo" data-modelo="mujer">Modelo mujer</button>
+        <button class="tab-modelo" data-modelo="hombre">Modelo hombre</button>
+      </div>
+      <div class="vestidor">
+        <div class="escenario-col">
+          <div id="escenario" class="escenario" tabindex="0" aria-label="Modelo. Arrastra o usa las flechas para girarlo."></div>
+          <div id="indicador-vistas" class="indicador-vistas"></div>
+          <div class="controles-giro">
+            <button id="btn-girar-izq" class="btn-giro" aria-label="Girar a la izquierda">⟲</button>
+            <button id="btn-auto" class="btn-principal" aria-pressed="false">▶ Dar vueltas</button>
+            <button id="btn-girar-der" class="btn-giro" aria-label="Girar a la derecha">⟳</button>
+          </div>
+          <p class="pista-giro">Arrastra al modelo con el dedo o el ratón para girarlo.</p>
+          <div class="escenario-botones">
+            <button id="btn-quitar" class="btn-secundario">Quitar toda la ropa</button>
+            <button id="btn-vistas" class="btn-secundario">Ver las 4 vistas</button>
+          </div>
+        </div>
+        <div class="closet">
+          <h2 class="closet-titulo">Closet</h2>
+          <div id="closet-tabs" class="closet-tabs"></div>
+          <div id="closet-prendas" class="closet-prendas"></div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ VIDEOS ============ -->
+  <section id="pantalla-videos" class="pantalla">
+    <header class="barra">
+      <button class="btn-volver" data-ir="hub" aria-label="Volver">&#8592;</button>
+      <img src="img/logo.jpg" alt="XILOVHA" class="barra-logo">
+    </header>
+    <main class="contenido">
+      <h1 class="titulo">Videos</h1>
+      <p class="subtitulo">Cada herramienta tendrá su video. Toca una para verla.</p>
+      <div id="lista-videos"></div>
+    </main>
+  </section>
+
+  <!-- ============ CONFIGURACIÓN ============ -->
+  <section id="pantalla-config" class="pantalla">
+    <header class="barra">
+      <button class="btn-volver" data-ir="inicio" aria-label="Volver">&#8592;</button>
+      <img src="img/logo.jpg" alt="XILOVHA" class="barra-logo">
+    </header>
+    <main class="contenido">
+      <h1 class="titulo">Configuración</h1>
+      <p class="subtitulo">Tienes <b class="puntos-valor">0</b> puntos guardados en este dispositivo.</p>
+      <button id="btn-reiniciar" class="btn-secundario">Reiniciar mis puntos</button>
+      <p id="msg-reinicio" class="subtitulo" hidden>Listo, tus puntos volvieron a 0.</p>
+    </main>
+  </section>
+
+  <!-- ============ VENTANA DE DETALLE DE HERRAMIENTA ============ -->
+  <div id="detalle" class="detalle oculto" role="dialog" aria-modal="true">
+    <div class="detalle-caja">
+      <button class="detalle-cerrar" aria-label="Cerrar">&times;</button>
+      <div id="detalle-contenido"></div>
+    </div>
+  </div>
+
+  <script src="js/datos.js"></script>
+  <script src="js/videos.js"></script>
+  <script src="js/closet.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/actividades.js"></script>
+  <script src="js/vestidor.js"></script>
+</body>
+</html>
