@@ -7,7 +7,7 @@
    Cada herramienta puede tener:
      nombre    -> como aparece en el menú de Modaris
      atajo     -> tecla rápida (opcional)
-     manual    -> nombre con el que aparece en el manual, si es distinto
+     manual    -> otro nombre con el que se conoce la herramienta (se muestra como "También se llama")
      sirve     -> para qué sirve (1-2 frases)
      pasos     -> lista corta de pasos
      nota      -> dato importante / tip
@@ -19,7 +19,7 @@
 const MENUS = [
   { tecla: "F1",  nombre: "Puntos, líneas",                         color: "#f6d2ae", listo: true  },
   { tecla: "F2",  nombre: "Piquetes, orientación, herramientas",    color: "#f0b04a", listo: true  },
-  { tecla: "F3",  nombre: "Modificación",                           color: "#f8c3cf", listo: false },
+  { tecla: "F3",  nombre: "Modificación",                           color: "#f8c3cf", listo: true  },
   { tecla: "F4",  nombre: "Industrialización, pieza",               color: "#cfcfcf", listo: false },
   { tecla: "F5",  nombre: "Piezas derivadas, pliegues, CAD-CAM",    color: "#cdb6d8", listo: false },
   { tecla: "F6",  nombre: "Escalado",                               color: "#7fd0cc", listo: false },
@@ -549,6 +549,269 @@ const HERRAMIENTAS = {
               "Presiona Espacio para ver cada tangente.",
               "Haz clic en la tangente que quieres."
             ]
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ================================================================
+     F3 · MODIFICACIÓN
+     ================================================================ */
+  F3: {
+    descripcion: "Herramientas para corregir lo que ya trazaste: mover, estirar o alargar líneas, cortar y unir curvas, fijar puntos con chinchetas y amarrar valores a medidas.",
+
+    glosario: [
+      ["Chincheta", "Punto «clavado»: se queda fijo cuando mueves o estiras lo demás."],
+      ["Homotecia", "Agrandar o achicar una forma conservando sus proporciones."],
+      ["Gradación / leyes de evolución", "Cómo cambia cada punto de una talla a otra."],
+      ["Talla base", "La talla en la que trazas; las demás se calculan a partir de ella."],
+      ["Punto de extremo", "Punto donde empieza o termina una línea."],
+      ["Punto constante", "Punto que está a una distancia fija sobre la línea (ver F1)."],
+      ["Medida MCM", "Medida guardada en la tabla de medidas de Modaris; se puede amarrar a puntos o paralelas."],
+      ["Parámetros asociados", "Menú con las opciones de la herramienta; elígelas antes de usarla."],
+      ["~", "En los atajos de Modaris: ~ = tecla Alt."]
+    ],
+
+    grupos: [
+      /* ========================= MODIFICACIÓN DE LÍNEA ========================= */
+      {
+        nombre: "Modificación de línea",
+        herramientas: [
+          {
+            nombre: "Desplazar", atajo: "D",
+            sirve: "Mueve un punto junto con todo lo que está unido a él (líneas, otros puntos). La forma se acomoda sola entre los puntos con chincheta.",
+            pasos: [
+              "(Opcional) elige las opciones de movimiento en Parámetros asociados.",
+              "(Opcional) pon chinchetas en los puntos que no quieres que se muevan.",
+              "Activa Desplazar y haz clic en el punto a mover.",
+              "Escribe Desfase x, Desfase y, Rotación o dl y presiona Enter… o muévelo a mano y haz clic."
+            ],
+            lista: [
+              "Talla base: mueve la talla base y elige si la gradación se queda igual, gira o gira y se escala.",
+              "Talla por talla: mueve una sola talla sin tocar las demás.",
+              "Todas tallas / Selección de tallas / Todos tipos esc.: a qué tallas o tipos de escalado se aplica."
+            ],
+            nota: "Atajo alterno: Ctrl + botón 2 del ratón. La posición original queda marcada como «huella» (se quita en Visualizar › Trazar)."
+          },
+          {
+            nombre: "Estirar", atajo: "Alt + p",
+            sirve: "Gira y agranda o achica una parte de la pieza tomando un punto como pivote, como si la estiraras.",
+            pasos: [
+              "(Opcional) elige las opciones de movimiento en Parámetros asociados.",
+              "Activa Estirar.",
+              "Clic en el 1.er punto (el pivote, no se mueve).",
+              "Clic en el 2.º punto (el que vas a estirar).",
+              "Escribe los valores (Desfase, Rotación, x, y, dl o Escala) y presiona Enter… o estíralo a mano y haz clic."
+            ],
+            nota: "Usa las mismas opciones de movimiento que Desplazar."
+          },
+          {
+            nombre: "Alargar", atajo: "$",
+            sirve: "Cambia el largo de una curva entre dos puntos a una medida exacta, sin cambiar su forma.",
+            pasos: [
+              "Activa Alargar.",
+              "Clic en el 1.er extremo de la curva.",
+              "Clic sostenido en el 2.º extremo (Espacio si hay dudas de qué curva es).",
+              "Escribe el largo total o lo que quieres agregar o quitar (dl) y presiona Enter."
+            ]
+          },
+          {
+            nombre: "Ajustar 2 líneas",
+            sirve: "Alarga o recorta una línea hasta que toque otra línea de referencia.",
+            pasos: [
+              "Activa Ajustar 2 líneas.",
+              "Clic en la línea que quieres alargar o recortar.",
+              "Clic en la línea de referencia."
+            ],
+            nota: "La primera línea es la que cambia; la segunda no se mueve. Con «Suprimir el último punto» se borra el extremo viejo."
+          },
+          {
+            nombre: "Al. Línea", atajo: "-",
+            manual: "Alargar línea",
+            sirve: "Prolonga una línea en línea recta desde uno de sus extremos.",
+            pasos: [
+              "Activa Al. Línea.",
+              "Clic en la línea, cerca del extremo que quieres alargar.",
+              "Muévela hasta el largo deseado y haz clic… o escribe el dl, Enter y clic."
+            ],
+            nota: "El extremo desde donde se alarga se vuelve punto característico (esquina)."
+          },
+          {
+            nombre: "Retiro",
+            manual: "Retiro efectivo (retracción)",
+            sirve: "Agranda o reduce una pieza (o parte de ella) por porcentaje. Sirve para compensar el encogimiento de la tela.",
+            pasos: [
+              "Marca o desmarca «Retracción todas las tallas».",
+              "Para una parte: selecciona sus puntos y haz clic en el punto de origen. Para toda la pieza: clic en cualquier lugar de la hoja.",
+              "Activa Retiro.",
+              "Escribe el porcentaje en x y en y y presiona Enter."
+            ],
+            nota: "Sin «todas las tallas» se usa el valor de la talla base para todas; con él, se calcula según cada talla. En piezas dependientes, selecciona toda la pieza primero o se aplica a todo el patrón."
+          },
+          {
+            nombre: "Simplificado", atajo: "Alt + s",
+            sirve: "Suaviza una curva quitándole puntos de más.",
+            pasos: [
+              "Activa Simplificado.",
+              "Clic en la curva (o en una selección de curvas).",
+              "Escribe el desvío permitido y presiona Enter."
+            ],
+            nota: "Entre más grande el desvío, más puntos quita y más simple queda la curva."
+          }
+        ]
+      },
+
+      /* ========================= MODIFICACIÓN DE PUNTO ========================= */
+      {
+        nombre: "Modificación de punto",
+        herramientas: [
+          {
+            nombre: "Modificar", atajo: "r",
+            sirve: "Cambia la posición de un punto o línea ya creados: alargar, acortar o «excavar» una línea, o mover un punto deslizante, constante o relativo.",
+            pasos: [
+              "Activa Modificar.",
+              "Clic en el objeto.",
+              "Escribe los valores y presiona Enter… o muévelo a mano y haz clic."
+            ],
+            nota: "También sirve para mover los «ganchos» (tangentes) de las curvas Bézier."
+          },
+          {
+            nombre: "Sección",
+            sirve: "Corta una curva en un punto: quedan dos líneas unidas por ese punto.",
+            pasos: [
+              "Activa Sección.",
+              "Clic en el punto donde quieres cortar."
+            ],
+            nota: "El punto se vuelve punto de extremo de las dos líneas nuevas."
+          },
+          {
+            nombre: "Fusión curvas",
+            sirve: "Une dos líneas que comparten un punto en una sola línea.",
+            pasos: [
+              "Activa Fusión curvas.",
+              "Si son 2 líneas: clic en su punto común.",
+              "Si el punto toca más de 2 líneas: clic sostenido en la 1.ª línea, arrastra hasta la 2.ª y suelta."
+            ],
+            nota: "Las curvas Bézier solo se fusionan con otras Bézier (actívalas en Visualizar › Bézier para reconocerlas)."
+          },
+          {
+            nombre: "Unido", atajo: "Alt + 5",
+            sirve: "Junta dos puntos en uno solo. Si son de líneas distintas, quedan conectadas por ese punto.",
+            pasos: [
+              "Activa Unido.",
+              "Clic en el 1.er punto.",
+              "Clic en el 2.º punto."
+            ]
+          },
+          {
+            nombre: "Separado", atajo: "Alt + 6",
+            sirve: "Lo contrario de Unido: suelta una línea (o una marca) de un punto que compartía.",
+            pasos: [
+              "Activa Separado.",
+              "Clic en el punto común.",
+              "Clic para confirmar."
+            ],
+            nota: "Quedan dos puntos encimados, uno para cada línea."
+          },
+          {
+            nombre: "Insertar punto", atajo: "Alt + 7",
+            sirve: "Convierte un punto deslizante, constante o de intersección en un punto característico de la línea.",
+            pasos: [
+              "Activa Insertar punto.",
+              "Clic en el punto."
+            ]
+          },
+          {
+            nombre: "Suprimir restricción",
+            sirve: "Quita la dependencia de un objeto (simétrico, paralelo, deslizante, constante o relativo) para que quede libre.",
+            pasos: [
+              "Activa Suprimir restricción.",
+              "Clic en el objeto (o en uno de la selección)."
+            ],
+            nota: "Los puntos deslizantes y constantes se vuelven puntos característicos."
+          },
+          {
+            nombre: "Supresión", atajo: "Supr",
+            sirve: "Borra cualquier objeto: puntos, líneas, marcas…",
+            pasos: [
+              "Activa Supresión.",
+              "Clic en el objeto (o en uno de la selección)."
+            ],
+            nota: "Para borrar todos los puntos de una línea, mantén Shift (⇧) al hacer clic. Si otros objetos dependen de él, Modaris te avisa antes de borrar."
+          }
+        ]
+      },
+
+      /* ========================= MEDIDAS ========================= */
+      {
+        nombre: "Asociar a medidas",
+        herramientas: [
+          {
+            nombre: "Asociar", atajo: "=",
+            sirve: "Hace que varios puntos constantes, pliegues o paralelas dependientes compartan el mismo valor: si cambias uno, cambian todos.",
+            lista: [
+              "Punto constante con otro punto constante o con una paralela dependiente.",
+              "Paralela dependiente con otra paralela o con un punto constante.",
+              "También sirve para quitar la asociación."
+            ],
+            nota: "Solo funciona con objetos que no estén restringidos por una medida."
+          },
+          {
+            nombre: "Asociar a medida", atajo: "Alt + n",
+            sirve: "Amarra un punto constante, pliegue o paralela dependiente a una medida: si cambias la medida cambia el objeto, y al revés.",
+            lista: [
+              "Añadir a baremo: agrega la medida a la tabla MCM.",
+              "Nombrar la medida: te deja ponerle nombre (si no, se llama «Medida 10», «Medida 11»…).",
+              "Restringir / Limitar a la tabla: solo muestra medidas de la tabla abierta."
+            ],
+            nota: "El objeto asociado se ve resaltado (brillante). Cada objeto solo puede tener una medida."
+          },
+          {
+            nombre: "Restricción por medida", atajo: "n",
+            sirve: "Hace que un punto constante, pliegue o paralela dependiente siga una medida, una fórmula o una medida MCM. Ya no se puede mover ni escalar a mano.",
+            lista: [
+              "Restringir a una medida, a otro objeto, a un valor o a una fórmula.",
+              "También sirve para quitar la restricción."
+            ],
+            nota: "El objeto restringido se ve en amarillo dorado. Al pasar el cursor ves su nombre, la medida entre corchetes y el valor, ej. Point 27 [1/4 bassin] 250.00 mm."
+          }
+        ]
+      },
+
+      /* ========================= CHINCHETAS ========================= */
+      {
+        nombre: "Chinchetas",
+        herramientas: [
+          {
+            nombre: "Chincheta", atajo: "Alt + e",
+            sirve: "Clava uno o varios puntos para que no se muevan al desplazar o estirar. Si el punto ya tiene chincheta, se la quita.",
+            pasos: [
+              "Activa Chincheta.",
+              "Clic en el punto (o en uno de la selección)."
+            ]
+          },
+          {
+            nombre: "Ch. Pts. Escalado", atajo: "h",
+            sirve: "Clava de una vez todos los puntos escalados de la hoja.",
+            pasos: ["Activa Ch. Pts. Escalado: el cambio es inmediato."]
+          },
+          {
+            nombre: "Ch. Pts. Caract.",
+            sirve: "Clava de una vez todos los puntos característicos (esquinas) de la hoja, incluidas las piezas unidas.",
+            pasos: ["Activa Ch. Pts. Caract.: el cambio es inmediato."]
+          },
+          {
+            nombre: "Ch. Extremidad", atajo: "f",
+            sirve: "Clava de una vez todos los puntos de extremo de las líneas de la hoja.",
+            pasos: ["Activa Ch. Extremidad: el cambio es inmediato."]
+          },
+          {
+            nombre: "Quit. Ch.", atajo: "e",
+            manual: "Quitar chinchetas",
+            sirve: "Quita todas las chinchetas de la hoja de una vez.",
+            pasos: ["Activa Quit. Ch.: el cambio es inmediato."],
+            nota: "Los extremos de una línea suelta siempre quedan clavados automáticamente."
           }
         ]
       }

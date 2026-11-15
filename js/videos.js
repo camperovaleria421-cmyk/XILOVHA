@@ -64,6 +64,35 @@ const VIDEOS = {
     "Arco_f": "",
     "Arco_r": "",
     "Tang. 2 círculos": ""
+  },
+  F3: {
+    // ---- Modificación de línea ----
+    "Desplazar": "",
+    "Estirar": "",
+    "Alargar": "",
+    "Ajustar 2 líneas": "",
+    "Al. Línea": "",
+    "Retiro": "",
+    "Simplificado": "",
+    // ---- Modificación de punto ----
+    "Modificar": "",
+    "Sección": "",
+    "Fusión curvas": "",
+    "Unido": "",
+    "Separado": "",
+    "Insertar punto": "",
+    "Suprimir restricción": "",
+    "Supresión": "",
+    // ---- Asociar a medidas ----
+    "Asociar": "",
+    "Asociar a medida": "",
+    "Restricción por medida": "",
+    // ---- Chinchetas ----
+    "Chincheta": "",
+    "Ch. Pts. Escalado": "",
+    "Ch. Pts. Caract.": "",
+    "Ch. Extremidad": "",
+    "Quit. Ch.": ""
   }
 };
 

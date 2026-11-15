@@ -153,7 +153,7 @@ function abrirDetalle(menu, gi, hi) {
   let html = `<div class="detalle-grupo">${menu} · ${grupo.nombre}</div>
               <h2>${h.nombre}</h2>`;
   if (h.atajo)  html += `<span class="atajo">⌨ Atajo: <kbd>${h.atajo}</kbd></span>`;
-  if (h.manual) html += `<p class="en-manual">En el manual aparece como: <em>${h.manual}</em></p>`;
+  if (h.manual) html += `<p class="en-manual">También se llama: <em>${h.manual}</em></p>`;
   html += `<div class="video-caja">${bloqueVideo(menu, h.nombre)}</div>`;
   html += `<h3>¿Para qué sirve?</h3><p>${h.sirve}</p>`;
   if (h.lista)  html += `<ul>${h.lista.map(x => `<li>${x}</li>`).join("")}</ul>`;
@@ -161,7 +161,7 @@ function abrirDetalle(menu, gi, hi) {
   if (h.teclas) html += `<h3>Teclas útiles</h3><div class="tabla-scroll"><table class="teclas">` +
                   h.teclas.map(([k, d]) => `<tr><td><kbd>${k}</kbd></td><td>${d}</td></tr>`).join("") + `</table></div>`;
   if (h.nota)   html += `<div class="consejo"><strong>💡 Ojo:</strong> ${h.nota}</div>`;
-  if (h.pendiente) html += `<span class="aviso-provisional">Información pendiente – no viene en el manual ${menu}</span>`;
+  if (h.pendiente) html += `<span class="aviso-provisional">Información pendiente – se agregará pronto</span>`;
   document.getElementById("detalle-contenido").innerHTML = html;
   document.getElementById("detalle").classList.remove("oculto");
 
