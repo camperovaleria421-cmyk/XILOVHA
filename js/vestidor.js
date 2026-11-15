@@ -27,6 +27,8 @@ Object.values(MODELOS).forEach(m => Object.values(m.vistas).forEach(src => { con
 
 /* ---------- Cambiar de modelo ---------- */
 document.querySelectorAll(".tab-modelo").forEach(b => b.addEventListener("click", () => {
+  detenerAutoGiro();
+  cancelAnimationFrame(animacion360);
   modeloActual = b.dataset.modelo;
   P.vestidor.modelo = modeloActual;
   cambioProgreso();
@@ -63,21 +65,74 @@ function alternarAutoGiro() {
     clearInterval(autoGiro); autoGiro = null;
     btn.textContent = "▶ Dar vueltas"; btn.setAttribute("aria-pressed", "false");
   } else {
-    girar(1);
-    autoGiro = setInterval(() => girar(1), 1100);
+    if (es360()) autoGiro = setInterval(() => ponerCuadro(cuadro360[modeloActual] + 1), 80);
+    else { girar(1); autoGiro = setInterval(() => girar(1), 1100); }
     btn.textContent = "⏸ Detener"; btn.setAttribute("aria-pressed", "true");
   }
 }
 function detenerAutoGiro() { if (autoGiro) alternarAutoGiro(); }
 
+/* ---------- Giro 3D real (modelos con cuadros de video 360°) ---------- */
+const cuadro360 = { mujer: 0, hombre: 0 };
+let animacion360 = null;
+const es360 = () => MODELOS[modeloActual].giro360;
+const srcCuadro = (g, n) => `${g.carpeta}${String(n).padStart(2, "0")}.jpg`;
+
+// Precargar los cuadros para que el giro sea fluido
+Object.values(MODELOS).forEach(m => {
+  if (m.giro360) for (let n = 0; n < m.giro360.cuadros; n++) { const i = new Image(); i.src = srcCuadro(m.giro360, n); }
+});
+
+function ponerCuadro(n) {
+  const g = es360();
+  n = ((n % g.cuadros) + g.cuadros) % g.cuadros;
+  cuadro360[modeloActual] = n;
+  const img = document.getElementById("img360");
+  if (img) img.src = srcCuadro(g, n);
+  // Marca la vista más cercana (Frente / Perfil / Espalda / Perfil)
+  const cercana = ORDEN_VISTAS.reduce((mejor, v, i) => {
+    const d = Math.min(Math.abs(g.vistas[v] - n), g.cuadros - Math.abs(g.vistas[v] - n));
+    return d < mejor.d ? { i, d } : mejor;
+  }, { i: 0, d: Infinity }).i;
+  document.querySelectorAll(".punto-vista").forEach((b, i) => b.classList.toggle("activo", i === cercana));
+}
+
+/* Gira suavemente hasta un cuadro (para los botones y los puntos de vista) */
+function animar360(pasos) {
+  cancelAnimationFrame(animacion360);
+  if (sinMovimiento) { ponerCuadro(cuadro360[modeloActual] + pasos); return; }
+  let hechos = 0, ultimo = 0;
+  const paso = t => {
+    if (t - ultimo >= 45) { ultimo = t; hechos++; ponerCuadro(cuadro360[modeloActual] + Math.sign(pasos)); }
+    if (hechos < Math.abs(pasos)) animacion360 = requestAnimationFrame(paso);
+  };
+  animacion360 = requestAnimationFrame(paso);
+}
+
+function girar360(direccion, destino) {
+  const g = es360();
+  if (destino !== undefined) {
+    let d = g.vistas[ORDEN_VISTAS[destino]] - cuadro360[modeloActual];
+    if (d > g.cuadros / 2) d -= g.cuadros;
+    if (d < -g.cuadros / 2) d += g.cuadros;
+    animar360(d);
+  } else {
+    animar360(direccion * Math.round(g.cuadros / 4));
+  }
+}
+
 /* Arrastrar con el dedo o el ratón para girar */
 (function () {
   const esc = document.getElementById("escenario");
-  let inicioX = null;
-  esc.addEventListener("pointerdown", e => { inicioX = e.clientX; esc.setPointerCapture(e.pointerId); detenerAutoGiro(); });
+  let inicioX = null, cuadroInicio = 0;
+  esc.addEventListener("pointerdown", e => {
+    inicioX = e.clientX; cuadroInicio = cuadro360[modeloActual];
+    esc.setPointerCapture(e.pointerId); detenerAutoGiro(); cancelAnimationFrame(animacion360);
+  });
   esc.addEventListener("pointermove", e => {
     if (inicioX === null) return;
     const dx = e.clientX - inicioX;
+    if (es360()) { ponerCuadro(cuadroInicio - Math.round(dx / 8)); return; }   // giro continuo
     if (Math.abs(dx) > 45) { girar(dx > 0 ? 1 : -1); inicioX = e.clientX; }
   });
   const soltar = () => { inicioX = null; };
@@ -92,6 +147,7 @@ document.getElementById("escenario").addEventListener("keydown", e => {
 });
 
 function girar(direccion, destino) {
+  if (es360()) return girar360(direccion, destino);
   if (girando) return;
   const total = ORDEN_VISTAS.length;
   const nuevo = destino !== undefined ? destino : (vistaIdx[modeloActual] + direccion + total) % total;
@@ -136,6 +192,27 @@ function pintarEscenario(entraCerrada) {
   const m = MODELOS[modeloActual];
   const vista = ORDEN_VISTAS[vistaIdx[modeloActual]];
   const esc = document.getElementById("escenario");
+  esc.classList.toggle("estudio-3d", !!m.giro360);
+
+  // Modelo con giro 3D real (cuadros del video de modelado)
+  if (m.giro360) {
+    const g = m.giro360;
+    const conRopa = Object.keys(ropa(modeloActual)).length;
+    esc.style.aspectRatio = `${g.ancho} / ${g.alto}`;
+    esc.innerHTML = `
+      <img id="img360" class="modelo-base" src="${srcCuadro(g, cuadro360[modeloActual])}" alt="${m.nombre} en 3D. Arrastra para girarlo." draggable="false">
+      <span class="sello-3d">3D · 360°</span>
+      ${conRopa ? `<span class="aviso-vista">La ropa en 3D estará disponible pronto</span>` : ""}`;
+    document.getElementById("indicador-vistas").innerHTML = ORDEN_VISTAS.map((v, i) =>
+      `<button class="punto-vista" data-i="${i}" aria-label="Ver ${NOMBRE_VISTA[v]}">${NOMBRE_VISTA[v]}</button>`).join("");
+    document.querySelectorAll(".punto-vista").forEach(b => b.addEventListener("click", () => {
+      detenerAutoGiro();
+      girar(0, +b.dataset.i);
+    }));
+    ponerCuadro(cuadro360[modeloActual]);
+    return;
+  }
+
   esc.style.aspectRatio = `${m.ancho} / ${m.alto}`;
 
   let capas = `<img class="modelo-base" src="${m.vistas[vista]}" alt="${m.nombre}, vista ${NOMBRE_VISTA[vista].toLowerCase()}" draggable="false">`;

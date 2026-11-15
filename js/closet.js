@@ -46,7 +46,11 @@ const MODELOS = {
               "atras":      "img/modelos/hombre-atras.png",
               "perfil-der": "img/modelos/hombre-perfil-der.png"
             },
-            referencia: "img/modelos/referencia-hombre.jpg" }
+            referencia: "img/modelos/referencia-hombre.jpg",
+            /* Giro 3D real: cuadros sacados del video de modelado 3D (vuelta de 360°).
+               vistas = número de cuadro donde queda de frente, perfil, espalda y perfil. */
+            giro360: { carpeta: "img/modelos/hombre-giro/", cuadros: 35, ancho: 350, alto: 600,
+                       vistas: { "frente": 0, "perfil-izq": 9, "atras": 18, "perfil-der": 29 } } }
 };
 
 const CATEGORIAS = [
