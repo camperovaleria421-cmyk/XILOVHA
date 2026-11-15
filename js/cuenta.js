@@ -88,6 +88,13 @@ function registrarJuego(tipo, aciertos, total) {
   cambioProgreso(true);
 }
 
+/* Cada respuesta de un juego (solo con cuenta): pregunta, respuesta, si fue correcta y segundos */
+function registrarRespuesta(datos) {
+  if (!Cuenta.db || !Cuenta.perfil) return;
+  Cuenta.db.from("xilovha_respuestas").insert({ user_id: Cuenta.usuario.id, ...datos })
+    .then(() => {}, () => {});
+}
+
 /* Tiempo de uso: cuenta mientras la app está abierta y a la vista.
    Cada minuto avisa al servidor (así se sabe quién está en línea). */
 let latidos = 0;

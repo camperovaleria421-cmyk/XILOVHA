@@ -592,3 +592,6 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 
 /* Lo que tiene el atributo hidden siempre se oculta */
 [hidden] { display: none !important; }
+
+/* Tiempo que tardó en responder (juegos) */
+.tiempo-respuesta { display: inline-block; margin-left: 6px; font-size: .8rem; font-weight: 700; background: rgba(255,255,255,.7); padding: 2px 8px; border-radius: 99px; font-variant-numeric: tabular-nums; }

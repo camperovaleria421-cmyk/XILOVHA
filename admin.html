@@ -21,7 +21,7 @@
     .tarjeta-dato small { color: var(--texto-2); display: block; }
     .tarjeta-dato b { font-size: 1.6rem; font-variant-numeric: tabular-nums; }
     .tabla-caja { background: #fff; border: 1px solid var(--borde); border-radius: 18px; overflow-x: auto; }
-    table.jugadores { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 900px; }
+    table.jugadores { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 1080px; }
     .jugadores th { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--texto-2);
                     padding: 12px 10px; border-bottom: 1px solid var(--borde); white-space: nowrap; cursor: pointer; user-select: none; }
     .jugadores th[aria-sort] { color: var(--texto); }
@@ -43,6 +43,17 @@
     .vacio { color: var(--texto-2); font-style: italic; }
     .buscar { width: 100%; max-width: 360px; padding: 10px 14px; border-radius: 12px; border: 2px solid #d5dde8; font: inherit; margin-bottom: 12px; }
     .nota-admin { color: var(--texto-2); font-size: .85rem; margin-top: 12px; line-height: 1.5; }
+    .partidas { grid-column: 1 / -1; }
+    .partida { background: #fff; border: 1px solid var(--borde); border-radius: 14px; margin-top: 10px; overflow-x: auto; }
+    .partida-cab { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; padding: 10px 14px; border-bottom: 1px solid var(--borde); }
+    .partida-cab b { font-size: .95rem; }
+    .partida-cab small { color: var(--texto-2); }
+    table.resp { width: 100%; border-collapse: collapse; font-size: .84rem; min-width: 560px; }
+    .resp th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--texto-2); padding: 8px 12px; cursor: default; }
+    .resp td { padding: 8px 12px; border-top: 1px solid #eef2f6; }
+    .resp td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .resp tr.mal td { background: #fff5f5; }
+    .lento { color: #b45309; font-weight: 700; }
   </style>
 </head>
 <body>
@@ -87,6 +98,8 @@
               <th data-orden="fichas">Fichas</th>
               <th data-orden="videos">Videos</th>
               <th data-orden="juegos">Juegos</th>
+              <th data-orden="pctAciertos">Aciertos</th>
+              <th data-orden="promedio">Tiempo por pregunta</th>
               <th></th>
             </tr>
           </thead>
@@ -94,7 +107,8 @@
         </table>
       </div>
       <p class="nota-admin">Se actualiza solo cada 30 segundos. «En línea» = usó la app en los últimos 2 minutos.
-        Al eliminar un perfil se borran su nombre, puntos y avance; si esa persona vuelve a entrar con su correo, empieza de cero con un nombre nuevo.</p>
+        «Aciertos» y «Tiempo por pregunta» cuentan cada respuesta de los juegos; en «Ver avance» está el detalle de cada partida.
+      Al eliminar un perfil se borran su nombre, puntos, avance y respuestas; si esa persona vuelve a entrar con su correo, empieza de cero con un nombre nuevo.</p>
     </section>
   </div>
 
@@ -104,7 +118,7 @@
     const SUPABASE_KEY = "sb_publishable_HzaqS1Ud2wGLdHwoPyGyhA_mwCFWqzc";
     const NOMBRE_JUEGO = { quien: "¿Qué herramienta es?", atajos: "Atajo correcto", pasos: "Ordena los pasos" };
     const $ = id => document.getElementById(id);
-    let db = null, jugadores = [], orden = { campo: "puntos", desc: true }, abierto = null, confirmando = null, refresco = null;
+    let db = null, jugadores = [], respuestas = [], orden = { campo: "puntos", desc: true }, abierto = null, confirmando = null, refresco = null;
 
     const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     function tiempo(s) { s = s || 0; const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60); return h ? `${h} h ${m} min` : `${m} min`; }
@@ -157,14 +171,23 @@
     async function cargar() {
       const { data, error } = await db.from("xilovha_perfiles")
         .select("user_id,nombre,correo,puntos,segundos,progreso,ultima_vez,creado");
-      if (error) { $("cuerpo").innerHTML = `<tr><td colspan="9">No se pudo cargar: ${esc(error.message)}</td></tr>`; return; }
+      if (error) { $("cuerpo").innerHTML = `<tr><td colspan="11">No se pudo cargar: ${esc(error.message)}</td></tr>`; return; }
+      // Respuestas de los juegos (las más recientes primero)
+      const resp = await db.from("xilovha_respuestas")
+        .select("user_id,partida,juego,pregunta,respuesta,correcta,segundos,creado")
+        .order("creado", { ascending: false }).limit(10000);
+      respuestas = resp.error ? [] : resp.data;
       const porPuntos = [...data].sort((a, b) => b.puntos - a.puntos || a.segundos - b.segundos);
       const conteo = {};
       data.forEach(j => { const k = clave(j.nombre); conteo[k] = (conteo[k] || 0) + 1; });
       jugadores = data.map(j => {
         const p = j.progreso || {};
         const juegos = p.juegos || {};
-        return { ...j,
+        const suyas = respuestas.filter(r => r.user_id === j.user_id);
+        const buenas = suyas.filter(r => r.correcta).length;
+        return { ...j, suyas, buenas,
+          pctAciertos: suyas.length ? Math.round(buenas / suyas.length * 100) : -1,
+          promedio: suyas.length ? suyas.reduce((n, r) => n + Number(r.segundos), 0) / suyas.length : -1,
           lugar: porPuntos.indexOf(j) + 1,
           fichas: (p.fichas || []).length, videos: (p.videos || []).length,
           juegos: Object.values(juegos).reduce((n, x) => n + (x.veces || 0), 0),
@@ -196,7 +219,7 @@
         if (c === campo) th.setAttribute("aria-sort", desc ? "descending" : "ascending"); else th.removeAttribute("aria-sort");
       });
 
-      if (!lista.length) { $("cuerpo").innerHTML = `<tr><td colspan="9" class="vacio">${total ? "Nadie coincide con la búsqueda." : "Todavía no hay jugadores registrados."}</td></tr>`; return; }
+      if (!lista.length) { $("cuerpo").innerHTML = `<tr><td colspan="11" class="vacio">${total ? "Nadie coincide con la búsqueda." : "Todavía no hay jugadores registrados."}</td></tr>`; return; }
       $("cuerpo").innerHTML = lista.map(j => {
         const ultima = j.enLinea ? `<span class="linea"><span class="punto-linea"></span>En línea</span>` : hace(j.ultima_vez);
         const acciones = confirmando === j.user_id
@@ -211,9 +234,11 @@
           <td class="num">${j.fichas}</td>
           <td class="num">${j.videos}</td>
           <td class="num">${j.juegos}</td>
+          <td class="num">${j.suyas.length ? `${j.buenas}/${j.suyas.length} · ${j.pctAciertos}%` : "—"}</td>
+          <td class="num">${j.suyas.length ? j.promedio.toFixed(1) + " s" : "—"}</td>
           <td><div class="acciones-celda">${acciones}</div></td>
         </tr>`;
-        if (abierto === j.user_id) html += `<tr class="detalle-fila"><td colspan="9">${detalle(j)}</td></tr>`;
+        if (abierto === j.user_id) html += `<tr class="detalle-fila"><td colspan="11">${detalle(j)}</td></tr>`;
         return html;
       }).join("");
     }
@@ -230,7 +255,32 @@
         <div><h4>Juegos</h4>${lista(juegos, "Todavía no juega.")}
              <h4 style="margin-top:12px">Su modelo</h4><p>${modelo}</p>
              <h4 style="margin-top:12px">Se registró</h4><p>${new Date(j.creado).toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })}</p></div>
+        <div class="partidas"><h4>Respuestas en los juegos</h4>${partidas(j.suyas)}</div>
       </div>`;
+    }
+
+    /* Cada partida con sus preguntas: respuesta, ✅/❌ y segundos */
+    function partidas(lista) {
+      if (!lista.length) return `<p class="vacio">Todavía no hay respuestas guardadas (solo se registran jugando con cuenta).</p>`;
+      const grupos = {};
+      lista.forEach(r => (grupos[r.partida] = grupos[r.partida] || []).push(r));
+      return Object.values(grupos).map(rs => {
+        rs.sort((a, b) => new Date(a.creado) - new Date(b.creado));
+        const buenas = rs.filter(r => r.correcta).length;
+        const total = rs.reduce((n, r) => n + Number(r.segundos), 0);
+        const prom = total / rs.length;
+        const fecha = new Date(rs[0].creado).toLocaleString("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+        return `<div class="partida">
+          <div class="partida-cab"><b>${esc(NOMBRE_JUEGO[rs[0].juego] || rs[0].juego)}</b>
+            <small>${fecha}</small><small>${buenas} de ${rs.length} correctas</small>
+            <small>${total.toFixed(1)} s en total · ${prom.toFixed(1)} s por pregunta</small></div>
+          <table class="resp"><thead><tr><th>#</th><th>Herramienta</th><th>Respondió</th><th>Resultado</th><th style="text-align:right">Tiempo</th></tr></thead><tbody>
+          ${rs.map((r, i) => `<tr class="${r.correcta ? "" : "mal"}">
+              <td>${i + 1}</td><td>${esc(r.pregunta)}</td><td>${esc(r.respuesta)}</td>
+              <td>${r.correcta ? "✅ Correcta" : "❌ Incorrecta"}</td>
+              <td class="num ${Number(r.segundos) > prom * 1.6 && rs.length > 2 ? "lento" : ""}">${Number(r.segundos).toFixed(1)} s</td></tr>`).join("")}
+          </tbody></table></div>`;
+      }).join("");
     }
 
     $("cuerpo").addEventListener("click", async e => {

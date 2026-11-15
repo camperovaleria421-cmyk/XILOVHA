@@ -22,7 +22,8 @@ function iniciarJuego(tipo) {
   if (tipo === "quien")  preguntas = mezclar(pool);
   if (tipo === "atajos") preguntas = mezclar(pool.filter(h => h.atajo));
   if (tipo === "pasos")  preguntas = mezclar(pool.filter(h => h.pasos && h.pasos.length >= 3));
-  partida = { tipo, pool, preguntas: preguntas.slice(0, JUEGOS[tipo].rondas), i: 0, aciertos: 0, ganados: 0 };
+  partida = { tipo, pool, preguntas: preguntas.slice(0, JUEGOS[tipo].rondas), i: 0, aciertos: 0, ganados: 0,
+              id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), inicio: 0 };
   document.getElementById("juego-titulo").textContent = JUEGOS[tipo].titulo;
   irA("juego");
   mostrarPregunta();
@@ -35,6 +36,7 @@ function mostrarPregunta() {
   if (p.tipo === "quien")  preguntaOpciones(ocultarNombre(h.sirve, h.nombre), h.nombre, p.pool.map(x => x.nombre), "Lee la descripción. ¿Qué herramienta es?");
   if (p.tipo === "atajos") preguntaOpciones(`<span class="pregunta-grande">${h.nombre}</span>`, h.atajo, p.pool.filter(x => x.atajo).map(x => x.atajo), "¿Cuál es su atajo de teclado?");
   if (p.tipo === "pasos")  preguntaPasos(h);
+  p.inicio = Date.now();     // empieza a contar el tiempo de esta pregunta
 }
 
 function ocultarNombre(texto, nombre) {
@@ -58,7 +60,7 @@ function preguntaOpciones(enunciado, correcta, todas, instruccion) {
       if (x.dataset.v === correcta) x.classList.add("correcta");
     });
     if (!ok) b.classList.add("incorrecta");
-    responder(ok, ok ? "¡Correcto!" : `La respuesta era: <b>${correcta}</b>`);
+    responder(ok, ok ? "¡Correcto!" : `La respuesta era: <b>${correcta}</b>`, b.dataset.v);
   }));
 }
 
@@ -88,20 +90,31 @@ function preguntaPasos(h) {
       document.getElementById("btn-deshacer").hidden = true;
       lista.classList.add(ok ? "bien" : "mal");
       responder(ok, ok ? "¡Orden perfecto!" :
-        `El orden correcto es:<ol>${h.pasos.map(t => `<li>${t}</li>`).join("")}</ol>`);
+        `El orden correcto es:<ol>${h.pasos.map(t => `<li>${t}</li>`).join("")}</ol>`,
+        "Orden elegido: " + elegidos.map(i => i + 1).join(" → "));
     }
   }));
   document.getElementById("btn-deshacer").addEventListener("click", () => { elegidos.pop(); pintar(); });
 }
 
 /* ---- Resultado de cada ronda ---- */
-function responder(ok, mensaje) {
+function responder(ok, mensaje, respuesta) {
   const premio = JUEGOS[partida.tipo].premio;
+  const segundos = Math.min(3599, Math.round((Date.now() - partida.inicio) / 100) / 10);
   if (ok) { partida.aciertos++; partida.ganados += premio; sumarPuntos(premio); }
+
+  // Se guarda para el panel de administración: pregunta, respuesta, si fue correcta y el tiempo
+  registrarRespuesta({
+    partida: partida.id, juego: partida.tipo,
+    pregunta: partida.preguntas[partida.i].nombre.slice(0, 80),
+    respuesta: String(respuesta || "").slice(0, 160),
+    correcta: ok, segundos
+  });
+
   const ultima = partida.i === partida.preguntas.length - 1;
   document.getElementById("retro").innerHTML = `
     <div class="retro ${ok ? "ok" : "no"}">
-      <div>${ok ? `✅ ${mensaje} <b>+${premio} ⭐</b>` : `❌ ${mensaje}`}</div>
+      <div>${ok ? `✅ ${mensaje} <b>+${premio} ⭐</b>` : `❌ ${mensaje}`} <span class="tiempo-respuesta">⏱ ${segundos.toFixed(1)} s</span></div>
       <button id="btn-siguiente" class="btn-principal">${ultima ? "Ver resultado" : "Siguiente"}</button>
     </div>`;
   document.getElementById("btn-siguiente").addEventListener("click", () => {
