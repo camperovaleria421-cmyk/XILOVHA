@@ -48,9 +48,9 @@ document.querySelectorAll(".barra").forEach(barra => {
   b.className = "btn-menu";
   b.setAttribute("aria-label", "Abrir menú");
   b.innerHTML = `<svg class="ico"><use href="#i-menu"/></svg>`;
-  b.addEventListener("click", abrirLateral);
   barra.appendChild(b);
 });
+document.querySelectorAll(".btn-menu").forEach(b => b.addEventListener("click", abrirLateral));
 function abrirLateral() { document.body.classList.add("lateral-abierto"); }
 function cerrarLateral() { document.body.classList.remove("lateral-abierto"); }
 document.getElementById("velo").addEventListener("click", cerrarLateral);
@@ -218,3 +218,9 @@ function todasLasHerramientas(menu) {
 
 pintarMenus();
 pintarPuntos();
+
+/* Abrir una sección directo desde el enlace, ej. xilovha.vercel.app/#actividades */
+window.addEventListener("load", () => {
+  const h = location.hash.slice(1);
+  if (h && h !== "inicio" && document.getElementById("pantalla-" + h)) irA(h);
+});
