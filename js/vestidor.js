@@ -270,7 +270,7 @@ function pintarPrendas() {
     const bloqueada = p.costo > puntos;
     const activa = ropa(modeloActual)[p.categoria] === p.id;
     return `<button class="prenda ${activa ? "activa" : ""}" data-id="${p.id}" ${bloqueada ? "disabled" : ""}>
-      <img src="${p.img}" alt="">
+      <img src="${p.miniatura || p.img}" alt="" loading="lazy">
       <span>${p.nombre}</span>
       ${bloqueada ? `<span class="candado">🔒 ${p.costo} ⭐</span>` : ""}
     </button>`;

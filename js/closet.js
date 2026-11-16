@@ -82,6 +82,14 @@ const LUCES = [
   { id: "dorado",  nombre: "Dorado",        color: "#ffc93c", filtro: "hue-rotate(-160deg) saturate(1.3)",     costo: 200 }
 ];
 
+/* Cada prenda se saca de una imagen de Gemini con el robot ya vestido:
+   se compara contra el robot sin ropa y se recorta solo lo que cambió.
+   miniatura = imagen pequeña para el closet. */
 const PRENDAS = [
-  // Aquí se agregan las prendas cuando lleguen las imágenes.
+  { id: "chamarra-biker", nombre: "Chamarra biker de piel", categoria: "encima", modelo: "mujer", costo: 0,
+    img: "img/ropa/mujer/chamarra-biker-frente.webp",
+    miniatura: "img/ropa/mujer/chamarra-biker-mini.webp",
+    vistas: { "perfil-izq": "img/ropa/mujer/chamarra-biker-perfil-izq.webp",
+              "perfil-der": "img/ropa/mujer/chamarra-biker-perfil-der.webp",
+              "atras":      "img/ropa/mujer/chamarra-biker-atras.webp" } }
 ];
