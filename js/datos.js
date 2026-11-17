@@ -826,17 +826,36 @@ const HERRAMIENTAS = {
    ===================================================================== */
 const ANTES = { tecla: "Inicio", nombre: "Antes de empezar", color: "#bfe3f5" };
 HERRAMIENTAS.Inicio = {
-  descripcion: "Los pasos que haces antes de usar las funciones: preparar tu archivo y tu hoja de trabajo.",
+  descripcion: "Los pasos que haces antes de usar las funciones: preparar tu carpeta, crear tu hoja y ver el cartucho.",
   grupos: [
     {
       nombre: "Primeros pasos",
       herramientas: [
-        { nombre: "Crear tu archivo", pendiente: true,
-          sirve: "Crear un archivo nuevo de Modaris donde vas a guardar tu patrón." },
-        { nombre: "Crear la hoja", pendiente: true,
-          sirve: "Abrir una hoja de trabajo nueva para empezar a trazar." },
-        { nombre: "Guardar tu documento", pendiente: true,
-          sirve: "Guardar tu trabajo para no perder tus avances." }
+        { nombre: "Creación de carpeta",
+          sirve: "Preparar en tu computadora la carpeta del proyecto y el archivo de tallas antes de abrir Modaris.",
+          pasos: [
+            "En el Escritorio, clic derecho › Nuevo › Carpeta. Ponle el nombre de tu proyecto (ej. NIÑA).",
+            "Entra a esa carpeta y crea otra llamada TALLAS.",
+            "Dentro de TALLAS, clic derecho › Nuevo › Documento de texto. Llámalo NUMERIC.",
+            "Ábrelo y escribe tu tabla de tallas igual que en el video. La talla base lleva * (ej. *6).",
+            "Guarda y cierra."
+          ],
+          nota: "Ten todo en la misma carpeta: así encuentras tu modelo y tus tallas rápido." },
+        { nombre: "Creación de hoja",
+          sirve: "Crear tu modelo nuevo en Modaris y abrir la hoja donde vas a trazar.",
+          pasos: [
+            "Ve a Fichero › Nuevo (Ctrl + N).",
+            "En «Nombre nuevo modelo» escribe el nombre (ej. FALDA NIÑA T6) y presiona Enter.",
+            "Ve a Hoja › Nueva hoja (N).",
+            "Aparece la hoja gris: ahí empiezas a trazar."
+          ] },
+        { nombre: "Visualizar cartucho",
+          sirve: "Mostrar el cartucho: el recuadro con los datos de cada hoja (nombre del modelo, de la pieza y tallas).",
+          pasos: [
+            "Ve a Visualizar › Cartucho.",
+            "Aparece el cartucho en la parte de abajo de cada hoja.",
+            "Para ocultarlo, repite Visualizar › Cartucho."
+          ] }
       ]
     }
   ]

@@ -14,9 +14,9 @@
 const VIDEOS = {
   Inicio: {
     // ---- Antes de empezar ----
-    "Crear tu archivo": "",
-    "Crear la hoja": "",
-    "Guardar tu documento": ""
+    "Creación de carpeta": "videos/inicio-crear-carpeta.mp4",
+    "Creación de hoja": "videos/inicio-crear-hoja.mp4",
+    "Visualizar cartucho": "videos/inicio-visualizar-cartucho.mp4"
   },
   F1: {
     // ---- Puntos ----
