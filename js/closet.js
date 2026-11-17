@@ -85,11 +85,41 @@ const LUCES = [
 /* Cada prenda se saca de una imagen de Gemini con el robot ya vestido:
    se compara contra el robot sin ropa y se recorta solo lo que cambió.
    miniatura = imagen pequeña para el closet. */
+/* prenda(modelo, archivo, nombre, categoría, costo, ranura)
+   Los archivos están en img/ropa/<modelo>/<archivo>-<vista>.webp
+   ranura (solo accesorios): "cabello" | "cabeza" | "muneca", para poder usar varios a la vez. */
+function prenda(modelo, archivo, nombre, categoria, costo, ranura) {
+  const r = `img/ropa/${modelo}/${archivo}`;
+  return { id: `${modelo}-${archivo}`, nombre, categoria, modelo, costo, ranura: ranura || categoria,
+           img: `${r}-frente.webp`, miniatura: `${r}-mini.webp`,
+           vistas: { "perfil-izq": `${r}-perfil-izq.webp`, "perfil-der": `${r}-perfil-der.webp`, "atras": `${r}-atras.webp` } };
+}
+
 const PRENDAS = [
-  { id: "chamarra-biker", nombre: "Chamarra biker de piel", categoria: "encima", modelo: "mujer", costo: 0,
-    img: "img/ropa/mujer/chamarra-biker-frente.webp",
-    miniatura: "img/ropa/mujer/chamarra-biker-mini.webp",
-    vistas: { "perfil-izq": "img/ropa/mujer/chamarra-biker-perfil-izq.webp",
-              "perfil-der": "img/ropa/mujer/chamarra-biker-perfil-der.webp",
-              "atras":      "img/ropa/mujer/chamarra-biker-atras.webp" } }
+  /* ---------- Modelo mujer ---------- */
+  prenda("mujer", "camiseta-cuervo",   "Camiseta negra con cuervo",          "torso",    0),
+  prenda("mujer", "camiseta-oversize", "Camiseta oversize negra",            "torso",    30),
+  prenda("mujer", "jeans-baggy",       "Jeans baggy deslavados",             "inferior", 30),
+  prenda("mujer", "chamarra-biker",    "Chamarra biker de piel",             "encima",   60),
+
+  /* ---------- Modelo hombre ---------- */
+  prenda("hombre", "camiseta-negra",       "Camiseta negra",                     "torso",    0),
+  prenda("hombre", "camiseta-beige",       "Camiseta beige",                     "torso",    0),
+  prenda("hombre", "sueter-beige",         "Suéter beige con cuello",            "torso",    30),
+  prenda("hombre", "camiseta-oversize",    "Camiseta oversize estampada",        "torso",    40),
+  prenda("hombre", "shorts-blancos",       "Shorts blancos",                     "inferior", 0),
+  prenda("hombre", "jeans-negros",         "Jeans negros ajustados",             "inferior", 30),
+  prenda("hombre", "jeans-azul-oscuro",    "Jeans azul oscuro",                  "inferior", 30),
+  prenda("hombre", "cargo-beige",          "Pantalón cargo beige",               "inferior", 30),
+  prenda("hombre", "cargo-negro",          "Pantalón cargo negro con cadena",    "inferior", 40),
+  prenda("hombre", "jeans-baggy",          "Jeans baggy con cadena",             "inferior", 40),
+  prenda("hombre", "pantalon-negro-roto",  "Pantalón negro roto",                "inferior", 50),
+  prenda("hombre", "tenis-blancos",        "Tenis blancos",                      "calzado",  20),
+  prenda("hombre", "chamarra-beige",       "Chamarra beige con playera",         "encima",   50),
+  prenda("hombre", "chaleco-mezclilla",    "Chaleco de mezclilla con parches",   "encima",   70),
+  prenda("hombre", "chamarra-biker",       "Chamarra biker de piel",             "encima",   80),
+  prenda("hombre", "chamarra-biker-dorada","Chamarra biker con cierres dorados", "encima",   100),
+  prenda("hombre", "cabello-largo",        "Cabello largo",                      "accesorio", 30, "cabello"),
+  prenda("hombre", "gorra-negra",          "Gorra negra",                        "accesorio", 20, "cabeza"),
+  prenda("hombre", "reloj",                "Reloj inteligente",                  "accesorio", 25, "muneca")
 ];

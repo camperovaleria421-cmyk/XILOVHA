@@ -9,7 +9,10 @@
 let modeloActual = P.vestidor.modelo;        // se guarda en la cuenta (js/cuenta.js)
 let categoriaActual = CATEGORIAS[0].id;
 const ropa = m => P.vestidor.puesto[m];      // categoría -> id de prenda, por modelo
-const ORDEN_CAPAS = ["inferior", "torso", "calzado", "encima", "accesorio"];   // de abajo hacia arriba
+// Ranuras de ropa en el orden en que se dibujan (de abajo hacia arriba).
+// Los accesorios tienen varias ranuras para poder usar cabello, gorra y reloj a la vez.
+const ORDEN_CAPAS = ["inferior", "torso", "calzado", "encima", "cabello", "cabeza", "muneca"];
+const conRopa = m => ORDEN_CAPAS.some(r => PRENDAS.some(p => p.id === ropa(m)[r]));
 const luzDe = m => LUCES.find(l => l.id === P.vestidor.luces[m]) || LUCES[0];
 const filtroLuz = () => { const f = luzDe(modeloActual).filtro; return f === "none" ? "" : `style="filter:${f}"`; };
 
@@ -40,6 +43,8 @@ document.querySelectorAll(".tab-modelo").forEach(b => b.addEventListener("click"
 }));
 
 document.getElementById("btn-quitar").addEventListener("click", () => {
+  const g = MODELOS[modeloActual].giro360;
+  if (g && !es360()) cuadro360[modeloActual] = g.vistas[ORDEN_VISTAS[vistaIdx[modeloActual]]];   // vuelve al 3D mirando igual
   P.vestidor.puesto[modeloActual] = {};
   cambioProgreso();
   pintarVestidor();
@@ -78,7 +83,16 @@ function detenerAutoGiro() { if (autoGiro) alternarAutoGiro(); }
 /* ---------- Giro 3D real (modelos con cuadros de video 360°) ---------- */
 const cuadro360 = { mujer: 0, hombre: 0 };
 let animacion360 = null;
-const es360 = () => MODELOS[modeloActual].giro360;
+// El giro 3D se usa cuando el modelo no tiene ropa; con ropa se usan sus 4 vistas (donde encaja la ropa)
+const es360 = () => (MODELOS[modeloActual].giro360 && !conRopa(modeloActual)) ? MODELOS[modeloActual].giro360 : null;
+
+/* Al pasar de 3D a 4 vistas (o al revés) se conserva hacia dónde mira el modelo */
+function vistaCercana(g, n) {
+  return ORDEN_VISTAS.reduce((mejor, v, i) => {
+    const d = Math.min(Math.abs(g.vistas[v] - n), g.cuadros - Math.abs(g.vistas[v] - n));
+    return d < mejor.d ? { i, d } : mejor;
+  }, { i: 0, d: Infinity }).i;
+}
 const srcCuadro = (g, n) => `${g.carpeta}${String(n).padStart(2, "0")}.jpg`;
 
 // Precargar los cuadros para que el giro sea fluido
@@ -93,10 +107,7 @@ function ponerCuadro(n) {
   const img = document.getElementById("img360");
   if (img) img.src = srcCuadro(g, n);
   // Marca la vista más cercana (Frente / Perfil / Espalda / Perfil)
-  const cercana = ORDEN_VISTAS.reduce((mejor, v, i) => {
-    const d = Math.min(Math.abs(g.vistas[v] - n), g.cuadros - Math.abs(g.vistas[v] - n));
-    return d < mejor.d ? { i, d } : mejor;
-  }, { i: 0, d: Infinity }).i;
+  const cercana = vistaCercana(g, n);
   document.querySelectorAll(".punto-vista").forEach((b, i) => b.classList.toggle("activo", i === cercana));
 }
 
@@ -195,17 +206,15 @@ function pintarEscenario(entraCerrada) {
   const m = MODELOS[modeloActual];
   const vista = ORDEN_VISTAS[vistaIdx[modeloActual]];
   const esc = document.getElementById("escenario");
-  esc.classList.toggle("estudio-3d", !!m.giro360);
+  esc.classList.toggle("estudio-3d", !!es360());
 
-  // Modelo con giro 3D real (cuadros del video de modelado)
-  if (m.giro360) {
-    const g = m.giro360;
-    const conRopa = Object.keys(ropa(modeloActual)).length;
+  // Modelo con giro 3D real (cuadros del video de modelado), solo sin ropa
+  if (es360()) {
+    const g = es360();
     esc.style.aspectRatio = `${g.ancho} / ${g.alto}`;
     esc.innerHTML = `
       <img id="img360" class="modelo-base" ${filtroLuz()} src="${srcCuadro(g, cuadro360[modeloActual])}" alt="${m.nombre} en 3D. Arrastra para girarlo." draggable="false">
-      <span class="sello-3d">3D · 360°</span>
-      ${conRopa ? `<span class="aviso-vista">La ropa en 3D estará disponible pronto</span>` : ""}`;
+      <span class="sello-3d">3D · 360°</span>`;
     document.getElementById("indicador-vistas").innerHTML = ORDEN_VISTAS.map((v, i) =>
       `<button class="punto-vista" data-i="${i}" aria-label="Ver ${NOMBRE_VISTA[v]}">${NOMBRE_VISTA[v]}</button>`).join("");
     document.querySelectorAll(".punto-vista").forEach(b => b.addEventListener("click", () => {
@@ -268,7 +277,7 @@ function pintarPrendas() {
   const puntos = leerPuntos();
   cont.innerHTML = lista.map(p => {
     const bloqueada = p.costo > puntos;
-    const activa = ropa(modeloActual)[p.categoria] === p.id;
+    const activa = ropa(modeloActual)[p.ranura || p.categoria] === p.id;
     return `<button class="prenda ${activa ? "activa" : ""}" data-id="${p.id}" ${bloqueada ? "disabled" : ""}>
       <img src="${p.miniatura || p.img}" alt="" loading="lazy">
       <span>${p.nombre}</span>
@@ -281,10 +290,14 @@ function pintarPrendas() {
 function ponerPrenda(id) {
   const p = PRENDAS.find(x => x.id === id);
   const r = ropa(modeloActual);
-  if (r[p.categoria] === id) delete r[p.categoria];             // tocar otra vez = quitar
-  else {
-    r[p.categoria] = id;
-  }
+  const ranura = p.ranura || p.categoria;
+  const g = MODELOS[modeloActual].giro360;
+  const estaba3d = !!es360();
+  if (estaba3d) vistaIdx[modeloActual] = vistaCercana(g, cuadro360[modeloActual]);   // de 3D a 4 vistas
+  detenerAutoGiro();
+  if (r[ranura] === id) delete r[ranura];                       // tocar otra vez = quitar
+  else r[ranura] = id;
+  if (g && !estaba3d && es360()) cuadro360[modeloActual] = g.vistas[ORDEN_VISTAS[vistaIdx[modeloActual]]];  // de vuelta a 3D
   cambioProgreso();
   pintarVestidor();
 }
