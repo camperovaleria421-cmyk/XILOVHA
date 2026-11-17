@@ -54,6 +54,44 @@
     .resp td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .resp tr.mal td { background: #fff5f5; }
     .lento { color: #b45309; font-weight: 700; }
+
+    /* Pestañas del panel */
+    .pestanas-admin { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; border-bottom: 1px solid var(--borde); }
+    .pestana-admin { font: inherit; font-weight: 600; border: 0; background: none; padding: 10px 14px; cursor: pointer; color: var(--texto-2);
+                     border-bottom: 3px solid transparent; margin-bottom: -1px; }
+    .pestana-admin.activo { color: var(--texto); border-bottom-color: var(--cian); }
+    .fila-botones { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .btn-mini.activo { background: var(--tinta); color: #fff; border-color: var(--tinta); }
+
+    /* Probador */
+    .probador { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+    @media (min-width: 900px) { .probador { grid-template-columns: 340px minmax(0, 1fr); } }
+    .probador-escena { display: grid; gap: 10px; justify-items: center; align-content: start; }
+    .pb-escenario { position: relative; height: min(70vh, 640px); max-width: 100%; background: #fff; border: 1px solid var(--borde);
+                    border-radius: 18px; overflow: hidden; }
+    .pb-escenario img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+    .probador-closet { background: #fff; border: 1px solid var(--borde); border-radius: 18px; padding: 16px; min-width: 0; }
+    .pb-titulo { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--texto-2); margin: 14px 0 8px; }
+    .pb-titulo:first-child { margin-top: 0; }
+    .pb-luz { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; background: var(--luz); cursor: pointer;
+              box-shadow: 0 0 0 1px var(--borde), 0 0 10px var(--luz); }
+    .pb-luz.activo { box-shadow: 0 0 0 3px var(--tinta), 0 0 12px var(--luz); }
+    .pb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+    .pb-prenda { display: grid; gap: 4px; justify-items: center; font: inherit; font-size: .75rem; text-align: center; cursor: pointer;
+                 background: var(--fondo); border: 2px solid transparent; border-radius: 12px; padding: 8px; }
+    .pb-prenda img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+    .pb-prenda.activo { border-color: var(--cian); background: #e6f6ff; }
+    .pb-prenda small { color: var(--texto-2); }
+
+    /* Respuestas */
+    .rs-juego { background: #fff; border: 1px solid var(--borde); border-radius: 16px; margin-top: 14px; overflow-x: auto; }
+    .rs-juego h3 { font-size: 1rem; padding: 12px 14px; border-bottom: 1px solid var(--borde); }
+    .rs-juego h3 small { font-weight: 400; color: var(--texto-2); }
+    .rs-juego table { width: 100%; border-collapse: collapse; font-size: .86rem; min-width: 560px; }
+    .rs-juego th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--texto-2); padding: 8px 14px; cursor: default; }
+    .rs-juego td { padding: 9px 14px; border-top: 1px solid #eef2f6; vertical-align: top; line-height: 1.5; }
+    .rs-juego td.ok { font-weight: 700; color: #15803d; white-space: nowrap; }
+    .rs-juego ol { padding-left: 18px; }
   </style>
 </head>
 <body>
@@ -84,6 +122,42 @@
 
     <!-- Panel -->
     <section id="vista-panel" hidden>
+      <div class="pestanas-admin" role="tablist">
+        <button class="pestana-admin activo" data-tab="jugadores">👥 Jugadores</button>
+        <button class="pestana-admin" data-tab="probador">👗 Probador</button>
+        <button class="pestana-admin" data-tab="respuestas">✅ Respuestas de actividades</button>
+      </div>
+
+      <!-- ===== PROBADOR: personaje de prueba con todo desbloqueado ===== -->
+      <div id="tab-probador" class="tab-panel" hidden>
+        <p class="subtitulo">Personaje de prueba con <b>todas las prendas, accesorios y luces desbloqueados</b>. Solo lo ves tú; no cambia el avance de nadie.</p>
+        <div class="probador">
+          <div class="probador-escena">
+            <div class="fila-botones" id="pb-modelos"></div>
+            <div id="pb-escenario" class="pb-escenario"></div>
+            <div class="fila-botones" id="pb-vistas"></div>
+            <div class="fila-botones">
+              <button class="btn-mini" id="pb-girar">⟳ Girar</button>
+              <button class="btn-mini peligro" id="pb-quitar">Quitar toda la ropa</button>
+            </div>
+            <p class="nota-admin" id="pb-puesto"></p>
+          </div>
+          <div class="probador-closet">
+            <h4 class="pb-titulo">Color de luces</h4>
+            <div class="fila-botones" id="pb-luces"></div>
+            <div id="pb-prendas"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RESPUESTAS DE CADA ACTIVIDAD ===== -->
+      <div id="tab-respuestas" class="tab-panel" hidden>
+        <p class="subtitulo">Respuesta correcta de cada pregunta que puede salir en los juegos. Las preguntas salen al azar de esta lista.</p>
+        <div class="fila-botones" id="rs-menus"></div>
+        <div id="rs-contenido"></div>
+      </div>
+
+      <div id="tab-jugadores" class="tab-panel">
       <div class="resumen" id="resumen"></div>
       <input id="buscar" class="buscar" type="search" placeholder="Buscar por nombre o correo…">
       <div class="tabla-caja">
@@ -109,10 +183,105 @@
       <p class="nota-admin">Se actualiza solo cada 30 segundos. «En línea» = usó la app en los últimos 2 minutos.
         «Aciertos» y «Tiempo por pregunta» cuentan cada respuesta de los juegos; en «Ver avance» está el detalle de cada partida.
       Al eliminar un perfil se borran su nombre, puntos, avance y respuestas; si esa persona vuelve a entrar con su correo, empieza de cero con un nombre nuevo.</p>
+      </div>
     </section>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/closet.js"></script>
+  <script>
+    /* =================== PESTAÑAS =================== */
+    document.querySelectorAll(".pestana-admin").forEach(b => b.addEventListener("click", () => {
+      document.querySelectorAll(".pestana-admin").forEach(x => x.classList.toggle("activo", x === b));
+      document.querySelectorAll(".tab-panel").forEach(p => p.hidden = p.id !== "tab-" + b.dataset.tab);
+      if (b.dataset.tab === "probador") pintarProbador();
+      if (b.dataset.tab === "respuestas") pintarRespuestas();
+    }));
+
+    /* =================== PROBADOR (todo desbloqueado) =================== */
+    const PB = { modelo: "mujer", vista: 0, luces: { mujer: "azul", hombre: "azul" }, puesto: { mujer: {}, hombre: {} } };
+    const PB_CAPAS = ["inferior", "torso", "calzado", "encima", "cabello", "cabeza", "muneca"];
+    const pbEsc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+    function pintarProbador() {
+      const m = MODELOS[PB.modelo];
+      const vista = ORDEN_VISTAS[PB.vista];
+      const luz = LUCES.find(l => l.id === PB.luces[PB.modelo]) || LUCES[0];
+      const puesto = PB.puesto[PB.modelo];
+
+      document.getElementById("pb-modelos").innerHTML = Object.keys(MODELOS).map(k =>
+        `<button class="btn-mini ${k === PB.modelo ? "activo" : ""}" data-pb-modelo="${k}">${MODELOS[k].nombre}</button>`).join("");
+
+      const esc = document.getElementById("pb-escenario");
+      esc.style.aspectRatio = `${m.ancho} / ${m.alto}`;
+      let capas = `<img src="${m.vistas[vista]}" alt="" style="${luz.filtro === "none" ? "" : "filter:" + luz.filtro}">`;
+      PB_CAPAS.forEach(r => {
+        const p = PRENDAS.find(x => x.id === puesto[r]); if (!p) return;
+        const src = vista === "frente" ? p.img : (p.vistas || {})[vista];
+        if (src) capas += `<img src="${src}" alt="${pbEsc(p.nombre)}">`;
+      });
+      esc.innerHTML = capas;
+
+      document.getElementById("pb-vistas").innerHTML = ORDEN_VISTAS.map((v, i) =>
+        `<button class="btn-mini ${i === PB.vista ? "activo" : ""}" data-pb-vista="${i}">${NOMBRE_VISTA[v]}${v.startsWith("perfil") ? (v.endsWith("izq") ? " izq." : " der.") : ""}</button>`).join("");
+
+      document.getElementById("pb-luces").innerHTML = LUCES.map(l =>
+        `<button class="pb-luz ${l.id === luz.id ? "activo" : ""}" style="--luz:${l.color}" data-pb-luz="${l.id}" title="${l.nombre}" aria-label="${l.nombre}"></button>`).join("");
+
+      const lista = PRENDAS.filter(p => p.modelo === PB.modelo || p.modelo === "ambos");
+      document.getElementById("pb-prendas").innerHTML = CATEGORIAS.filter(c => c.id !== "luces").map(c => {
+        const delCajon = lista.filter(p => p.categoria === c.id);
+        return `<h4 class="pb-titulo">${c.nombre} (${delCajon.length})</h4>` + (delCajon.length
+          ? `<div class="pb-grid">${delCajon.map(p => `<button class="pb-prenda ${puesto[p.ranura || p.categoria] === p.id ? "activo" : ""}" data-pb-prenda="${p.id}">
+                <img src="${p.miniatura || p.img}" alt="" loading="lazy"><span>${pbEsc(p.nombre)}</span><small>${p.costo ? p.costo + " ⭐ para jugadores" : "Gratis"}</small></button>`).join("")}</div>`
+          : `<p class="vacio">Sin prendas todavía.</p>`);
+      }).join("");
+
+      const puestas = PB_CAPAS.map(r => PRENDAS.find(x => x.id === puesto[r])).filter(Boolean);
+      document.getElementById("pb-puesto").textContent = puestas.length ? "Lleva puesto: " + puestas.map(p => p.nombre).join(" · ") : "Sin ropa.";
+    }
+
+    document.getElementById("tab-probador").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.pbModelo) PB.modelo = b.dataset.pbModelo;
+      if (b.dataset.pbVista) PB.vista = +b.dataset.pbVista;
+      if (b.dataset.pbLuz) PB.luces[PB.modelo] = b.dataset.pbLuz;
+      if (b.dataset.pbPrenda) {
+        const p = PRENDAS.find(x => x.id === b.dataset.pbPrenda), r = p.ranura || p.categoria, puesto = PB.puesto[PB.modelo];
+        if (puesto[r] === p.id) delete puesto[r]; else puesto[r] = p.id;
+      }
+      if (b.id === "pb-girar") PB.vista = (PB.vista + 1) % ORDEN_VISTAS.length;
+      if (b.id === "pb-quitar") PB.puesto[PB.modelo] = {};
+      pintarProbador();
+    });
+
+    /* =================== RESPUESTAS DE LAS ACTIVIDADES =================== */
+    let rsMenu = "F1";
+    function pintarRespuestas() {
+      const listos = MENUS.filter(m => m.listo && HERRAMIENTAS[m.tecla]);
+      document.getElementById("rs-menus").innerHTML = listos.map(m =>
+        `<button class="btn-mini ${m.tecla === rsMenu ? "activo" : ""}" data-rs="${m.tecla}">${m.tecla} · ${m.nombre}${m.tecla === "F1" ? " (en los juegos)" : ""}</button>`).join("");
+      const pool = HERRAMIENTAS[rsMenu].grupos.flatMap(g => g.herramientas.map(h => ({ ...h, grupo: g.nombre }))).filter(h => !h.pendiente);
+      const conAtajo = pool.filter(h => h.atajo);
+      const conPasos = pool.filter(h => h.pasos && h.pasos.length >= 3);
+      const aviso = rsMenu === "F1" ? "" : `<p class="nota-admin">Por ahora los juegos solo preguntan del F1. Esta lista sirve de referencia por si se agregan preguntas de ${rsMenu}.</p>`;
+      document.getElementById("rs-contenido").innerHTML = aviso + `
+        <div class="rs-juego"><h3>❓ ¿Qué herramienta es? <small>· ${pool.length} preguntas posibles · +10 ⭐</small></h3>
+          <table><thead><tr><th>Lo que lee el jugador</th><th>Respuesta correcta</th></tr></thead><tbody>
+          ${pool.map(h => `<tr><td>${h.sirve.split(h.nombre).join("_____")}</td><td class="ok">${h.nombre}</td></tr>`).join("")}</tbody></table></div>
+        <div class="rs-juego"><h3>⌨ Atajo correcto <small>· ${conAtajo.length} preguntas posibles · +10 ⭐</small></h3>
+          <table><thead><tr><th>Herramienta</th><th>Respuesta correcta</th></tr></thead><tbody>
+          ${conAtajo.map(h => `<tr><td>${h.nombre} <small style="color:var(--texto-2)">(${h.grupo})</small></td><td class="ok"><kbd>${h.atajo}</kbd></td></tr>`).join("")}</tbody></table></div>
+        <div class="rs-juego"><h3>🔢 Ordena los pasos <small>· ${conPasos.length} preguntas posibles · +15 ⭐</small></h3>
+          <table><thead><tr><th>Herramienta</th><th>Orden correcto</th></tr></thead><tbody>
+          ${conPasos.map(h => `<tr><td><b>${h.nombre}</b></td><td><ol>${h.pasos.map(p => `<li>${p}</li>`).join("")}</ol></td></tr>`).join("")}</tbody></table></div>`;
+    }
+    document.getElementById("rs-menus").addEventListener("click", e => {
+      const b = e.target.closest("[data-rs]"); if (!b) return;
+      rsMenu = b.dataset.rs; pintarRespuestas();
+    });
+  </script>
   <script>
     const SUPABASE_URL = "https://ljmavqsijlcqcqihuqxi.supabase.co";
     const SUPABASE_KEY = "sb_publishable_HzaqS1Ud2wGLdHwoPyGyhA_mwCFWqzc";
