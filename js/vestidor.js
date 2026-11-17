@@ -11,7 +11,7 @@ let categoriaActual = CATEGORIAS[0].id;
 const ropa = m => P.vestidor.puesto[m];      // categoría -> id de prenda, por modelo
 // Ranuras de ropa en el orden en que se dibujan (de abajo hacia arriba).
 // Los accesorios tienen varias ranuras para poder usar cabello, gorra y reloj a la vez.
-const ORDEN_CAPAS = ["inferior", "torso", "calzado", "encima", "cabello", "cabeza", "muneca"];
+const ORDEN_CAPAS = ["calzado", "inferior", "torso", "encima", "cabello", "cabeza", "muneca"];   // el pantalón cae sobre el tenis
 const conRopa = m => ORDEN_CAPAS.some(r => PRENDAS.some(p => p.id === ropa(m)[r]));
 const luzDe = m => LUCES.find(l => l.id === P.vestidor.luces[m]) || LUCES[0];
 const filtroLuz = () => { const f = luzDe(modeloActual).filtro; return f === "none" ? "" : `style="filter:${f}"`; };

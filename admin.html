@@ -201,7 +201,7 @@
 
     /* =================== PROBADOR (todo desbloqueado) =================== */
     const PB = { modelo: "mujer", vista: 0, luces: { mujer: "azul", hombre: "azul" }, puesto: { mujer: {}, hombre: {} } };
-    const PB_CAPAS = ["inferior", "torso", "calzado", "encima", "cabello", "cabeza", "muneca"];
+    const PB_CAPAS = ["calzado", "inferior", "torso", "encima", "cabello", "cabeza", "muneca"];
     const pbEsc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
     function pintarProbador() {

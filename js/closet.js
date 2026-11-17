@@ -119,7 +119,6 @@ const PRENDAS = [
   prenda("hombre", "chaleco-mezclilla",    "Chaleco de mezclilla con parches",   "encima",   70),
   prenda("hombre", "chamarra-biker",       "Chamarra biker de piel",             "encima",   80),
   prenda("hombre", "chamarra-biker-dorada","Chamarra biker con cierres dorados", "encima",   100),
-  prenda("hombre", "cabello-largo",        "Cabello largo",                      "accesorio", 30, "cabello"),
   prenda("hombre", "gorra-negra",          "Gorra negra",                        "accesorio", 20, "cabeza"),
   prenda("hombre", "reloj",                "Reloj inteligente",                  "accesorio", 25, "muneca")
 ];
