@@ -9,7 +9,8 @@
 const JUEGOS = {
   quien:  { titulo: "¿Qué herramienta es?", rondas: 8, premio: 10 },
   atajos: { titulo: "Atajo correcto",       rondas: 6, premio: 10 },
-  pasos:  { titulo: "Ordena los pasos",     rondas: 5, premio: 15 }
+  pasos:  { titulo: "Ordena los pasos",     rondas: 5, premio: 15 },
+  pantalla: { titulo: "Practica en pantalla", rondas: 5, premio: 15 }   // está en js/practica.js
 };
 
 let partida = null;
@@ -34,13 +35,17 @@ function pintarEligeMenu() {
   }));
   // Cuántas preguntas hay de cada juego con el menú elegido
   const pool = poolJuego();
-  const cuantas = { quien: pool.length, atajos: pool.filter(h => h.atajo).length, pasos: pool.filter(h => h.pasos && h.pasos.length >= 3).length };
-  document.querySelectorAll(".juego-card").forEach(c => {
+  const conPasos = pool.filter(h => h.pasos && h.pasos.length >= 3).length;
+  const cuantas = { quien: pool.length, atajos: pool.filter(h => h.atajo).length, pasos: conPasos, pantalla: pool.filter(h => pasosPantalla(h).length >= 2).length };
+  document.querySelectorAll(".juego-card[data-juego]").forEach(c => {
     const n = cuantas[c.dataset.juego];
     c.disabled = n < 4;
     c.title = n < 4 ? "No hay suficientes preguntas de este menú" : "";
   });
 }
+
+/* Pasos para «Practica en pantalla»: sin el «Activa…», porque eso se hace eligiendo la herramienta */
+function pasosPantalla(h) { return (h.pasos || []).filter(p => !/^Activa\b/i.test(p)); }
 
 /* Herramientas del menú elegido (cada una sabe de qué menú es) */
 function poolJuego() {
@@ -51,7 +56,7 @@ function poolJuego() {
 alEntrar.actividades = pintarEligeMenu;
 pintarEligeMenu();
 
-document.querySelectorAll(".juego-card").forEach(b =>
+document.querySelectorAll(".juego-card[data-juego]").forEach(b =>
   b.addEventListener("click", () => iniciarJuego(b.dataset.juego)));
 
 function iniciarJuego(tipo) {
@@ -60,6 +65,7 @@ function iniciarJuego(tipo) {
   if (tipo === "quien")  preguntas = mezclar(pool);
   if (tipo === "atajos") preguntas = mezclar(pool.filter(h => h.atajo));
   if (tipo === "pasos")  preguntas = mezclar(pool.filter(h => h.pasos && h.pasos.length >= 3));
+  if (tipo === "pantalla") preguntas = mezclar(pool.filter(h => pasosPantalla(h).length >= 2));
   partida = { tipo, pool, preguntas: preguntas.slice(0, JUEGOS[tipo].rondas), i: 0, aciertos: 0, ganados: 0,
               id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), inicio: 0 };
   document.getElementById("juego-titulo").textContent =
@@ -76,6 +82,7 @@ function mostrarPregunta() {
   if (p.tipo === "quien")  preguntaOpciones(ocultarNombre(h.sirve, h.nombre), h.nombre, p.pool.map(x => x.nombre), "Lee la descripción. ¿Qué herramienta es?" + de);
   if (p.tipo === "atajos") preguntaOpciones(`<span class="pregunta-grande">${h.nombre}</span>`, h.atajo, p.pool.filter(x => x.atajo).map(x => x.atajo), "¿Cuál es su atajo de teclado?" + de);
   if (p.tipo === "pasos")  preguntaPasos(h);
+  if (p.tipo === "pantalla") preguntaPantalla(h);
   p.inicio = Date.now();     // empieza a contar el tiempo de esta pregunta
 }
 

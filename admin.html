@@ -190,6 +190,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/closet.js"></script>
+  <script src="js/falda.js"></script>
   <script>
     /* =================== PESTAÑAS =================== */
     document.querySelectorAll(".pestana-admin").forEach(b => b.addEventListener("click", () => {
@@ -275,7 +276,16 @@
           ${conAtajo.map(h => `<tr><td>${h.nombre} <small style="color:var(--texto-2)">(${h.grupo})</small></td><td class="ok"><kbd>${h.atajo}</kbd></td></tr>`).join("")}</tbody></table></div>
         <div class="rs-juego"><h3>🔢 Ordena los pasos <small>· ${conPasos.length} preguntas posibles · +15 ⭐</small></h3>
           <table><thead><tr><th>Herramienta</th><th>Orden correcto</th></tr></thead><tbody>
-          ${conPasos.map(h => `<tr><td><b>${h.nombre}</b></td><td><ol>${h.pasos.map(p => `<li>${p}</li>`).join("")}</ol></td></tr>`).join("")}</tbody></table></div>`;
+          ${conPasos.map(h => `<tr><td><b>${h.nombre}</b></td><td><ol>${h.pasos.map(p => `<li>${p}</li>`).join("")}</ol></td></tr>`).join("")}</tbody></table></div>
+        <p class="nota-admin">🖥 «Practica en pantalla» usa las mismas herramientas y el mismo orden de pasos que «Ordena los pasos».</p>
+        <div class="rs-juego"><h3>✂ Práctica final: ${FALDA.titulo} <small>· ${FALDA.pasos.length} pasos · +5 ⭐ por paso sin errores ni ayuda, +20 ⭐ al terminar</small></h3>
+          <table><thead><tr><th>#</th><th>Paso</th><th>Función correcta</th><th>Clics y valores</th></tr></thead><tbody>
+          ${FALDA.pasos.map((p, i) => `<tr><td>${i + 1}</td><td><b>${p.titulo}</b><br><small style="color:var(--texto-2)">${p.guia}</small></td>
+            <td class="ok">${p.tipo === "barra" ? p.ruta.join(" › ") : p.opciones.map(o => `${o.menu} › ${o.herramienta}`).join("<br>o ")}</td>
+            <td>${p.tipo === "barra" ? (p.nombre ? `Nombre: ${FALDA.modelo}` : "—") : p.opciones.map(o =>
+              [o.clics.length ? "Clic: " + o.clics.map(c => c === "fin" ? "botón 3" : c === "hoja" ? "en la hoja" : c).join(" → ") : "",
+               (o.campos || []).map(c => `${c.n} = ${c.v}`).join(", ")].filter(Boolean).join(" · ")).join("<br>o ")}</td></tr>`).join("")}
+          </tbody></table></div>`;
     }
     document.getElementById("rs-menus").addEventListener("click", e => {
       const b = e.target.closest("[data-rs]"); if (!b) return;
@@ -285,7 +295,8 @@
   <script>
     const SUPABASE_URL = "https://ljmavqsijlcqcqihuqxi.supabase.co";
     const SUPABASE_KEY = "sb_publishable_HzaqS1Ud2wGLdHwoPyGyhA_mwCFWqzc";
-    const NOMBRE_JUEGO = { quien: "¿Qué herramienta es?", atajos: "Atajo correcto", pasos: "Ordena los pasos" };
+    const NOMBRE_JUEGO = { quien: "¿Qué herramienta es?", atajos: "Atajo correcto", pasos: "Ordena los pasos",
+                           pantalla: "Practica en pantalla", falda: "Práctica final: falda niña T6" };
     const $ = id => document.getElementById(id);
     let db = null, jugadores = [], respuestas = [], orden = { campo: "puntos", desc: true }, abierto = null, confirmando = null, refresco = null;
 

@@ -628,3 +628,114 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 .chip-juego.activo { border-color: var(--color-menu); box-shadow: 0 0 0 2px var(--color-menu) inset; font-weight: 700; }
 .juego-card[disabled] { opacity: .5; cursor: default; }
 @media (max-width: 520px) { .chip-juego span { display: none; } .chip-juego { padding: 4px; } }
+/* ===================== Pantalla de Modaris (práctica) ===================== */
+.mod { position: relative; border: 1px solid #5d636c; border-radius: 10px; overflow: hidden; background: #b9bdc4;
+  color: #111; font-size: .78rem; user-select: none; -webkit-user-select: none; }
+.mod-barra { display: flex; overflow-x: auto; background: #e4e5e8; border-bottom: 1px solid #9aa0a8; scrollbar-width: thin; }
+.mod-bm { background: none; border: 0; padding: 7px 10px; font: inherit; cursor: pointer; white-space: nowrap; color: #111; }
+.mod-bm:hover, .mod-bm.pista { background: #0a5bd6; color: #fff; }
+.mod-bm.pista { animation: modPulso .8s infinite alternate; }
+.mod-desplegable { position: absolute; z-index: 6; min-width: 210px; background: #f4f4f4; border: 1px solid #777;
+  box-shadow: 0 6px 16px rgba(0,0,0,.25); padding: 3px 0; }
+.mod-desplegable button { display: flex; justify-content: space-between; gap: 18px; width: 100%; padding: 6px 12px; border: 0;
+  background: none; font: inherit; text-align: left; cursor: pointer; color: #111; }
+.mod-desplegable button:hover { background: #0a5bd6; color: #fff; }
+.mod-desplegable kbd { font: inherit; opacity: .6; }
+.mod-desplegable p { padding: 8px 12px; color: #666; }
+.mod-info { display: flex; gap: 8px; align-items: center; background: #d6d8dc; padding: 4px 10px; border-bottom: 1px solid #9aa0a8; min-height: 28px; }
+.mod-ref { font-weight: 700; }
+.mod-prompt { color: #0a3d91; font-weight: 700; }
+.mod-modelo { margin-left: auto; background: #fff; border: 1px solid #999; padding: 1px 8px; white-space: nowrap; }
+.mod-modelo:empty { display: none; }
+.mod-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) 200px; min-height: 380px; }
+.mod-area { position: relative; background: #a3a7ae; min-width: 0; display: flex; }
+.mod-lienzo { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
+.mod-svg { width: 100%; height: min(64vh, 580px); display: block; cursor: crosshair; }
+.mod-hoja { fill: #8d929a; stroke: #2a2d33; stroke-width: 1.2px; vector-effect: non-scaling-stroke; }
+.mod-tr { fill: none; stroke: #0d0f12; stroke-width: 1.8px; vector-effect: non-scaling-stroke; }
+.mod-pt { fill: #fff; stroke: #0d0f12; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.mod-et { fill: #0d1017; font-family: Arial, sans-serif; font-weight: 700; pointer-events: none; }
+.mod-sel { fill: rgba(41,182,255,.25); stroke: #29b6ff; stroke-width: 2.5px; vector-effect: non-scaling-stroke; pointer-events: none; }
+.mod-hl { stroke: #29b6ff; stroke-width: 5px; vector-effect: non-scaling-stroke; pointer-events: none; opacity: .85; }
+.mod-pista { fill: rgba(255,214,0,.4); stroke: #ffd600; stroke-width: 3px; vector-effect: non-scaling-stroke; pointer-events: none; animation: modPulso .8s infinite alternate; }
+.mod-pista-l { stroke: #ffd600; stroke-width: 6px; vector-effect: non-scaling-stroke; pointer-events: none; animation: modPulso .8s infinite alternate; }
+@keyframes modPulso { to { opacity: .35; } }
+.mod-cartucho rect { fill: #a6abb3; stroke: #e3e600; stroke-width: 1.4px; vector-effect: non-scaling-stroke; }
+.mod-cartucho text { fill: #111; font-family: Arial, sans-serif; }
+.mod-sin-hoja { color: #2f343b; text-align: center; padding: 40px 10px; font-weight: 700; }
+.mod-panel { background: #c8cbd0; border-left: 1px solid #8a9098; padding: 6px; display: flex; flex-direction: column; gap: 4px;
+  overflow-y: auto; max-height: min(70vh, 640px); }
+.mod-menus { display: flex; flex-direction: column; gap: 4px; }
+.mod-seleccion { background: #e9eaec; text-align: center; padding: 3px; border: 1px solid #9aa0a8; font-weight: 700; }
+.mod-mb { display: flex; justify-content: space-between; align-items: center; gap: 6px; background: #eceef1; border: 1px solid #8f959d;
+  border-bottom: 5px solid var(--c); padding: 7px 8px; font: inherit; text-align: left; cursor: pointer; color: #111; border-radius: 2px; }
+.mod-mb b { font-size: .7rem; opacity: .7; }
+.mod-mb:hover { background: #fff; }
+.mod-mb.pista, .mod-h.pista { outline: 3px solid #ffd600; outline-offset: 1px; animation: modPulso .8s infinite alternate; }
+.mod-regresar { background: #e9eaec; border: 1px solid #8f959d; padding: 5px; font: inherit; cursor: pointer; color: #111; text-align: left; }
+.mod-titulo-menu { background: var(--c); padding: 5px 8px; font-weight: 700; border-radius: 2px; }
+.mod-grupo { font-size: .66rem; text-transform: uppercase; letter-spacing: .05em; color: #3d434b; margin-top: 4px; font-weight: 700; }
+.mod-herrs { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.mod-h { overflow-wrap: anywhere; min-width: 0; background: var(--c); border: 1px solid #7d838b; padding: 6px 4px; font: inherit; font-size: .72rem; cursor: pointer;
+  color: #111; border-radius: 2px; line-height: 1.15; }
+.mod-h:hover { outline: 2px solid #0a5bd6; }
+.mod-h.activa { background: #0a5bd6; color: #fff; }
+.mod-h.mal { background: #e5484d; color: #fff; }
+.mod-vacio { padding: 8px; color: #333; }
+.mod-pie { display: flex; flex-wrap: wrap; gap: 4px 14px; background: #5b616a; color: #e9ecef; padding: 5px 10px; font-size: .7rem; align-items: center; min-height: 30px; }
+.mod-boton3 { margin-left: auto; background: #ffd600; color: #111; border: 0; border-radius: 4px; padding: 5px 10px; font: inherit;
+  font-weight: 700; font-size: .8rem; cursor: pointer; }
+.mod-dialogo { position: absolute; top: 12px; right: 12px; z-index: 4; }
+.mod-form { background: #eceef1; border: 1px solid #555; box-shadow: 0 8px 20px rgba(0,0,0,.3); padding: 10px; display: grid; gap: 6px; min-width: 220px; }
+.mod-form-t { font-weight: 700; background: #1f3a5f; color: #fff; margin: -10px -10px 4px; padding: 6px 10px; }
+.mod-form label { display: grid; grid-template-columns: 110px minmax(0, 1fr); align-items: center; gap: 6px; }
+.mod-form input { font: inherit; font-size: .95rem; padding: 5px 7px; border: 1px solid #888; background: #fff; color: #111; width: 100%; min-width: 0; }
+.mod-enter { background: #0a5bd6; color: #fff; border: 0; padding: 7px; font: inherit; font-weight: 700; cursor: pointer; border-radius: 4px; }
+@media (max-width: 700px) {
+  .mod-cuerpo { grid-template-columns: minmax(0, 1fr); }
+  .mod-panel { border-left: 0; border-top: 1px solid #8a9098; max-height: none; }
+  .mod-menus { display: grid; grid-template-columns: 1fr 1fr; }
+  .mod-herrs { grid-template-columns: repeat(3, 1fr); }
+  .mod-svg { height: 56vh; }
+  .mod-dialogo { left: 8px; right: 8px; }
+}
+
+/* Juego «Practica en pantalla» */
+.pp-pantalla { margin-top: 12px; }
+.pp-hoja { width: 100%; padding: 16px; display: grid; gap: 10px; align-content: start; min-height: 360px; }
+.pp-vacio { color: #3b4048; font-weight: 700; text-align: center; margin-top: 120px; }
+.pp-log { background: #eef0f3; border-radius: 6px; padding: 8px 8px 8px 28px; display: grid; gap: 4px; font-size: .85rem; }
+.pp-log:empty { display: none; }
+.pp-pregunta { font-weight: 700; font-size: .9rem; }
+.pp-opciones { display: grid; gap: 6px; }
+.pp-op { background: #fff; border: 1px solid #7d838b; border-radius: 6px; padding: 9px 12px; font: inherit; font-size: .85rem; text-align: left; cursor: pointer; color: #111; }
+.pp-op:hover { outline: 2px solid #0a5bd6; }
+.pp-op.mal { background: #fde8e8; border-color: #e5484d; }
+
+/* Práctica final: falda */
+.fs-eyebrow { margin-top: 22px; }
+.juego-final { border: 2px solid #f0b04a; background: linear-gradient(90deg, #fff8ea, #fff); }
+.fs { display: grid; gap: 14px; }
+@media (min-width: 1100px) { .fs { grid-template-columns: 300px minmax(0, 1fr); align-items: start; } .fs-guia { position: sticky; top: 12px; } }
+.fs-guia { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 16px; display: grid; gap: 10px; min-width: 0; }
+.fs-cab { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: .8rem; color: var(--texto-2); font-weight: 600; }
+.fs-guia h2 { font-size: 1.15rem; }
+.fs-guia h3 { font-size: .95rem; }
+.fs-nota { font-size: .8rem; background: #fff7d6; border-radius: 8px; padding: 6px 10px; }
+.fs-msg { border-radius: 10px; padding: 8px 12px; font-size: .9rem; line-height: 1.45; }
+.fs-msg:empty { display: none; }
+.fs-msg.ok { background: #e3f7e8; color: #14532d; }
+.fs-msg.no { background: #fde8e8; color: #7f1d1d; }
+.fs-msg.info { background: #e6f1fd; color: #12345a; }
+.fs-botones { display: flex; gap: 8px; flex-wrap: wrap; }
+.fs-medidas summary { cursor: pointer; font-weight: 600; font-size: .88rem; }
+.fs-medidas table { width: 100%; font-size: .8rem; border-collapse: collapse; margin-top: 6px; }
+.fs-medidas td { padding: 3px 4px; border-top: 1px solid var(--borde); }
+.fs-medidas td:last-child { text-align: right; font-weight: 700; }
+.fs-link { background: none; border: 0; color: var(--texto-2); text-decoration: underline; font: inherit; font-size: .8rem; cursor: pointer; justify-self: start; }
+.fs-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fs-stats div { background: var(--fondo); border-radius: 10px; padding: 8px; text-align: center; }
+.fs-stats b { display: block; font-size: 1.2rem; }
+.fs-stats span { font-size: .75rem; color: var(--texto-2); }
+.fs-check { list-style: none; display: grid; gap: 4px; font-size: .88rem; }
+.pp-pantalla, .fs-pantalla, .mod { min-width: 0; max-width: 100%; }
