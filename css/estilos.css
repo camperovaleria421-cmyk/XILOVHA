@@ -617,3 +617,14 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 
 /* Antes de empezar: tarjeta separada arriba de los menús F */
 .tarjeta-antes { margin-bottom: 14px; }
+
+/* Actividades: elegir menú de las preguntas */
+.elige-menu-txt { font-weight: 700; margin: 6px 0 8px; }
+.elige-menu { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.chip-juego { display: flex; align-items: center; gap: 8px; padding: 7px 14px 7px 7px; border-radius: 999px;
+  border: 2px solid transparent; background: var(--tile, #f1f4f8); cursor: pointer; font: inherit; color: inherit; }
+.chip-juego b { background: var(--color-menu); border-radius: 999px; padding: 4px 10px; font-size: .85rem; color: #1b2430; }
+.chip-juego span { font-size: .85rem; }
+.chip-juego.activo { border-color: var(--color-menu); box-shadow: 0 0 0 2px var(--color-menu) inset; font-weight: 700; }
+.juego-card[disabled] { opacity: .5; cursor: default; }
+@media (max-width: 520px) { .chip-juego span { display: none; } .chip-juego { padding: 4px; } }

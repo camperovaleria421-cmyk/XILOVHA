@@ -261,11 +261,11 @@
     function pintarRespuestas() {
       const listos = MENUS.filter(m => m.listo && HERRAMIENTAS[m.tecla]);
       document.getElementById("rs-menus").innerHTML = listos.map(m =>
-        `<button class="btn-mini ${m.tecla === rsMenu ? "activo" : ""}" data-rs="${m.tecla}">${m.tecla} · ${m.nombre}${m.tecla === "F1" ? " (en los juegos)" : ""}</button>`).join("");
+        `<button class="btn-mini ${m.tecla === rsMenu ? "activo" : ""}" data-rs="${m.tecla}">${m.tecla} · ${m.nombre}</button>`).join("");
       const pool = HERRAMIENTAS[rsMenu].grupos.flatMap(g => g.herramientas.map(h => ({ ...h, grupo: g.nombre }))).filter(h => !h.pendiente);
       const conAtajo = pool.filter(h => h.atajo);
       const conPasos = pool.filter(h => h.pasos && h.pasos.length >= 3);
-      const aviso = rsMenu === "F1" ? "" : `<p class="nota-admin">Por ahora los juegos solo preguntan del F1. Esta lista sirve de referencia por si se agregan preguntas de ${rsMenu}.</p>`;
+      const aviso = `<p class="nota-admin">El jugador elige el menú (${rsMenu}) o «Todos», que mezcla las preguntas de todos los menús. En «Jugadores» cada respuesta dice de qué menú fue (ej. ${rsMenu} · …).</p>`;
       document.getElementById("rs-contenido").innerHTML = aviso + `
         <div class="rs-juego"><h3>❓ ¿Qué herramienta es? <small>· ${pool.length} preguntas posibles · +10 ⭐</small></h3>
           <table><thead><tr><th>Lo que lee el jugador</th><th>Respuesta correcta</th></tr></thead><tbody>
