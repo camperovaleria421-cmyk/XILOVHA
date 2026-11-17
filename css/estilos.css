@@ -614,3 +614,6 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 .modelo-base { transition: filter .35s ease; }
 
 .closet-tabs { flex-wrap: wrap; overflow-x: visible; }
+
+/* Antes de empezar: tarjeta separada arriba de los menús F */
+.tarjeta-antes { margin-bottom: 14px; }

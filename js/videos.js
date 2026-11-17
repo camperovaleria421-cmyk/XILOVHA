@@ -12,6 +12,12 @@
    ===================================================================== */
 
 const VIDEOS = {
+  Inicio: {
+    // ---- Antes de empezar ----
+    "Crear tu archivo": "",
+    "Crear la hoja": "",
+    "Guardar tu documento": ""
+  },
   F1: {
     // ---- Puntos ----
     "Deslizante": "",

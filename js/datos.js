@@ -818,3 +818,26 @@ const HERRAMIENTAS = {
     ]
   }
 };
+
+/* =====================================================================
+   ANTES DE EMPEZAR: pasos previos a usar las funciones
+   (crear la hoja, hacer tu archivo, guardar...). Cada paso tiene su
+   video en js/videos.js, sección "Inicio".
+   ===================================================================== */
+const ANTES = { tecla: "Inicio", nombre: "Antes de empezar", color: "#bfe3f5" };
+HERRAMIENTAS.Inicio = {
+  descripcion: "Los pasos que haces antes de usar las funciones: preparar tu archivo y tu hoja de trabajo.",
+  grupos: [
+    {
+      nombre: "Primeros pasos",
+      herramientas: [
+        { nombre: "Crear tu archivo", pendiente: true,
+          sirve: "Crear un archivo nuevo de Modaris donde vas a guardar tu patrón." },
+        { nombre: "Crear la hoja", pendiente: true,
+          sirve: "Abrir una hoja de trabajo nueva para empezar a trazar." },
+        { nombre: "Guardar tu documento", pendiente: true,
+          sirve: "Guardar tu trabajo para no perder tus avances." }
+      ]
+    }
+  ]
+};

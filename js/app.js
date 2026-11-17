@@ -58,9 +58,18 @@ function contarHerramientas(tecla) {
   const d = HERRAMIENTAS[tecla];
   return d ? d.grupos.reduce((n, g) => n + g.herramientas.length, 0) : 0;
 }
+/* Datos (nombre y color) de un menú F o de "Antes de empezar" */
+function infoMenu(tecla) { return tecla === ANTES.tecla ? ANTES : MENUS.find(m => m.tecla === tecla); }
+
 function pintarMenus() {
   const cont = document.getElementById("lista-menus");
-  cont.innerHTML = MENUS.map(m => {
+  const pasos = HERRAMIENTAS[ANTES.tecla].grupos[0].herramientas;
+  cont.innerHTML = `
+    <button class="tarjeta-menu tarjeta-antes" data-tecla="${ANTES.tecla}" style="--color-menu:${ANTES.color}">
+      <span class="tecla">▶</span>
+      <span class="tarjeta-texto"><strong>${ANTES.nombre}</strong><small>${pasos.length} pasos · ${pasos.map(p => p.nombre).join(", ")}</small></span>
+      <svg class="ico flecha"><use href="#i-flecha"/></svg>
+    </button>` + MENUS.map(m => {
     const d = HERRAMIENTAS[m.tecla];
     const listo = m.listo && d;
     const detalle = listo ? `${contarHerramientas(m.tecla)} herramientas · ${d.grupos.map(g => g.nombre).join(", ")}` : "Próximamente";
@@ -108,11 +117,12 @@ pintarConsejo();
 /* ---------- Abrir un menú (ej. F1) ---------- */
 function abrirMenu(tecla) {
   menuActual = tecla;
-  const info = MENUS.find(m => m.tecla === tecla);
+  const info = infoMenu(tecla);
   const datos = HERRAMIENTAS[tecla];
   const cab = document.getElementById("cabecera-menu");
   cab.style.background = info.color;
-  let html = `<h1>${tecla} · ${info.nombre}</h1><p>${datos.descripcion}</p>`;
+  const titulo = info === ANTES ? info.nombre : `${tecla} · ${info.nombre}`;
+  let html = `<h1>${titulo}</h1><p>${datos.descripcion}</p>`;
   if (datos.glosario) {
     html += `<details class="glosario"><summary>📖 Términos que vas a ver</summary><dl>` +
       datos.glosario.map(([t, d]) => `<dt>${t}</dt><dd>${d}</dd>`).join("") + `</dl></details>`;
@@ -125,7 +135,7 @@ function abrirMenu(tecla) {
 
 function pintarHerramientas(filtro) {
   const datos = HERRAMIENTAS[menuActual];
-  const color = MENUS.find(m => m.tecla === menuActual).color;
+  const color = infoMenu(menuActual).color;
   const texto = filtro.trim().toLowerCase();
   const cont = document.getElementById("lista-herramientas");
   let html = "";
@@ -184,10 +194,12 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") { cerrarDeta
 alEntrar.videos = function () {
   const cont = document.getElementById("lista-videos");
   let html = "";
-  Object.keys(HERRAMIENTAS).forEach(menu => {
-    const color = MENUS.find(m => m.tecla === menu).color;
+  const orden = [ANTES.tecla, ...Object.keys(HERRAMIENTAS).filter(k => k !== ANTES.tecla)];
+  orden.forEach(menu => {
+    const color = infoMenu(menu).color;
     HERRAMIENTAS[menu].grupos.forEach((g, gi) => {
-      html += `<div class="grupo"><h2>${menu} · ${g.nombre}</h2><div class="lista-video">`;
+      const titulo = menu === ANTES.tecla ? ANTES.nombre : `${menu} · ${g.nombre}`;
+      html += `<div class="grupo"><h2>${titulo}</h2><div class="lista-video">`;
       g.herramientas.forEach((h, hi) => {
         const tiene = !!((VIDEOS[menu] || {})[h.nombre]);
         html += `<button class="fila-video" data-menu="${menu}" data-g="${gi}" data-h="${hi}">
