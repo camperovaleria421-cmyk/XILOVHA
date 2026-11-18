@@ -198,29 +198,39 @@ function preguntaPantalla(h) {
 /* =====================================================================
    PRÁCTICA FINAL: FALDA RECTA NIÑA T6
    ===================================================================== */
-let FS = null;   // estado de la práctica
+let FS = null;   // estado de la práctica que está en pantalla
+/* Dos versiones del mismo ejercicio:
+   "ayuda" = con botón de ayuda y errores frecuentes   (se guarda como juego "falda")
+   "sin"   = sin ayuda: solo la instrucción y el menú F  (se guarda como juego "falda2") */
+const estadosFalda = { ayuda: null, sin: null };
+const JUEGO_FALDA = { ayuda: "falda", sin: "falda2" };
 const VISTAS_FALDA = { todo: [-3, -4, 45, 54], pinza: [-2, -3, 24, 18] };
 
-document.getElementById("btn-falda").addEventListener("click", () => iniciarFalda(true));
+document.getElementById("btn-falda").addEventListener("click", () => iniciarFalda("ayuda", true));
+document.getElementById("btn-falda2").addEventListener("click", () => iniciarFalda("sin", true));
 const antesActividades = alEntrar.actividades;
 alEntrar.actividades = function () { if (antesActividades) antesActividades(); tarjetaFalda(); };
 function tarjetaFalda() {
-  const enCurso = FS && !FS.terminado && FS.i > 0;
-  document.getElementById("falda-sub").textContent = enCurso
-    ? `Vas en el paso ${FS.i + 1} de ${FALDA.pasos.length}. Toca para continuar.`
-    : "Traza el patrón completo en una pantalla como la de Modaris, paso a paso.";
-  document.getElementById("falda-premio").textContent = `hasta +${FALDA.pasos.length * 5 + 20} ⭐`;
+  [["ayuda", "falda-sub", "falda-premio", "Traza el patrón completo en una pantalla como la de Modaris, con ayuda en cada paso."],
+   ["sin", "falda2-sub", "falda2-premio", "El mismo ejercicio, sin ayuda: solo la instrucción y el menú que se usa."]].forEach(([modo, sub, premio, txt]) => {
+    const e = estadosFalda[modo], enCurso = e && !e.terminado && e.i > 0;
+    document.getElementById(sub).textContent = enCurso ? `Vas en el paso ${e.i + 1} de ${FALDA.pasos.length}. Toca para continuar.` : txt;
+    document.getElementById(premio).textContent = `hasta +${FALDA.pasos.length * 5 + 20} ⭐`;
+  });
 }
 tarjetaFalda();
 
-function iniciarFalda(continuar) {
-  if (!(continuar && FS && !FS.terminado)) {
-    FS = { i: 0, etapa: "", op: null, ci: 0, err: 0, ayu: 0, tPaso: Date.now(), t0: Date.now(),
-           errores: 0, ayudas: 0, perfectos: 0, sinAyuda: 0, ganados: 0,
+function iniciarFalda(modo, continuar) {
+  const previo = estadosFalda[modo];
+  if (continuar && previo && !previo.terminado) {
+    FS = previo;
+  } else {
+    FS = estadosFalda[modo] = { modo, i: 0, etapa: "", op: null, ci: 0, err: 0, ayu: 0, tPaso: Date.now(), t0: Date.now(),
+           errores: 0, ayudas: 0, perfectos: 0, sinAyuda: 0, ganados: 0, tiempos: [],
            hechos: new Set(), lineas: [], curvas: [], hoja: false, cartucho: false, modelo: "", pistaObj: null,
            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), terminado: false };
   }
-  document.getElementById("juego-titulo").textContent = "Práctica final · Falda";
+  document.getElementById("juego-titulo").textContent = modo === "sin" ? "Práctica final · Sin ayuda" : "Práctica final · Con ayuda";
   irA("juego");
   pintarFalda();
 }
@@ -231,12 +241,13 @@ function pintarFalda() {
     <div class="fs">
       <aside class="fs-guia">
         <div class="fs-cab"><span id="fs-num"></span>
-          <span>⏱ <b id="fs-tiempo">0:00</b> · ❌ <b id="fs-err">0</b> · 💡 <b id="fs-ayu">0</b></span></div>
+          <span>⏱ <b id="fs-tiempo">0:00</b> · ❌ <b id="fs-err">0</b>${FS.modo === "sin" ? "" : ` · 💡 <b id="fs-ayu">0</b>`}</span></div>
         <h2 id="fs-titulo"></h2>
         <p id="fs-texto"></p>
+        <p id="fs-menu" class="fs-menu" hidden></p>
         <p id="fs-nota" class="fs-nota" hidden></p>
         <div id="fs-msg" class="fs-msg" aria-live="polite"></div>
-        <div class="fs-botones"><button id="fs-ayuda" class="btn-secundario">💡 Ayuda</button><span id="fs-ficha"></span></div>
+        ${FS.modo === "sin" ? "" : `<div class="fs-botones"><button id="fs-ayuda" class="btn-secundario">💡 Ayuda</button><span id="fs-ficha"></span></div>`}
         <details class="fs-medidas"><summary>📏 Tabla de medidas (cm)</summary>
           <table>${FALDA.medidas.map(([a, b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join("")}</table></details>
         <button id="fs-reiniciar" class="fs-link">Empezar de nuevo</button>
@@ -247,8 +258,8 @@ function pintarFalda() {
     onBarra: faldaBarra, onHerramienta: faldaHerramienta, onBoton3: () => faldaObjetivo("fin")
   });
   FS.pant.modelo(FS.modelo);
-  document.getElementById("fs-ayuda").addEventListener("click", faldaAyuda);
-  document.getElementById("fs-reiniciar").addEventListener("click", () => iniciarFalda(false));
+  if (FS.modo !== "sin") document.getElementById("fs-ayuda").addEventListener("click", faldaAyuda);
+  document.getElementById("fs-reiniciar").addEventListener("click", () => iniciarFalda(FS.modo, false));
   contadoresFalda();
   relojFalda();
   if (FS.terminado) return finFalda(true);
@@ -292,7 +303,15 @@ function entrarPaso() {
   document.getElementById("fs-texto").innerHTML = p.guia;
   const nota = document.getElementById("fs-nota");
   nota.hidden = !p.nota; nota.textContent = p.nota ? "ℹ️ " + p.nota : "";
-  document.getElementById("fs-ficha").innerHTML = "";
+  // Sin ayuda: solo se dice en qué menú está la función
+  const menu = document.getElementById("fs-menu");
+  menu.hidden = FS.modo !== "sin";
+  if (FS.modo === "sin") {
+    const t = p.tipo === "barra" ? null : p.opciones[0].menu;
+    menu.innerHTML = t ? `Usa el menú <b style="background:${colorMenuF(t)}">${t}</b>` : `Usa el <b>menú de arriba</b>`;
+  }
+  const ficha = document.getElementById("fs-ficha");
+  if (ficha) ficha.innerHTML = "";
   msgFalda("");
   FS.pant.resetPanel(); FS.pant.cerrarDialogo(); FS.pant.boton3(false);
   FS.pant.prompt("Elige la función para este paso");
@@ -302,7 +321,7 @@ function entrarPaso() {
 function errorFalda(t) {
   FS.err++; FS.errores++;
   contadoresFalda();
-  msgFalda("❌ " + t + (FS.err >= 2 ? " <br><small>Si te atoras, usa 💡 Ayuda.</small>" : ""), "no");
+  msgFalda("❌ " + t + (FS.err >= 2 && FS.modo !== "sin" ? " <br><small>Si te atoras, usa 💡 Ayuda.</small>" : ""), "no");
 }
 
 /* ---- Menú de arriba ---- */
@@ -412,7 +431,10 @@ function faldaObjetivo(id) {
     FS.pant.prompt("Escribe los valores y presiona Enter");
     FS.pant.dialogo(FS.op.herramienta, FS.op.campos, vals => {
       const malos = FS.op.campos.filter((c, i) => !valorOk(vals[i], c));
-      if (malos.length) { errorFalda(`Revisa ${malos.map(c => c.n).join(" y ")}. <b>Error frecuente:</b> ${FALDA.pasos[FS.i].error}`); return; }
+      if (malos.length) {
+        errorFalda(`Revisa ${malos.map(c => c.n).join(" y ")}.` + (FS.modo === "sin" ? "" : ` <b>Error frecuente:</b> ${FALDA.pasos[FS.i].error}`));
+        return;
+      }
       FS.pant.cerrarDialogo();
       completarPaso();
     });
@@ -428,7 +450,7 @@ function valorOk(txt, c) {
 
 /* ---- Ayuda ---- */
 function faldaAyuda() {
-  if (!FS || FS.etapa === "hecho" || FS.terminado) return;
+  if (!FS || FS.etapa === "hecho" || FS.terminado || FS.modo === "sin") return;
   const p = FALDA.pasos[FS.i];
   FS.ayu++; FS.ayudas++;
   contadoresFalda();
@@ -477,8 +499,9 @@ function completarPaso() {
   const perfecto = FS.err === 0 && FS.ayu === 0;
   if (FS.ayu === 0) FS.sinAyuda++;
   if (perfecto) { FS.perfectos++; FS.ganados += 5; sumarPuntos(5); }
+  FS.tiempos.push({ paso: p.titulo, funcion: FS.op ? FS.op.herramienta : p.ruta.join(" › "), segundos, errores: FS.err, ayudas: FS.ayu });
   registrarRespuesta({
-    partida: FS.id, juego: "falda",
+    partida: FS.id, juego: JUEGO_FALDA[FS.modo],
     pregunta: `Paso ${FS.i + 1}: ${p.titulo}`.slice(0, 80),
     respuesta: `${FS.op ? FS.op.menu + " › " + FS.op.herramienta : p.ruta.join(" › ")} · errores ${FS.err} · ayudas ${FS.ayu}`.slice(0, 160),
     correcta: perfecto, segundos
@@ -504,8 +527,12 @@ function finFalda(yaGuardado) {
     FS.terminado = true;
     FS.fin = Date.now();
     FS.ganados += 20; sumarPuntos(20);
-    registrarJuego("falda", FS.perfectos, total);
+    registrarJuego(JUEGO_FALDA[FS.modo], FS.perfectos, total);
   }
+  const mmss = x => { x = Math.round(x); return `${Math.floor(x / 60)}:${String(x % 60).padStart(2, "0")}`; };
+  const tablaPasos = `<details class="fs-medidas"><summary>⏱ Tiempo en cada paso</summary><table>` +
+    FS.tiempos.map((t, i) => `<tr><td>${i + 1}. ${t.paso}<br><small>${t.funcion}${t.errores ? ` · ❌ ${t.errores}` : ""}${t.ayudas ? ` · 💡 ${t.ayudas}` : ""}</small></td><td>${mmss(t.segundos)}</td></tr>`).join("") +
+    `</table></details>`;
   const s = Math.round((FS.fin - FS.t0) / 1000);
   const autonomia = Math.round(FS.sinAyuda / total * 100);
   const estrellas = FS.perfectos === total ? "🌟🌟🌟" : FS.perfectos >= total * 0.6 ? "🌟🌟" : "🌟";
@@ -518,17 +545,18 @@ function finFalda(yaGuardado) {
     <div class="fs-stats">
       <div><b>${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}</b><span>Tiempo</span></div>
       <div><b>${FS.errores}</b><span>Errores</span></div>
-      <div><b>${FS.ayudas}</b><span>Ayudas</span></div>
-      <div><b>${autonomia}%</b><span>Pasos sin ayuda</span></div>
+      ${FS.modo === "sin" ? `<div><b>${FS.perfectos}/${total}</b><span>Pasos sin errores</span></div>`
+        : `<div><b>${FS.ayudas}</b><span>Ayudas</span></div><div><b>${autonomia}%</b><span>Pasos sin ayuda</span></div>`}
     </div>
     <p>${FS.perfectos} de ${total} pasos perfectos. Ganaste <b>${FS.ganados} ⭐</b>.</p>
+    ${tablaPasos}
     <h3>Después del trazo, en Lectra:</h3>
     <ul class="fs-check">${FALDA.despues.map((t, i) => `<li><label><input type="checkbox"> ${t}</label></li>`).join("")}</ul>
     <div class="fin-botones">
       <button class="btn-principal" id="fs-otra">Repetir práctica</button>
       <button class="btn-secundario" data-ir="actividades">Otras actividades</button>
     </div>`;
-  document.getElementById("fs-otra").addEventListener("click", () => iniciarFalda(false));
+  document.getElementById("fs-otra").addEventListener("click", () => iniciarFalda(FS.modo, false));
 }
 
 /* ---- Dibujo del patrón ---- */

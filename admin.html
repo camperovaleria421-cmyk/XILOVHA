@@ -278,7 +278,7 @@
           <table><thead><tr><th>Herramienta</th><th>Orden correcto</th></tr></thead><tbody>
           ${conPasos.map(h => `<tr><td><b>${h.nombre}</b></td><td><ol>${h.pasos.map(p => `<li>${p}</li>`).join("")}</ol></td></tr>`).join("")}</tbody></table></div>
         <p class="nota-admin">🖥 «Practica en pantalla» usa las mismas herramientas y el mismo orden de pasos que «Ordena los pasos».</p>
-        <div class="rs-juego"><h3>✂ Práctica final: ${FALDA.titulo} <small>· ${FALDA.pasos.length} pasos · +5 ⭐ por paso sin errores ni ayuda, +20 ⭐ al terminar</small></h3>
+        <div class="rs-juego"><h3>✂ Práctica final: ${FALDA.titulo} (con ayuda y sin ayuda) <small>· ${FALDA.pasos.length} pasos · +5 ⭐ por paso sin errores ni ayuda, +20 ⭐ al terminar</small></h3>
           <table><thead><tr><th>#</th><th>Paso</th><th>Función correcta</th><th>Clics y valores</th></tr></thead><tbody>
           ${FALDA.pasos.map((p, i) => `<tr><td>${i + 1}</td><td><b>${p.titulo}</b><br><small style="color:var(--texto-2)">${p.guia}</small></td>
             <td class="ok">${p.tipo === "barra" ? p.ruta.join(" › ") : p.opciones.map(o => `${o.menu} › ${o.herramienta}`).join("<br>o ")}</td>
@@ -296,7 +296,7 @@
     const SUPABASE_URL = "https://ljmavqsijlcqcqihuqxi.supabase.co";
     const SUPABASE_KEY = "sb_publishable_HzaqS1Ud2wGLdHwoPyGyhA_mwCFWqzc";
     const NOMBRE_JUEGO = { quien: "¿Qué herramienta es?", atajos: "Atajo correcto", pasos: "Ordena los pasos",
-                           pantalla: "Practica en pantalla", falda: "Práctica final: falda niña T6" };
+                           pantalla: "Practica en pantalla", falda: "Falda niña T6 · con ayuda", falda2: "Falda niña T6 · sin ayuda" };
     const $ = id => document.getElementById(id);
     let db = null, jugadores = [], respuestas = [], orden = { campo: "puntos", desc: true }, abierto = null, confirmando = null, refresco = null;
 
@@ -450,6 +450,7 @@
         const total = rs.reduce((n, r) => n + Number(r.segundos), 0);
         const prom = total / rs.length;
         const fecha = new Date(rs[0].creado).toLocaleString("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+        if (rs[0].juego === "falda" || rs[0].juego === "falda2") return partidaFalda(rs, fecha);
         return `<div class="partida">
           <div class="partida-cab"><b>${esc(NOMBRE_JUEGO[rs[0].juego] || rs[0].juego)}</b>
             <small>${fecha}</small><small>${buenas} de ${rs.length} correctas</small>
@@ -461,6 +462,39 @@
               <td class="num ${Number(r.segundos) > prom * 1.6 && rs.length > 2 ? "lento" : ""}">${Number(r.segundos).toFixed(1)} s</td></tr>`).join("")}
           </tbody></table></div>`;
       }).join("");
+    }
+
+    /* Práctica final (falda): tiempo total, tiempo y errores de cada paso, dónde pidió ayuda y tiempo por herramienta */
+    const mmss = s => { s = Math.round(s); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+    function partidaFalda(rs, fecha) {
+      const conAyuda = rs[0].juego === "falda";
+      const filas = rs.map(r => {
+        const m = /^(.*) · errores (\d+) · ayudas (\d+)/.exec(r.respuesta || "") || [];
+        return { paso: r.pregunta, funcion: m[1] || r.respuesta || "", err: +m[2] || 0, ayu: +m[3] || 0, seg: Number(r.segundos) };
+      });
+      const total = filas.reduce((n, f) => n + f.seg, 0);
+      const errores = filas.reduce((n, f) => n + f.err, 0);
+      const ayudados = filas.filter(f => f.ayu);
+      const prom = total / filas.length;
+      const terminada = filas.length >= FALDA.pasos.length;
+      const porHerr = {};
+      filas.forEach(f => { const k = f.funcion.replace(/^F\d › /, ""); (porHerr[k] = porHerr[k] || { seg: 0, veces: 0, err: 0 }); porHerr[k].seg += f.seg; porHerr[k].veces++; porHerr[k].err += f.err; });
+      return `<div class="partida">
+        <div class="partida-cab"><b>✂ Falda niña T6 · ${conAyuda ? "Con ayuda" : "Sin ayuda"}</b>
+          <small>${fecha}</small>
+          <small><b>Tiempo total: ${mmss(total)}</b></small>
+          <small>${filas.length} de ${FALDA.pasos.length} pasos ${terminada ? "· terminada" : "· sin terminar"}</small>
+          <small>❌ ${errores} errores</small>
+          ${conAyuda ? `<small>💡 ${ayudados.length ? `Ayuda en ${ayudados.length} pasos: ${ayudados.map(f => f.paso.replace(/^Paso (\d+):.*/, "$1")).join(", ")}` : "No pidió ayuda"}</small>` : ""}</div>
+        <table class="resp"><thead><tr><th>Paso</th><th>Función que usó</th><th style="text-align:right">Tiempo</th><th style="text-align:right">Errores</th>${conAyuda ? "<th>Ayuda</th>" : ""}</tr></thead><tbody>
+        ${filas.map(f => `<tr class="${f.err || f.ayu ? "mal" : ""}">
+            <td>${esc(f.paso)}</td><td>${esc(f.funcion)}</td>
+            <td class="num ${f.seg > prom * 1.6 && filas.length > 2 ? "lento" : ""}">${mmss(f.seg)}</td>
+            <td class="num">${f.err || "—"}</td>${conAyuda ? `<td>${f.ayu ? `💡 Sí (${f.ayu})` : "—"}</td>` : ""}</tr>`).join("")}
+        </tbody></table>
+        <p class="nota-admin"><b>Tiempo por herramienta:</b> ${Object.entries(porHerr).sort((a, b) => b[1].seg - a[1].seg)
+          .map(([k, v]) => `${esc(k)} ${mmss(v.seg)} (${v.veces} ${v.veces === 1 ? "paso" : "pasos"}${v.err ? `, ${v.err} errores` : ""})`).join(" · ")}</p>
+      </div>`;
     }
 
     $("cuerpo").addEventListener("click", async e => {

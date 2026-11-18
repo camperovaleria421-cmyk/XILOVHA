@@ -739,3 +739,9 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 .fs-stats span { font-size: .75rem; color: var(--texto-2); }
 .fs-check { list-style: none; display: grid; gap: 4px; font-size: .88rem; }
 .pp-pantalla, .fs-pantalla, .mod { min-width: 0; max-width: 100%; }
+
+/* Falda sin ayuda */
+.juego-final + .juego-final { margin-top: 10px; }
+.juego-final.sin-ayuda { border-color: #7fd0cc; background: linear-gradient(90deg, #eafaf8, #fff); }
+.fs-menu { font-size: .9rem; }
+.fs-menu b { border-radius: 6px; padding: 2px 8px; background: var(--tile); }
