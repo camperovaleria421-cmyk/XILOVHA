@@ -144,6 +144,13 @@
       <div id="tab-falda" class="tab-panel" hidden>
         <p class="subtitulo">Resultados de todos los jugadores en la práctica final «Falda recta niña T6»: tiempo de cada paso, errores, ayuda y tiempo total.</p>
         <div class="fila-botones">
+          <button class="btn-mini activo" data-fp="1">1️⃣ Prueba 1</button>
+          <button class="btn-mini" data-fp="2">2️⃣ Prueba 2</button>
+          <small style="color:var(--texto-2)">La prueba 2 empieza el
+            <input type="datetime-local" id="fa-corte" class="btn-mini" style="font:inherit"></small>
+        </div>
+        <p class="nota-admin" id="fa-nota-prueba" style="margin:4px 0 8px"></p>
+        <div class="fila-botones">
           <button class="btn-mini activo" data-fm="falda">💡 Con ayuda</button>
           <button class="btn-mini" data-fm="falda2">🚫 Sin ayuda</button>
           <select id="fa-filtro" class="btn-mini">
@@ -383,10 +390,16 @@
         .select("user_id,nombre,correo,puntos,segundos,progreso,ultima_vez,creado");
       if (error) { $("cuerpo").innerHTML = `<tr><td colspan="11">No se pudo cargar: ${esc(error.message)}</td></tr>`; return; }
       // Respuestas de los juegos (las más recientes primero)
-      const resp = await db.from("xilovha_respuestas")
-        .select("user_id,partida,juego,pregunta,respuesta,correcta,segundos,creado")
-        .order("creado", { ascending: false }).limit(10000);
-      respuestas = resp.error ? [] : resp.data;
+      // La base entrega máximo 1000 por consulta: se piden por partes hasta tenerlas todas
+      respuestas = [];
+      for (let desde = 0; desde < 50000; desde += 1000) {
+        const resp = await db.from("xilovha_respuestas")
+          .select("user_id,partida,juego,pregunta,respuesta,correcta,segundos,creado")
+          .order("creado", { ascending: false }).order("id", { ascending: false }).range(desde, desde + 999);
+        if (resp.error) break;
+        respuestas = respuestas.concat(resp.data);
+        if (resp.data.length < 1000) break;
+      }
       const porPuntos = [...data].sort((a, b) => b.puntos - a.puntos || a.segundos - b.segundos);
       const conteo = {};
       data.forEach(j => { const k = clave(j.nombre); conteo[k] = (conteo[k] || 0) + 1; });
@@ -530,6 +543,19 @@
 
     /* =================== PESTAÑA «PRÁCTICA FALDA» =================== */
     let faModo = "falda";
+    /* Prueba 1 = intentos que empezaron antes del corte · Prueba 2 = desde el corte */
+    const CORTE_PRUEBA2 = "2026-11-20T14:30";
+    let faPrueba = "1";
+    let corte = CORTE_PRUEBA2;
+    try { corte = localStorage.getItem("xilovha-admin-corte") || CORTE_PRUEBA2; } catch (e) {}
+    $("fa-corte").value = corte;
+    $("fa-corte").addEventListener("change", () => {
+      corte = $("fa-corte").value || CORTE_PRUEBA2;
+      try { localStorage.setItem("xilovha-admin-corte", corte); } catch (e) {}
+      pintarFaldaAdmin();
+    });
+    document.querySelectorAll("[data-fp]").forEach(b => b.addEventListener("click", () => { faPrueba = b.dataset.fp; pintarFaldaAdmin(); }));
+    function textoCorte() { return new Date(corte).toLocaleString("es-MX", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }); }
     function intentosFalda(juego) {
       const quien = {};
       jugadores.forEach(j => quien[j.user_id] = j);
@@ -554,7 +580,8 @@
       }).sort((a, b) => a.fecha - b.fecha);
     }
     function intentosFiltrados() {
-      let lista = intentosFalda(faModo);
+      const limite = new Date(corte);
+      let lista = intentosFalda(faModo).filter(i => faPrueba === "1" ? i.fecha < limite : i.fecha >= limite);
       const f = $("fa-filtro").value;
       // Cuántos intentos tiene cada jugador (para avisar si salió y volvió a empezar)
       const cuenta = {};
@@ -574,9 +601,13 @@
     function pintarFaldaAdmin() {
       if (!$("tab-falda") || $("tab-falda").hidden) return;
       document.querySelectorAll("[data-fm]").forEach(b => b.classList.toggle("activo", b.dataset.fm === faModo));
+      document.querySelectorAll("[data-fp]").forEach(b => b.classList.toggle("activo", b.dataset.fp === faPrueba));
+      $("fa-nota-prueba").innerHTML = faPrueba === "1"
+        ? `Viendo la <b>Prueba 1</b>: intentos que empezaron <b>antes del ${textoCorte()}</b>`
+        : `Viendo la <b>Prueba 2</b>: intentos que empezaron <b>desde el ${textoCorte()}</b>`;
       const ayuda = faModo === "falda";
       const lista = intentosFiltrados();
-      if (!lista.length) { $("fa-contenido").innerHTML = `<p class="nota-admin">Todavía nadie ha hecho la práctica ${ayuda ? "con" : "sin"} ayuda (solo se registra jugando con cuenta).</p>`; return; }
+      if (!lista.length) { $("fa-contenido").innerHTML = `<p class="nota-admin">Todavía nadie ha hecho la práctica ${ayuda ? "con" : "sin"} ayuda en la Prueba ${faPrueba} (solo se registra jugando con cuenta).</p>`; return; }
       const prom = k => lista.reduce((s, i) => s + i[k], 0) / lista.length;
       const fecha = d => d.toLocaleString("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const tarjetas = [["Intentos", lista.length], ["Terminados", lista.filter(i => i.terminada).length],
@@ -585,7 +616,7 @@
 
       // 1) Resumen por jugador
       let html = `<div class="resumen" style="margin-top:14px">${tarjetas.map(([t, v]) => `<div class="tarjeta-dato"><small>${t}</small><b>${v}</b></div>`).join("")}</div>
-        <div class="rs-juego"><h3>👥 Resumen por jugador <small>· ${ayuda ? "con ayuda" : "sin ayuda"}</small></h3>
+        <div class="rs-juego"><h3>👥 Resumen por jugador <small>· Prueba ${faPrueba} · ${ayuda ? "con ayuda" : "sin ayuda"}</small></h3>
         <table><thead><tr><th>Jugador</th><th>Fecha</th><th>Pasos</th><th style="text-align:right">Tiempo total</th><th style="text-align:right">Errores</th>
           ${ayuda ? `<th style="text-align:right">Ayudas</th><th>Pasos con ayuda</th>` : ""}<th style="text-align:right">Pasos perfectos</th></tr></thead><tbody>
         ${lista.map(i => `<tr><td><b>${esc(i.nombre)}</b><br><small style="color:var(--texto-2)">${esc(i.correo)}</small></td>
@@ -627,13 +658,13 @@
     $("fa-csv").addEventListener("click", () => {
       const lista = intentosFiltrados(), ayuda = faModo === "falda";
       const q = v => `"${String(v).replace(/"/g, '""')}"`;
-      const filas = [["Jugador", "Correo", "Práctica", "Fecha", "Intento terminado", "Paso", "Nombre del paso", "Función usada", "Segundos", "Errores", "Ayudas", "Tiempo total del intento (s)"]];
-      lista.forEach(i => i.filas.forEach(f => filas.push([i.nombre, i.correo, ayuda ? "Con ayuda" : "Sin ayuda", i.fecha.toLocaleString("es-MX"),
+      const filas = [["Prueba", "Jugador", "Correo", "Práctica", "Fecha", "Intento terminado", "Paso", "Nombre del paso", "Función usada", "Segundos", "Errores", "Ayudas", "Tiempo total del intento (s)"]];
+      lista.forEach(i => i.filas.forEach(f => filas.push(["Prueba " + faPrueba, i.nombre, i.correo, ayuda ? "Con ayuda" : "Sin ayuda", i.fecha.toLocaleString("es-MX"),
         i.terminada ? "Sí" : "No", f.n, f.paso, f.funcion, f.seg.toFixed(1), f.err, f.ayu, i.total.toFixed(1)])));
       const blob = new Blob(["﻿" + filas.map(r => r.map(q).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `falda-${ayuda ? "con-ayuda" : "sin-ayuda"}-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `falda-prueba${faPrueba}-${ayuda ? "con-ayuda" : "sin-ayuda"}-${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a); a.click(); a.remove();
     });
 
