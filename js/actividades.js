@@ -14,6 +14,20 @@ const JUEGOS = {
 };
 
 let partida = null;
+let juegoEnCurso = false;   // true mientras hay un juego corto a medias
+
+/* Aviso al salir de un juego a medias (su avance no se guarda) */
+const AVISO_SALIR = "Si sales ahora, el avance de este juego no se guardará.\n\n¿Quieres salir de todos modos?";
+document.addEventListener("click", e => {
+  const boton = e.target.closest("[data-ir]");
+  if (!boton || !juegoEnCurso || !document.getElementById("pantalla-juego").classList.contains("activa")) return;
+  if (confirm(AVISO_SALIR)) { juegoEnCurso = false; return; }
+  e.stopImmediatePropagation(); e.preventDefault();
+}, true);
+window.addEventListener("beforeunload", e => {
+  if (!juegoEnCurso) return;
+  e.preventDefault(); e.returnValue = "";
+});
 
 /* ---- Elegir de qué menú son las preguntas ---- */
 const MENUS_JUEGO = MENUS.filter(m => m.listo && HERRAMIENTAS[m.tecla]);
@@ -71,6 +85,7 @@ function iniciarJuego(tipo) {
   document.getElementById("juego-titulo").textContent =
     `${JUEGOS[tipo].titulo} · ${menuJuego === "todos" ? "Todos" : menuJuego}`;
   irA("juego");
+  juegoEnCurso = true;
   mostrarPregunta();
 }
 
@@ -174,6 +189,7 @@ function responder(ok, mensaje, respuesta) {
 function finJuego() {
   const p = partida;
   const total = p.preguntas.length;
+  juegoEnCurso = false;
   const estrellas = p.aciertos === total ? "🌟🌟🌟" : p.aciertos >= total / 2 ? "🌟🌟" : "🌟";
   registrarJuego(p.tipo, p.aciertos, total);
   document.getElementById("juego-progreso").textContent = "";

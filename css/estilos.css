@@ -690,6 +690,10 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 .mod-form-t { font-weight: 700; background: #1f3a5f; color: #fff; margin: -10px -10px 4px; padding: 6px 10px; }
 .mod-form label { display: grid; grid-template-columns: 110px minmax(0, 1fr); align-items: center; gap: 6px; }
 .mod-form input { font: inherit; font-size: .95rem; padding: 5px 7px; border: 1px solid #888; background: #fff; color: #111; width: 100%; min-width: 0; }
+.fs-guardado { font-size: .8rem; color: var(--texto-2, #5a6470); margin: 4px 0 0; }
+.mod-campo { display: flex; gap: 4px; min-width: 0; }
+.mod-signo { flex: none; font: inherit; font-weight: 700; padding: 4px 9px; border: 1px solid #888; background: #dfe3e8; color: #111; border-radius: 4px; cursor: pointer; }
+.mod-signo:active { background: #c5ccd5; }
 .mod-enter { background: #0a5bd6; color: #fff; border: 0; padding: 7px; font: inherit; font-weight: 700; cursor: pointer; border-radius: 4px; }
 @media (max-width: 700px) {
   .mod-cuerpo { grid-template-columns: minmax(0, 1fr); }

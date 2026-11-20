@@ -147,6 +147,7 @@
           <button class="btn-mini activo" data-fm="falda">💡 Con ayuda</button>
           <button class="btn-mini" data-fm="falda2">🚫 Sin ayuda</button>
           <select id="fa-filtro" class="btn-mini">
+            <option value="uno">Un intento por jugador (el más avanzado)</option>
             <option value="todos">Todos los intentos</option>
             <option value="primero">Solo el primer intento de cada jugador</option>
             <option value="terminados">Solo intentos terminados</option>
@@ -555,6 +556,16 @@
     function intentosFiltrados() {
       let lista = intentosFalda(faModo);
       const f = $("fa-filtro").value;
+      // Cuántos intentos tiene cada jugador (para avisar si salió y volvió a empezar)
+      const cuenta = {};
+      lista.forEach(i => cuenta[i.user] = (cuenta[i.user] || 0) + 1);
+      lista.forEach(i => i.intentos = cuenta[i.user]);
+      if (f === "uno") {
+        // Si alguien salió y volvió a empezar, se queda solo con su intento más avanzado (si empatan, el primero)
+        const mejor = {};
+        lista.forEach(i => { const m = mejor[i.user]; if (!m || i.filas.length > m.filas.length) mejor[i.user] = i; });
+        lista = lista.filter(i => mejor[i.user] === i);
+      }
       if (f === "terminados") lista = lista.filter(i => i.terminada);
       if (f === "primero") { const vistos = new Set(); lista = lista.filter(i => !vistos.has(i.user) && vistos.add(i.user)); }
       return lista;
@@ -578,7 +589,7 @@
         <table><thead><tr><th>Jugador</th><th>Fecha</th><th>Pasos</th><th style="text-align:right">Tiempo total</th><th style="text-align:right">Errores</th>
           ${ayuda ? `<th style="text-align:right">Ayudas</th><th>Pasos con ayuda</th>` : ""}<th style="text-align:right">Pasos perfectos</th></tr></thead><tbody>
         ${lista.map(i => `<tr><td><b>${esc(i.nombre)}</b><br><small style="color:var(--texto-2)">${esc(i.correo)}</small></td>
-            <td>${fecha(i.fecha)}</td><td>${i.filas.length}/${FALDA.pasos.length}${i.terminada ? " ✅" : " <small>(sin terminar)</small>"}</td>
+            <td>${fecha(i.fecha)}${i.intentos > 1 ? `<br><small style="color:var(--texto-2)">${i.intentos} intentos en total</small>` : ""}</td><td>${i.filas.length}/${FALDA.pasos.length}${i.terminada ? " ✅" : " <small>(sin terminar)</small>"}</td>
             <td class="num"><b>${mmss(i.total)}</b></td><td class="num">${i.errores}</td>
             ${ayuda ? `<td class="num">${i.ayudas}</td><td>${i.conAyuda.length ? i.conAyuda.join(", ") : "—"}</td>` : ""}
             <td class="num">${i.perfectos}</td></tr>`).join("")}

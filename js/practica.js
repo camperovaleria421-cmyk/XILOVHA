@@ -119,10 +119,18 @@ function pantallaModaris(cont, o) {
   /* Ventana para escribir valores (como la de Modaris) */
   api.dialogo = (titulo, campos, onOk) => {
     dlg.innerHTML = `<form class="mod-form"><div class="mod-form-t">${titulo}</div>` +
-      campos.map((c, i) => `<label><span>${c.n}</span><input name="c${i}" ${c.texto ? `type="text"` : `inputmode="decimal"`} autocomplete="off"></label>`).join("") +
+      campos.map((c, i) => `<label><span>${c.n}</span><span class="mod-campo"><input name="c${i}" ${c.texto ? `type="text"` : `inputmode="decimal"`} autocomplete="off">` +
+        (c.texto ? "" : `<button type="button" class="mod-signo" data-c="c${i}" title="Poner o quitar el signo menos (−)">+/−</button>`) + `</span></label>`).join("") +
       `<button type="submit" class="mod-enter">Enter ⏎</button></form>`;
     dlg.hidden = false;
     const f = dlg.querySelector("form");
+    // El teclado del celular a veces no trae el «−»: este botón lo pone o lo quita
+    f.querySelectorAll(".mod-signo").forEach(b => b.addEventListener("click", () => {
+      const inp = f.elements[b.dataset.c];
+      const v = inp.value.trim().replace(/^[−–]/, "-");
+      inp.value = v.startsWith("-") ? v.slice(1) : "-" + v;
+      inp.focus();
+    }));
     f.addEventListener("submit", ev => { ev.preventDefault(); onOk(campos.map((c, i) => f.elements["c" + i].value.trim())); });
     setTimeout(() => { if (f.elements.c0) f.elements.c0.focus(); }, 30);
   };
@@ -210,7 +218,40 @@ document.getElementById("btn-falda").addEventListener("click", () => iniciarFald
 document.getElementById("btn-falda2").addEventListener("click", () => iniciarFalda("sin", true));
 const antesActividades = alEntrar.actividades;
 alEntrar.actividades = function () { if (antesActividades) antesActividades(); tarjetaFalda(); };
+/* ---- Guardar el avance en el dispositivo (si sale o se cierra la página, sigue donde se quedó) ---- */
+const CLAVE_FALDA = "xilovha-falda-avance";
+let faldaCargadaPara = null;
+function duenoFalda() { return (typeof Cuenta !== "undefined" && Cuenta.usuario && Cuenta.usuario.id) || "invitado"; }
+function cargarFaldaGuardada() {
+  const yo = duenoFalda();
+  if (faldaCargadaPara === yo) return;
+  faldaCargadaPara = yo;                       // si cambió la cuenta, no se mezcla el avance de otra persona
+  estadosFalda.ayuda = estadosFalda.sin = null;
+  try {
+    const g = JSON.parse(localStorage.getItem(CLAVE_FALDA) || "null");
+    if (!g || g.user !== yo) return;
+    ["ayuda", "sin"].forEach(m => {
+      const e = g[m];
+      if (e && !e.terminado && e.id) estadosFalda[m] = { ...e, hechos: new Set(e.hechos || []), etapa: "", op: null, ci: 0, err: 0, ayu: 0, pistaObj: null };
+    });
+  } catch (e) {}
+}
+function guardarFalda() {
+  try {
+    const g = { user: duenoFalda() };
+    ["ayuda", "sin"].forEach(m => {
+      const e = estadosFalda[m];
+      if (!e || e.terminado) return;
+      g[m] = { modo: e.modo, i: e.etapa === "hecho" ? e.i + 1 : e.i, errores: e.errores, ayudas: e.ayudas, perfectos: e.perfectos,
+               sinAyuda: e.sinAyuda, ganados: e.ganados, tiempos: e.tiempos, hechos: [...e.hechos], lineas: e.lineas, curvas: e.curvas,
+               hoja: e.hoja, cartucho: e.cartucho, modelo: e.modelo, id: e.id, t0: e.t0, terminado: false };
+    });
+    localStorage.setItem(CLAVE_FALDA, JSON.stringify(g));
+  } catch (e) {}
+}
+
 function tarjetaFalda() {
+  cargarFaldaGuardada();
   [["ayuda", "falda-sub", "falda-premio", "Traza el patrón completo en una pantalla como la de Modaris, con ayuda en cada paso."],
    ["sin", "falda2-sub", "falda2-premio", "El mismo ejercicio, sin ayuda: solo la instrucción y el menú que se usa."]].forEach(([modo, sub, premio, txt]) => {
     const e = estadosFalda[modo], enCurso = e && !e.terminado && e.i > 0;
@@ -221,15 +262,24 @@ function tarjetaFalda() {
 tarjetaFalda();
 
 function iniciarFalda(modo, continuar) {
+  juegoEnCurso = false;
+  cargarFaldaGuardada();
   const previo = estadosFalda[modo];
   if (continuar && previo && !previo.terminado) {
     FS = previo;
+    // Sigue en el paso donde se quedó (el paso a medias empieza otra vez, sin contar lo que llevaba)
+    if (FS.etapa === "hecho") FS.i++;
+    else { FS.errores -= FS.err || 0; FS.ayudas -= FS.ayu || 0; }
+    FS.err = FS.ayu = 0; FS.etapa = "";
+    // El reloj total no cuenta el tiempo que estuvo fuera: es la suma de los pasos ya hechos
+    FS.t0 = Date.now() - FS.tiempos.reduce((s, t) => s + t.segundos, 0) * 1000;
   } else {
     FS = estadosFalda[modo] = { modo, i: 0, etapa: "", op: null, ci: 0, err: 0, ayu: 0, tPaso: Date.now(), t0: Date.now(),
            errores: 0, ayudas: 0, perfectos: 0, sinAyuda: 0, ganados: 0, tiempos: [],
            hechos: new Set(), lineas: [], curvas: [], hoja: false, cartucho: false, modelo: "", pistaObj: null,
            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), terminado: false };
   }
+  guardarFalda();
   document.getElementById("juego-titulo").textContent = modo === "sin" ? "Práctica final · Sin ayuda" : "Práctica final · Con ayuda";
   irA("juego");
   pintarFalda();
@@ -250,6 +300,7 @@ function pintarFalda() {
         ${FS.modo === "sin" ? "" : `<div class="fs-botones"><button id="fs-ayuda" class="btn-secundario">💡 Ayuda</button><span id="fs-ficha"></span></div>`}
         <details class="fs-medidas"><summary>📏 Tabla de medidas (cm)</summary>
           <table>${FALDA.medidas.map(([a, b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join("")}</table></details>
+        <p class="fs-guardado">💾 Tu avance se guarda al terminar cada paso. Si sales, al volver sigues donde te quedaste.</p>
         <button id="fs-reiniciar" class="fs-link">Empezar de nuevo</button>
       </aside>
       <div class="fs-pantalla"></div>
@@ -263,6 +314,7 @@ function pintarFalda() {
   contadoresFalda();
   relojFalda();
   if (FS.terminado) return finFalda(true);
+  if (FS.i >= FALDA.pasos.length) return finFalda();
   entrarPaso();
 }
 
@@ -444,7 +496,7 @@ function faldaObjetivo(id) {
   completarPaso();
 }
 function valorOk(txt, c) {
-  const n = parseFloat(String(txt).replace(",", "."));
+  const n = parseFloat(String(txt).replace(",", ".").replace(/[−–]/g, "-").replace(/\s+/g, ""));
   return isFinite(n) && [c.v, ...(c.alt || [])].some(v => Math.abs(n - v) < 0.051);
 }
 
@@ -507,6 +559,7 @@ function completarPaso() {
     correcta: perfecto, segundos
   });
   FS.etapa = "hecho";
+  guardarFalda();
   FS.pistaObj = null;
   FS.pant.boton3(false);
   FS.pant.resetPanel();
@@ -528,6 +581,7 @@ function finFalda(yaGuardado) {
     FS.fin = Date.now();
     FS.ganados += 20; sumarPuntos(20);
     registrarJuego(JUEGO_FALDA[FS.modo], FS.perfectos, total);
+    guardarFalda();   // ya terminó: se borra el avance guardado de esta versión
   }
   const mmss = x => { x = Math.round(x); return `${Math.floor(x / 60)}:${String(x % 60).padStart(2, "0")}`; };
   const tablaPasos = `<details class="fs-medidas"><summary>⏱ Tiempo en cada paso</summary><table>` +
