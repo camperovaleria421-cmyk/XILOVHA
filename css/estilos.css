@@ -690,6 +690,21 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 .mod-form-t { font-weight: 700; background: #1f3a5f; color: #fff; margin: -10px -10px 4px; padding: 6px 10px; }
 .mod-form label { display: grid; grid-template-columns: 110px minmax(0, 1fr); align-items: center; gap: 6px; }
 .mod-form input { font: inherit; font-size: .95rem; padding: 5px 7px; border: 1px solid #888; background: #fff; color: #111; width: 100%; min-width: 0; }
+/* Practicar cada herramienta */
+.btn-practicar { display: block; margin: 6px 0 12px; }
+.ph-tarea { background: #fff7d6; border-left: 4px solid #e0b100; padding: 8px 10px; border-radius: 6px; color: #3a3000; }
+.ph-guia { stroke: #2b3a8f; stroke-width: 1.4px; stroke-dasharray: 6 4; vector-effect: non-scaling-stroke; }
+.ph-hilo { stroke: #0d0f12; stroke-width: 1.4px; stroke-dasharray: 10 3 2 3; vector-effect: non-scaling-stroke; }
+.mod-tr.ph-nuevo { stroke: #0a4fc4; stroke-width: 2.4px; }
+.ph-nuevo-pt { fill: #4da3ff; }
+.ph-restr { fill: #e6b800; }
+.ph-piq { stroke: #0d0f12; stroke-width: 2.4px; vector-effect: non-scaling-stroke; }
+.ph-piq.ext { stroke: #b3261e; }
+.ph-ch { fill: #d32f2f; stroke: #5a0d0d; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.ph-marcaje { fill: none; stroke: #b3261e; stroke-width: 1.6px; vector-effect: non-scaling-stroke; }
+.ph-marca line { stroke: #f5f7fa; stroke-width: 1.6px; stroke-dasharray: 3 2; vector-effect: non-scaling-stroke; }
+.ph-marca-t { fill: #f5f7fa; font-family: Arial, sans-serif; font-weight: 700; pointer-events: none; }
+.ph-ops { display: flex; flex-wrap: wrap; gap: 6px; }
 .fs-guardado { font-size: .8rem; color: var(--texto-2, #5a6470); margin: 4px 0 0; }
 .mod-campo { display: flex; gap: 4px; min-width: 0; }
 .mod-signo { flex: none; font: inherit; font-weight: 700; padding: 4px 9px; border: 1px solid #888; background: #dfe3e8; color: #111; border-radius: 4px; cursor: pointer; }

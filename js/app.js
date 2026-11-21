@@ -173,6 +173,7 @@ function abrirDetalle(menu, gi, hi) {
   if (h.nota)   html += `<div class="consejo"><strong>💡 Ojo:</strong> ${h.nota}</div>`;
   if (h.pendiente) html += `<span class="aviso-provisional">Información pendiente – se agregará pronto</span>`;
   document.getElementById("detalle-contenido").innerHTML = html;
+  if (typeof botonPracticaHerr === "function") botonPracticaHerr(menu, gi, hi);   // botón «Practicar en pantalla»
   document.getElementById("detalle").classList.remove("oculto");
 
   // Registro de avance: ficha abierta y video visto
