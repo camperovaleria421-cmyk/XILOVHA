@@ -20,7 +20,7 @@ const MENUS = [
   { tecla: "F1",  nombre: "Puntos, líneas",                         color: "#f6d2ae", listo: true  },
   { tecla: "F2",  nombre: "Piquetes, orientación, herramientas",    color: "#f0b04a", listo: true  },
   { tecla: "F3",  nombre: "Modificación",                           color: "#f8c3cf", listo: true  },
-  { tecla: "F4",  nombre: "Industrialización, pieza",               color: "#cfcfcf", listo: false },
+  { tecla: "F4",  nombre: "Industrialización, pieza",               color: "#cfcfcf", listo: true  },
   { tecla: "F5",  nombre: "Piezas derivadas, pliegues, CAD-CAM",    color: "#cdb6d8", listo: false },
   { tecla: "F6",  nombre: "Escalado",                               color: "#7fd0cc", listo: false },
   { tecla: "F7",  nombre: "Evolución, modif. plancha",              color: "#9fd39b", listo: false },
@@ -817,6 +817,162 @@ const HERRAMIENTAS = {
       }
     ]
   }
+};
+
+/* =====================================================================
+   F4: INDUSTRIALIZACIÓN Y PIEZAS (explicado con palabras propias)
+   ===================================================================== */
+HERRAMIENTAS.F4 = {
+  descripcion: "Prepara el patrón para producirse: agrega márgenes de costura, define las esquinas, marca el hilo y saca cada pieza a su propia hoja.",
+
+  glosario: [
+    ["Patrón plano", "El trazo base de donde salen las piezas."],
+    ["Pieza", "Cada parte de la prenda, en su propia hoja, lista para cortar."],
+    ["Acabado", "La línea por donde se cose (sin margen)."],
+    ["Corte", "La línea por donde se corta la tela (con margen)."],
+    ["Inicio / Fin", "Margen al empezar y al terminar la línea. Si son distintos, el margen se va abriendo o cerrando."],
+    ["Entretela termoadhesiva", "Refuerzo que se pega con calor (cuellos, puños, vistas…)."],
+    ["Extraer", "Sacar una pieza del patrón plano a una hoja nueva."],
+    ["Con dependencia", "La pieza y el patrón quedan conectados: si cambias uno, cambia el otro."],
+    ["Maestro / esclavo", "El maestro manda; el esclavo copia su medida."],
+    ["Botones al extraer", "1 = elegir · 2 = quitar lo último · 3 = terminar."]
+  ],
+
+  grupos: [
+    {
+      nombre: "Costuras",
+      herramientas: [
+        { nombre: "Costura Línea", atajo: "U",
+          sirve: "Agrega margen de costura a una línea del patrón plano. Las piezas que salen de ese patrón también lo reciben.",
+          pasos: ["Activa Costura Línea.", "Clic en la línea que llevará margen.", "Escribe Inicio y Fin y presiona Enter… o colócalo a mano y haz clic."],
+          teclas: [["d", "Usa los valores que dejaste guardados en Parámetros asociados."]],
+          nota: "Si la pieza ya tiene su propia Costura Pieza, se respeta la de la pieza." },
+        { nombre: "Sup. Val. Cost. Cuv.",
+          sirve: "Borra el margen de costura de una línea del patrón plano.",
+          pasos: ["Activa Sup. Val. Cost. Cuv.", "Clic en la línea: su margen desaparece."],
+          nota: "No borra el margen puesto directamente en la pieza." },
+        { nombre: "Costura Pieza",
+          sirve: "Agrega margen de costura solo a una pieza, sin cambiar el patrón plano.",
+          pasos: ["Activa Costura Pieza.", "Clic en la línea de la pieza.", "Escribe Inicio y Fin y presiona Enter… o colócalo a mano y haz clic."],
+          teclas: [["d", "Usa los valores que dejaste guardados en Parámetros asociados."]],
+          nota: "Si no ves el margen, actívalo en Plano › Visualizar › Extracción." },
+        { nombre: "Sup. Val. Cost. Pza.",
+          sirve: "Borra el margen que se puso directamente en una pieza.",
+          pasos: ["Activa Sup. Val. Cost. Pza.", "Clic en la línea: su margen desaparece."],
+          nota: "Si el patrón plano tenía margen en esa línea, la pieza vuelve a usar ese." },
+        { nombre: "Val. termoad.",
+          sirve: "Indica en una pieza cuánto margen lleva la entretela termoadhesiva en cada línea.",
+          pasos: ["Activa Val. termoad.", "Clic en la línea de la pieza.", "Escribe Inicio y Fin y presiona Enter… o colócalo a mano y haz clic."],
+          nota: "Solo afecta a esa pieza." },
+        { nombre: "Sup. Val. termoad.",
+          sirve: "Quita el valor de entretela termoadhesiva de una línea.",
+          pasos: ["Activa Sup. Val. termoad.", "Clic en la línea."] }
+      ]
+    },
+    {
+      nombre: "Esquinas",
+      herramientas: [
+        { nombre: "Añadir C. Especial",
+          sirve: "Agrega una forma de esquina en un punto donde se juntan dos márgenes de costura. Formas disponibles:",
+          lista: [
+            "Intersección: los dos márgenes se alargan hasta tocarse (es la normal).",
+            "Desplazado: la esquina se corta siguiendo la mitad del ángulo.",
+            "Simetría: refleja el margen, para que al doblar coincida (dobladillos).",
+            "Revés: como Simetría, pero con un doblez más.",
+            "Perpendicular: termina a 90° de una línea. La variable ajusta el ancho del talón.",
+            "Sobrante: recorta la punta con una línea recta.",
+            "Vacío: deja el hueco de la esquina.",
+            "Curva: redondea la esquina.",
+            "Inglete: para unir dos dobladillos en diagonal. El avanzado permite lados distintos."
+          ],
+          pasos: ["Elige la forma en el menú Cost. Especial.", "Activa Añadir C. Especial.", "Clic en el punto de la esquina."],
+          nota: "Precedente = la línea de antes de la esquina; siguiente = la de después. Con Crear… guardas una esquina con tus medidas." },
+        { nombre: "Suprimir ángulo",
+          sirve: "Borra una esquina que agregaste o que quedó encimada con otra.",
+          pasos: ["Activa Suprimir ángulo.", "Clic en la esquina.", "Si hay varias encimadas, Espacio para elegir cuál."] },
+        { nombre: "C. Cos. Especial",
+          sirve: "Cambia la forma de una esquina o de todas las esquinas de la pieza.",
+          pasos: ["Elige la forma en el menú Cost. Especial.", "Activa C. Cos. Especial.", "Clic en la esquina que quieres cambiar."],
+          teclas: [["Shift (⇧) + clic en la pieza", "Cambia todas las esquinas."], ["Clic sostenido + Espacio", "Recorre las esquinas; suelta en la que quieras."]] },
+        { nombre: "Informar de esquinas",
+          sirve: "Copia las costuras y esquinas de una pieza a otra, o a otra parte de la misma pieza.",
+          pasos: ["Activa Informar de esquinas.", "Clic en el primer punto del tramo que quieres copiar.", "Clic sostenido en el último punto (Espacio para elegir el tramo) y suelta.", "Repite lo mismo en el lugar donde lo quieres."],
+          teclas: [["Shift (⇧)", "Lo copia en espejo (para piezas izquierda y derecha)."]] },
+        { nombre: "Restringir altura perpend.",
+          sirve: "Iguala la altura de dos esquinas perpendiculares, para que las piezas casen al coserlas.",
+          pasos: ["Activa Restringir altura perpend.", "Clic en la esquina que va a copiar (esclavo).", "Clic en la esquina de referencia (maestro)."],
+          nota: "Para separarlas: clic en el esclavo y luego en un lugar vacío. Al pasar el cursor, el maestro se ve rojo y el esclavo azul." }
+      ]
+    },
+    {
+      nombre: "Marcas y datos",
+      herramientas: [
+        { nombre: "Hilo/Través",
+          sirve: "Dibuja el eje que dice cómo va la pieza sobre la tela. También cambia el tipo de un eje ya dibujado. Tipos:",
+          lista: ["RH: hilo recto.", "TR: través.", "CM: dónde se escribe la información.", "GR: eje para el escalado.", "SPE: lleva un texto tuyo (hasta 32 letras).", "REF: lleva el texto de un archivo.", "POS: dónde va un accesorio en 3D (logo, botón…)."],
+          pasos: ["Elige el tipo en Parámetros asociados.", "Activa Hilo/Través.", "Clic en el punto donde empieza el eje.", "Escribe dx, dy, dl o rotación… o colócalo a mano.", "Clic para validar."],
+          nota: "De RH, TR, CM y GR solo cabe uno por pieza: si pones otro igual, el anterior se queda sin tipo." },
+        { nombre: "Agujero cartón",
+          sirve: "Marca dónde se perfora el molde de cartón, por ejemplo para colgarlo.",
+          pasos: ["Pon el diámetro en Parámetros asociados.", "Activa Agujero cartón.", "Clic en el punto a marcar."],
+          nota: "Si cambias el diámetro, cambian todos los agujeros de esa hoja." },
+        { nombre: "Cambiar",
+          sirve: "Intercambia todos los datos del cartucho entre dos piezas.",
+          pasos: ["Activa Cambiar.", "Clic en la hoja de la primera pieza.", "Clic en la hoja de la segunda pieza."] },
+        { nombre: "Intercambiar nombre piezas",
+          sirve: "Intercambia solo los nombres de dos hojas.",
+          pasos: ["Activa Intercambiar nombre piezas.", "Clic en la primera hoja.", "Clic en la segunda hoja."] }
+      ]
+    },
+    {
+      nombre: "Piezas",
+      herramientas: [
+        { nombre: "Sin costura", atajo: "o",
+          sirve: "Saca una pieza a una hoja nueva tomando el trazo como línea de acabado (por donde se cose).",
+          pasos: ["Activa Sin costura.", "Clic dentro de la zona que forma la pieza.", "Si la pieza tiene más zonas, clic en cada una.", "Botón 3 para terminar."],
+          teclas: [["Botón 2", "Quita la última zona."], ["Esc", "Salir."], ["Shift (⇧)", "Al sacarla de otra pieza, no conserva la original."]],
+          nota: "La zona debe estar cerrada. Si no ves la hoja nueva: Hoja › Siguiente." },
+        { nombre: "Con costura", atajo: "y",
+          sirve: "Saca una pieza a una hoja nueva tomando el trazo como línea de corte (ya trae el margen).",
+          pasos: ["Activa Con costura.", "Clic dentro de la zona que forma la pieza.", "Si la pieza tiene más zonas, clic en cada una.", "Botón 3 para terminar."],
+          teclas: [["Botón 2", "Quita la última zona."], ["Esc", "Salir."]],
+          nota: "Si no ves la hoja nueva: Hoja › Siguiente." },
+        { nombre: "Imp. Pza.",
+          sirve: "Trae a la pieza puntos, líneas o piquetes que están en su patrón plano.",
+          pasos: ["Activa Imp. Pza.", "Muestra el patrón con Visualizar › PatrónP.", "Clic en cada objeto que quieres traer."] },
+        { nombre: "Exp. Pza",
+          sirve: "Quita de la pieza líneas, pliegues o piquetes. Siguen existiendo en el patrón plano.",
+          pasos: ["Activa Exp. Pza.", "Clic en cada objeto que quieres quitar."] },
+        { nombre: "Canal",
+          sirve: "Declara que una línea interna de la pieza es de un tipo especial, para identificarla así.",
+          pasos: ["Activa la función.", "Clic en la línea interna."],
+          nota: "También puedes traer la línea del patrón: primero Visualizar › PatrónP." },
+        { nombre: "Retirar canal",
+          sirve: "Quita la identificación de tipo Canal de una línea interna.",
+          pasos: ["Activa Retirar canal.", "Clic en la línea."] },
+        { nombre: "Extr. Manual S. Costura",
+          sirve: "Saca una pieza marcando tú su contorno, línea por línea, como acabado (por donde se cose).",
+          pasos: ["Activa Extr. Manual S. Costura.", "Clic en las líneas del contorno, en orden.", "Botón 3 sobre el último punto para terminar."],
+          nota: "Si suena un aviso, las líneas no se tocan: revisa que haya un punto donde se unen." },
+        { nombre: "Extr. Manual",
+          sirve: "Saca una pieza marcando tú su contorno, línea por línea, como corte (ya trae el margen).",
+          pasos: ["Activa Extr. Manual.", "Clic en las líneas del contorno, en orden.", "Botón 3 sobre el último punto para terminar."] },
+        { nombre: "Crear S. Costura",
+          sirve: "Crea las líneas de acabado de una pieza a partir de su corte. Quedan independientes.",
+          pasos: ["Muestra Plano › Visualizar › Extracción.", "Activa Crear S. Costura.", "Clic dentro del acabado (todas las líneas)… o en una línea de corte (solo esa)."] },
+        { nombre: "Crear C. Costura",
+          sirve: "Crea las líneas de corte de una pieza a partir de su acabado. Quedan independientes.",
+          pasos: ["Muestra Plano › Visualizar › Extracción.", "Activa Crear C. Costura.", "Clic dentro del corte (todas las líneas)… o en una línea de acabado (solo esa)."] },
+        { nombre: "Bascular",
+          sirve: "Convierte líneas de acabado en líneas de corte, y al revés.",
+          pasos: ["Activa Bascular.", "Clic en una línea (cambia solo esa)… o dentro de la pieza (cambian todas)."] },
+        { nombre: "Ajuste del encogimiento de la pieza",
+          sirve: "Aplica a una pieza lo que la tela encoge, en X y en Y.",
+          pasos: ["Pon los valores X y Y en Parámetros asociados.", "Activa Ajuste del encogimiento de la pieza.", "Clic en la hoja: el valor aparece en su cartucho."],
+          nota: "Puedes aplicarlo a varias hojas seleccionadas." }
+      ]
+    }
+  ]
 };
 
 /* =====================================================================
