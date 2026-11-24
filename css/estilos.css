@@ -764,3 +764,12 @@ body.lateral-abierto .velo { opacity: 1; pointer-events: auto; }
 .juego-final.sin-ayuda { border-color: #7fd0cc; background: linear-gradient(90deg, #eafaf8, #fff); }
 .fs-menu { font-size: .9rem; }
 .fs-menu b { border-radius: 6px; padding: 2px 8px; background: var(--tile); }
+/* Aviso de marcas en la portada */
+.portada-aviso { position: relative; z-index: 3; margin: 0; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); background: #14213d; color: #d5deec; font-size: .72rem; line-height: 1.45; text-align: center; }
+@media (min-width: 900px) {
+  .portada { padding-bottom: 0; }
+  .portada-aviso { padding: 10px 48px 14px; font-size: .76rem; background: none; color: #3d4b63; text-align: left; }
+  .portada-nav { bottom: 78px; }
+  .portada-texto { padding-bottom: 120px; }
+  .portada-robot { height: calc(100vh - 190px); }
+}
