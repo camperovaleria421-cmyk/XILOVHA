@@ -841,6 +841,13 @@ HERRAMIENTAS.Inicio = {
             "Guarda y cierra."
           ],
           nota: "Ten todo en la misma carpeta: así encuentras tu modelo y tus tallas rápido." },
+        { nombre: "Modelos y trazos",
+          sirve: "Agregar a la carpeta de tu prenda las dos carpetas donde guardarás tu trabajo.",
+          pasos: [
+            "Dentro de la carpeta de tu prenda (ej. NIÑA): clic derecho › Nuevo › Carpeta.",
+            "Llámala MODELOS: ahí guardas el archivo de tu prenda patronada.",
+            "Crea otra carpeta igual y llámala TRAZOS (también se conocen como marcadas): ahí van tus marcadores."
+          ] },
         { nombre: "Creación de hoja",
           sirve: "Crear tu modelo nuevo en Modaris y abrir la hoja donde vas a trazar.",
           pasos: [
