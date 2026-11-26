@@ -30,18 +30,18 @@ const MENUS = [
 
 const HERRAMIENTAS = {
   F1: {
-    descripcion: "Herramientas para crear puntos y trazar líneas: la base para construir cualquier patrón.",
+    descripcion: "Todo empieza aquí: con estas herramientas pones puntos y dibujas las líneas que forman tu patrón.",
 
     glosario: [
-      ["dx / dy", "Distancia horizontal / vertical desde el punto donde hiciste clic."],
-      ["dl", "Distancia en línea recta entre los dos puntos."],
-      ["Rotación", "Ángulo respecto a la hoja (0° derecha, 90° arriba). Para sentido horario escribe negativo, ej. -45."],
-      ["~  y  ^", "En los atajos de Modaris: ~ = tecla Alt  ·  ^ = tecla Ctrl."],
-      ["Mayúsculas", "En los atajos cuentan: «x» (Eje) y «X» (Paralelo) son herramientas distintas."],
-      ["Punto característico", "Punto que forma esquina (ángulo marcado)."],
-      ["Punto de curva", "Punto por donde la línea pasa suave, sin esquina."],
-      ["Botones del ratón", "1 = crear punto · 2 = borrar el último punto · 3 = terminar la línea."],
-      ["Validar", "Confirmar con Enter (⏎) o con un clic."]
+      ["dx / dy", "Cuánto te mueves hacia los lados (dx) o hacia arriba y abajo (dy), contando desde el punto que tocaste."],
+      ["dl", "El largo directo entre dos puntos, como si tendieras un hilo entre ellos."],
+      ["Rotación", "La inclinación en grados: 0° apunta a la derecha y 90° hacia arriba. Para inclinar hacia el otro lado ponle signo menos (ej. -45)."],
+      ["~  y  ^", "Así aparecen las teclas en los atajos: ~ es Alt y ^ es Ctrl."],
+      ["Mayúsculas", "Una misma letra puede abrir dos herramientas: «x» minúscula es Eje y «X» mayúscula es Paralelo."],
+      ["Punto característico", "Punto donde la línea cambia de dirección y se forma una esquina."],
+      ["Punto de curva", "Punto que la línea atraviesa sin quebrarse, dejando la curva suave."],
+      ["Botones del ratón", "El botón 1 pone un punto, el 2 quita el último que pusiste y el 3 da la línea por terminada."],
+      ["Validar", "Aceptar lo que escribiste, ya sea con Enter (⏎) o con un clic."]
     ],
 
     grupos: [
@@ -51,81 +51,81 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "Deslizante",
-            sirve: "Pone un punto sobre una línea que conserva su proporción: si lo pones a 1/3 de la línea y la línea se estira, sigue quedando a 1/3.",
+            sirve: "Pon un punto que «viaja» con la línea: guarda su lugar en proporción. Si lo dejas a un tercio del largo y después la línea crece o se encoge, el punto se recorre para seguir a un tercio.",
             pasos: [
-              "Activa Deslizante.",
-              "Haz clic sobre la línea y mantén presionado: aparece el punto.",
-              "Suelta y desliza el punto por la línea.",
-              "Haz clic donde lo quieras fijar."
+              "Elige Deslizante en el menú.",
+              "Presiona sobre la línea sin soltar; verás aparecer el punto.",
+              "Suelta y recórrelo a lo largo de la línea.",
+              "Da clic en el lugar donde debe quedarse."
             ],
-            nota: "Se gradúa proporcionalmente en todas las tallas."
+            nota: "Al escalar, en cada talla conserva la misma proporción del largo."
           },
           {
             nombre: "Pto. Constante", atajo: "V", manual: "Desarrollo (V)",
-            sirve: "Pone un punto sobre la línea a una distancia exacta de otro punto de la misma línea. Aunque la línea cambie, esa distancia se mantiene.",
+            sirve: "Pon un punto sobre una línea a una medida fija, contada desde otro punto de esa misma línea. Si la línea cambia de forma o de largo, la medida se respeta.",
             pasos: [
-              "Activa la herramienta.",
-              "Haz clic en el punto de referencia de la línea.",
-              "Escribe la longitud y presiona Enter… o colócalo a mano y haz clic."
+              "Elige la herramienta.",
+              "Toca el punto de la línea desde el que vas a medir.",
+              "Teclea la medida y da Enter, o llévalo con el ratón y da clic."
             ],
-            nota: "Si el punto de referencia es la unión de dos líneas, pasa el cursor a la línea correcta y presiona Espacio."
+            nota: "¿El punto de partida está donde se juntan dos líneas? Coloca el cursor sobre la línea que quieres usar y presiona Espacio para cambiar a ella."
           },
           {
             nombre: "Serie de puntos constantes", pendiente: true,
-            sirve: "Al activarla se abre una ventana con estas opciones de marcaje:",
+            sirve: "Cuando la eliges aparece una ventana para decidir qué marca llevarán los puntos:",
             lista: ["Sin marcaje", "Taladro '35', '36', '37' y '1'", "Motivo vert. / horiz. / vert. horiz.", "Trama vertical y Trama horizontal", "Categoría motivo fallo", "Colocar piquetes en las series de puntos constantes"]
           },
           {
             nombre: "Desplazado", pendiente: true,
-            sirve: "Aparece desactivado (gris) en el menú."
+            sirve: "En el menú se ve en gris, es decir, todavía no se puede usar."
           },
           {
             nombre: "Punto Enlace",
-            sirve: "Crea un punto fuera de la línea que queda amarrado a otro punto: si el punto de referencia se mueve, éste lo sigue.",
+            sirve: "Crea un punto separado de la línea pero «atado» a otro punto: cuando el punto guía se mueve, el nuevo se va con él.",
             pasos: [
-              "Activa Punto Enlace.",
-              "Haz clic en el punto de referencia.",
-              "Escribe los valores (dx, dy, dl o rotación) o colócalo a mano.",
-              "Haz clic para validar."
+              "Elige Punto Enlace.",
+              "Toca el punto que servirá de guía.",
+              "Dale su posición escribiendo dx, dy, dl o rotación, o llévalo con el ratón.",
+              "Da clic para dejarlo."
             ],
             teclas: [
-              ["Espacio 1 vez", "Gira libre alrededor del punto."],
-              ["Espacio 2 veces", "Crea un nuevo punto sobre la curva y se apoya en él."],
-              ["Espacio 3 veces", "Regresa a perpendicular al punto."]
+              ["Espacio 1 vez", "Lo deja girar libremente alrededor del punto guía."],
+              ["Espacio 2 veces", "Se apoya en un punto nuevo que se crea sobre la curva."],
+              ["Espacio 3 veces", "Vuelve a quedar en perpendicular al punto guía."]
             ],
-            nota: "Copia el escalado del punto de referencia."
+            nota: "En las demás tallas se mueve igual que su punto guía."
           },
           {
             nombre: "Relativo", atajo: "Alt + r",
-            sirve: "Crea un punto a cierta distancia de otro punto (o de cualquier lugar). A diferencia de Punto Enlace, después NO depende de él.",
+            sirve: "Crea un punto a cierta medida de otro punto o de cualquier lugar de la hoja. A diferencia de Punto Enlace, queda suelto: si el otro se mueve, este no.",
             pasos: [
-              "Activa Relativo.",
-              "Haz clic en un punto de referencia o en cualquier lugar.",
-              "Escribe dx, dy, dl o rotación… o colócalo a mano.",
-              "Haz clic para validar."
+              "Elige Relativo.",
+              "Toca un punto de partida o un lugar vacío.",
+              "Escribe dx, dy, dl o rotación, o llévalo con el ratón.",
+              "Da clic para dejarlo."
             ],
-            nota: "Toma el escalado del punto de referencia."
+            nota: "Al crearse copia el escalado del punto de partida."
           },
           {
             nombre: "Intersección", atajo: "I",
-            sirve: "Crea un punto donde se cruzan dos líneas. Si no se tocan, lo pone donde se cruzarían si se alargaran.",
+            sirve: "Pone un punto en el cruce de dos líneas. Si no llegan a tocarse, lo pone donde se encontrarían si las prolongaras.",
             pasos: [
-              "Activa Intersección.",
-              "Opción A: haz clic justo en el cruce.",
-              "Opción B: clic sostenido en la 1.ª línea, arrastra hasta la 2.ª y suelta."
+              "Elige Intersección.",
+              "Forma rápida: da clic justo en el cruce.",
+              "Otra forma: presiona en la primera línea, arrastra sin soltar hasta la segunda y suelta."
             ],
-            nota: "Útil para agregar puntos antes de una extracción manual."
+            nota: "Conviene usarla para tener puntos de unión antes de sacar una pieza a mano."
           },
           {
             nombre: "Añadir punto", atajo: "Alt + 4",
-            sirve: "Agrega un punto sobre una línea, a una distancia de un punto de referencia.",
+            sirve: "Agrega un punto encima de una línea, medido desde un punto que tomas de referencia.",
             pasos: [
-              "Activa Añadir punto.",
-              "Haz clic en el punto de referencia.",
-              "(Opcional) escribe dx, dy o longitud y presiona Enter.",
-              "Coloca el punto sobre la línea y haz clic."
+              "Elige Añadir punto.",
+              "Toca el punto de referencia.",
+              "Si quieres una medida exacta, escribe dx, dy o el largo y da Enter.",
+              "Lleva el punto a la línea y da clic."
             ],
-            nota: "Sin teclas = punto característico (esquina). Con Shift (⇧) presionado = punto de curva."
+            nota: "Con clic normal el punto queda como esquina; si mantienes Shift (⇧), queda como punto de curva."
           },
           {
             nombre: "Taladro", pendiente: true,
@@ -133,35 +133,35 @@ const HERRAMIENTAS = {
           },
           {
             nombre: "Ali 2Pts", atajo: "A",
-            sirve: "Alinea un punto (o varios seleccionados) en horizontal o vertical con un punto de referencia.",
+            sirve: "Pone un punto (o los que tengas seleccionados) a la misma altura o en la misma vertical que otro punto.",
             pasos: [
-              "Activa Ali 2Pts.",
-              "Haz clic en el punto de referencia.",
-              "Presiona Espacio para cambiar entre horizontal y vertical.",
-              "Haz clic en el punto que quieres alinear."
+              "Elige Ali 2Pts.",
+              "Toca el punto que manda la posición.",
+              "Con Espacio cambias entre alinear en horizontal o en vertical.",
+              "Toca el punto que se va a acomodar."
             ],
-            nota: "Si tienes varios puntos seleccionados, haz clic en uno de ellos y se alinean todos."
+            nota: "Con varios puntos seleccionados basta con tocar uno: se acomodan todos juntos."
           },
           {
             nombre: "Ali 3Pts", atajo: "Alt + a",
-            sirve: "Alinea puntos sobre una línea imaginaria (eje) que defines con dos puntos. Los puntos «caen» en perpendicular sobre ese eje.",
+            sirve: "Primero marcas una línea guía con dos puntos; luego, cada punto que toques baja en ángulo recto hasta quedar sobre esa guía.",
             pasos: [
-              "Activa Ali 3Pts.",
-              "Clic en el 1.er punto del eje.",
-              "Clic en el 2.º punto del eje.",
-              "Clic en el punto que quieres alinear."
+              "Elige Ali 3Pts.",
+              "Toca el primer punto de la guía.",
+              "Toca el segundo punto de la guía.",
+              "Toca el punto que quieres llevar a la guía."
             ]
           },
           {
             nombre: "División",
-            sirve: "Reparte puntos a la misma distancia en línea recta entre dos puntos.",
+            sirve: "Reparte puntos a distancias iguales sobre el tramo recto que une dos puntos.",
             pasos: [
-              "Activa División.",
-              "Clic en el 1.er punto.",
-              "Clic en el 2.º punto.",
-              "Escribe el número de divisiones y presiona Enter."
+              "Elige División.",
+              "Toca el punto de inicio.",
+              "Toca el punto final.",
+              "Escribe en cuántas partes quieres dividir y da Enter."
             ],
-            nota: "Número de puntos = divisiones − 1 (ej. 4 divisiones = 3 puntos). Los puntos van en línea recta; si quieres que sigan la forma de la línea usa División segmento."
+            nota: "Siempre sale un punto menos que el número de partes (4 partes = 3 puntos). Quedan en recta; para que sigan una curva usa División segmento."
           }
         ]
       },
@@ -172,26 +172,26 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "L. Recta", atajo: "O",
-            sirve: "Traza una línea recta. Puedes darle medida exacta (dl) y ángulo (rotación).",
+            sirve: "Dibuja una recta. Puedes indicar su largo (dl) y su inclinación (rotación) para que salga exacta.",
             pasos: [
-              "Activa L. Recta.",
-              "Clic en el punto inicial.",
-              "Escribe los valores y presiona Enter… o estira la línea y haz clic para terminarla."
+              "Elige L. Recta.",
+              "Da clic donde empieza.",
+              "Escribe sus valores y da Enter, o estírala con el ratón y da clic donde termina."
             ],
             teclas: [
-              ["Shift + clic al inicio", "Ángulo exacto respecto a una línea o curva existente (90° por defecto)."],
-              ["Shift + clic al final", "Hace que la recta pase exactamente por ese punto."]
+              ["Shift + clic al inicio", "La recta arranca formando un ángulo exacto con otra línea o curva (90° si no lo cambias)."],
+              ["Shift + clic al final", "Obliga a la recta a terminar justo en ese punto."]
             ]
           },
           {
             nombre: "Paralelo", atajo: "X",
-            sirve: "Crea una línea paralela a otra, a la distancia que indiques.",
+            sirve: "Saca una copia paralela de una línea, separada la distancia que tú digas.",
             pasos: [
-              "Activa Paralelo.",
-              "Clic en la línea de referencia.",
-              "Escribe la distancia y presiona Enter… o arrástrala y haz clic."
+              "Elige Paralelo.",
+              "Toca la línea que vas a copiar.",
+              "Escribe la separación y da Enter, o jálala con el ratón y da clic."
             ],
-            nota: "Sigue el escalado de la línea original. Si pasas el cursor encima, se resalta la línea de la que depende."
+            nota: "En las tallas sigue el escalado de la línea de origen. Al pasar el cursor sobre ella se ilumina la línea de la que salió."
           },
           {
             nombre: "Oblicuo", pendiente: true,
@@ -199,57 +199,57 @@ const HERRAMIENTAS = {
           },
           {
             nombre: "Bézier", atajo: "b",
-            sirve: "Traza curvas suaves (escotes, sisas, tiros…). La forma se controla con sus puntos.",
+            sirve: "Para curvas suaves como escotes, sisas o tiros. Su forma depende de dónde pongas los puntos.",
             pasos: [
-              "Activa Bézier.",
-              "Clic para poner el punto inicial.",
-              "Sigue haciendo clic para los demás puntos.",
-              "Botón 3 del ratón para terminar."
+              "Elige Bézier.",
+              "Da clic donde empieza la curva.",
+              "Ve dando clic para cada punto siguiente.",
+              "Con el botón 3 terminas."
             ],
             teclas: [
-              ["Clic", "Punto característico (esquina)."],
-              ["Shift + clic", "Punto de curva (suave)."],
-              ["Botón 2", "Borra el último punto."]
+              ["Clic", "Deja un punto con esquina."],
+              ["Shift + clic", "Deja un punto de curva, sin quiebre."],
+              ["Botón 2", "Quita el punto que pusiste al último."]
             ],
-            nota: "Para corregir la curva: activa Visualización › Bézier y Pts de curva, usa Modificar y arrastra los «ganchos» (tangentes). Con Alt o Shift cambia el efecto."
+            nota: "Para afinarla, enciende Visualización › Bézier y Pts de curva; luego, con Modificar, jala los «ganchos» (tangentes). Si mantienes Alt o Shift, el ajuste se comporta distinto."
           },
           {
             nombre: "Semi-circ.", atajo: "S",
-            sirve: "Traza curvas en forma de arco usando grupos de 3 puntos: inicio, curvatura y fin.",
+            sirve: "Dibuja arcos de tres en tres puntos: donde empieza, por dónde se curva y donde acaba.",
             pasos: [
-              "Activa Semi-circ.",
-              "Clic en el punto inicial.",
-              "Clic en el 2.º punto (da la curvatura).",
-              "Clic en el 3.er punto para cerrar el arco. Repite de 3 en 3.",
-              "Botón 3 del ratón para terminar."
+              "Elige Semi-circ.",
+              "Da clic en el inicio.",
+              "Da clic en un segundo punto que marca qué tanto se curva.",
+              "Da clic en el tercero para cerrar el arco; sigue de tres en tres si necesitas más.",
+              "Con el botón 3 terminas."
             ],
-            nota: "Shift = punto de curva (suave). Sin Shift = esquina."
+            nota: "Con Shift el punto queda suave; sin Shift queda como esquina."
           },
           {
             nombre: "Trazar",
-            sirve: "Digitaliza líneas sobre un patrón o líneas internas de una pieza, sin crear contorno ni sacar pieza.",
+            sirve: "Pasa a la computadora, con la mesa digitalizadora, líneas de un patrón o líneas internas de una pieza, sin formar contorno ni crear pieza.",
             pasos: [
-              "Activa Trazar.",
-              "Digitaliza en la mesa.",
-              "Termina presionando F dos veces."
+              "Elige Trazar.",
+              "Marca las líneas en la mesa.",
+              "Para terminar, presiona F dos veces."
             ],
-            nota: "Línea interna que se va a cortar: termina con 7 y luego F."
+            nota: "Si es una línea interna que se va a cortar, ciérrala con 7 y luego F."
           },
           {
             nombre: "Eje", atajo: "x",
-            sirve: "Crea un eje (espejo) para hacer simetrías. Solo importa la dirección, no el largo.",
+            sirve: "Marca la línea que hará de espejo para las simetrías. Lo que cuenta es hacia dónde apunta, no qué tan larga es.",
             pasos: [
-              "Activa Eje.",
-              "Clic en los dos puntos que forman el eje."
+              "Elige Eje.",
+              "Toca los dos puntos por donde pasa."
             ]
           },
           {
             nombre: "Simetría", atajo: "Y",
-            sirve: "Copia en espejo uno o varios objetos usando un eje creado con Eje.",
+            sirve: "Hace el reflejo de uno o varios objetos del otro lado de un eje que ya creaste.",
             pasos: [
-              "Activa Simetría.",
-              "Clic en el eje.",
-              "Clic en el objeto a reflejar."
+              "Elige Simetría.",
+              "Toca el eje.",
+              "Toca lo que quieres reflejar."
             ]
           },
           {
@@ -262,71 +262,71 @@ const HERRAMIENTAS = {
           },
           {
             nombre: "Duplicar", atajo: "Alt + D",
-            sirve: "Copia puntos, líneas o piezas y los coloca donde quieras, en la misma hoja o en otra.",
+            sirve: "Hace una copia de puntos, líneas o piezas y te deja ponerla donde quieras, en esta hoja o en otra.",
             pasos: [
-              "Activa Duplicar.",
-              "Clic en el objeto a copiar.",
-              "Escribe Desfase X, Desfase Y o Rotación y presiona Enter… o colócalo a mano.",
-              "Clic para soltar la copia."
+              "Elige Duplicar.",
+              "Toca lo que vas a copiar.",
+              "Escribe Desfase X, Desfase Y o Rotación y da Enter, o acomódala con el ratón.",
+              "Da clic para dejar la copia."
             ],
-            nota: "La copia se hace en el mismo plano de trabajo que el original."
+            nota: "La copia queda en el mismo plano de trabajo que el objeto original."
           },
           {
             nombre: "División segmento",
-            sirve: "Divide una línea en partes iguales siguiendo su forma (también curvas).",
+            sirve: "Parte una línea en tramos iguales respetando su forma, aunque sea curva.",
             pasos: [
-              "Activa División segmento.",
-              "Clic en el 1.er punto de la línea.",
-              "Clic en el 2.º punto y mantén presionado (se resalta el tramo).",
-              "Espacio para elegir el tramo correcto; suelta.",
-              "Escribe el número de divisiones y presiona Enter."
+              "Elige División segmento.",
+              "Toca el primer punto del tramo.",
+              "Presiona el segundo punto sin soltar; el tramo se ilumina.",
+              "Si se iluminó otro tramo, cambia con Espacio; luego suelta.",
+              "Escribe cuántas partes quieres y da Enter."
             ],
-            nota: "Crea puntos deslizantes y se gradúan con la línea."
+            nota: "Los puntos que crea son deslizantes, así que en las tallas se acomodan con la línea."
           },
           {
             nombre: "Digit.", atajo: "Ctrl + D",
-            sirve: "Retoma la digitalización en la hoja actual (desde la mesa, el ratón o el teclado).",
+            sirve: "Continúa digitalizando sobre la hoja abierta, ya sea con la mesa, el ratón o el teclado.",
             pasos: [
-              "Activa Digit.: aparece una «mariposa» en el punto más a la izquierda.",
-              "En la mesa, haz clic en los dos puntos que corresponden en la pieza.",
-              "Digitaliza (mismas teclas que Enl. dig.).",
-              "Termina presionando F dos veces."
+              "Elige Digit.; verás una figura de «mariposa» en el punto que está más a la izquierda.",
+              "En la mesa, toca los dos puntos de la pieza que le corresponden.",
+              "Sigue digitalizando; las teclas son las mismas que en Enl. dig.",
+              "Para terminar, presiona F dos veces."
             ],
-            nota: "Con Espacio recorres los puntos uno por uno."
+            nota: "Con Espacio vas saltando de un punto a otro."
           },
           {
             nombre: "Enl. dig.", atajo: "Ctrl + R",
-            sirve: "Digitaliza un patrón en papel desde la mesa digitalizadora y saca la pieza automáticamente.",
+            sirve: "Pasa un patrón de papel a Modaris con la mesa digitalizadora; al terminar, la pieza se crea sola.",
             pasos: [
-              "Antes (una sola vez): Config › Selección digit. (tipo de mesa) e Inic. digit.",
-              "Activa Enl. dig.",
-              "En la mesa, clic en 2 puntos del eje horizontal (o del hilo recto).",
-              "Empieza el contorno con la tecla 2 y digitaliza.",
-              "Termina con F dos veces: la pieza sale en una hoja nueva."
+              "Solo la primera vez: en Config elige Selección digit. (tu modelo de mesa) y luego Inic. digit.",
+              "Elige Enl. dig.",
+              "En la mesa, toca 2 puntos del eje horizontal o del hilo recto.",
+              "Arranca el contorno con la tecla 2 y ve marcándolo.",
+              "Cierra con F dos veces; la pieza aparece en una hoja nueva."
             ],
             teclas: [
-              ["0", "Nueva hoja (saca la pieza actual)"],
-              ["1", "Punto característico (esquina)"],
-              ["2", "Inicio / fin de línea de contorno"],
-              ["3", "Marca interna (por defecto '35')"],
-              ["4", "Agujero cartón"],
-              ["5", "Elegir tipo de piquete o de marca"],
-              ["6", "Piquete en el último punto"],
-              ["7", "Inicio / fin de línea interna"],
+              ["0", "Saca la pieza que llevas y abre otra hoja"],
+              ["1", "Punto de esquina"],
+              ["2", "Empieza o termina el contorno"],
+              ["3", "Marca dentro de la pieza (de inicio, la '35')"],
+              ["4", "Perforación del cartón"],
+              ["5", "Escoger qué piquete o marca usar"],
+              ["6", "Piquete sobre el último punto marcado"],
+              ["7", "Empieza o termina una línea interna"],
               ["8", "Eje de referencia (hilo recto, través…)"],
-              ["9", "Reorientar el piquete"],
-              ["A", "Gradación (TEV) / digitalizar otra talla"],
-              ["B", "Piquete en corredera / redigitalizar talla"],
-              ["C", "Punto de curva / saltar punto"],
-              ["D", "Deshacer lo último"],
-              ["E", "Nombrar punto / repetir gradación anterior"],
-              ["F", "Sacar pieza · F dos veces = salir"],
-              ["L (teclado)", "Escribir dl y rotación"],
-              ["X (teclado)", "Escribir dx, dy y rotación"],
-              ["↓ (teclado)", "Escribir dx, dy, rotación, dl y sagita"],
-              ["G (teclado)", "Rehacer lo que deshiciste con D"]
+              ["9", "Cambiar la dirección del piquete"],
+              ["A", "Escalado (TEV) o marcar otra talla"],
+              ["B", "Piquete de corredera o volver a marcar una talla"],
+              ["C", "Punto de curva o brincar un punto"],
+              ["D", "Quitar lo último que hiciste"],
+              ["E", "Ponerle nombre al punto o repetir el escalado anterior"],
+              ["F", "Crear la pieza · F dos veces para salir"],
+              ["L (teclado)", "Teclear dl y rotación"],
+              ["X (teclado)", "Teclear dx, dy y rotación"],
+              ["↓ (teclado)", "Teclear dx, dy, rotación, dl y sagita"],
+              ["G (teclado)", "Recuperar lo que quitaste con D"]
             ],
-            nota: "Las marcas, cortes y agujeros internos se digitalizan ANTES de cerrar el contorno."
+            nota: "Primero marca lo de adentro (marcas, cortes y perforaciones) y al final cierra el contorno."
           }
         ]
       }
@@ -337,19 +337,19 @@ const HERRAMIENTAS = {
      F2 · PIQUETES, ORIENTACIÓN, FIGURAS GEOMÉTRICAS
      ================================================================ */
   F2: {
-    descripcion: "Herramientas para marcar piquetes y puntos de corte, girar o reflejar toda la hoja y trazar figuras básicas (rectángulos, círculos, óvalos y arcos).",
+    descripcion: "Aquí pones piquetes y marcas de corte, giras o volteas todo lo de la hoja y dibujas figuras sencillas: rectángulos, círculos, óvalos y arcos.",
 
     glosario: [
-      ["Piquete", "Pequeño corte o marca en la orilla de la pieza que sirve de guía para unir piezas al coser."],
-      ["Parámetros asociados", "Menú donde eliges el tipo de piquete o de marca ANTES de usar la herramienta."],
-      ["Restricción máxima", "El objeto queda amarrado a su punto de referencia: si el punto se mueve, el objeto lo sigue. Viene activada por defecto."],
-      ["Magnetismo", "El objeto se acomoda respecto al punto, pero no queda amarrado a él."],
-      ["Ninguna restricción", "El objeto y el punto son independientes."],
-      ["Hilo recto / través", "Ejes que indican la dirección de la tela en la pieza."],
-      ["Punto motivo", "Marca que sirve para acomodar la pieza sobre cuadros o rayas de la tela (tramas)."],
-      ["Flecha", "Altura de un arco: la distancia desde el centro de la cuerda hasta lo más alto del arco."],
-      ["Q W A S / moleta", "Teclas (o rueda del ratón) para ajustar giro, altura o radio mientras trazas."],
-      ["~", "En los atajos de Modaris: ~ = tecla Alt."]
+      ["Piquete", "Muesca chiquita en la orilla de la pieza; al coser te dice qué punto va con cuál."],
+      ["Parámetros asociados", "El menú donde dejas listo el tipo de piquete o de marca antes de empezar."],
+      ["Restricción máxima", "El objeto queda pegado a su punto: si el punto cambia de lugar, el objeto lo acompaña. Es la opción que viene puesta."],
+      ["Magnetismo", "El objeto se coloca guiado por el punto, pero sin quedar pegado a él."],
+      ["Ninguna restricción", "Objeto y punto no guardan ninguna relación."],
+      ["Hilo recto / través", "Las líneas que te dicen en qué dirección va la tela dentro de la pieza."],
+      ["Punto motivo", "Marca para que la pieza caiga bien sobre telas de cuadros o rayas."],
+      ["Flecha", "Qué tanto sube un arco: la distancia del centro de la cuerda a la parte más alta."],
+      ["Q W A S / moleta", "Teclas o rueda del ratón para cambiar el giro, la altura o el radio mientras dibujas."],
+      ["~", "En los atajos, ~ quiere decir Alt."]
     ],
 
     grupos: [
@@ -359,90 +359,90 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "Piquete", atajo: "c",
-            sirve: "Coloca un piquete (de marca, de montaje o de identificación) en el contorno de la pieza. También sirve para cambiar el tipo de un piquete que ya existe.",
+            sirve: "Pone una muesca en la orilla de la pieza (para marcar, para montar o para identificar). Si tocas una que ya existe, le cambia el tipo.",
             pasos: [
-              "(Opcional) elige el tipo de piquete en Parámetros asociados.",
-              "Activa Piquete.",
-              "Haz clic en la línea donde va el piquete… o sobre un piquete existente para cambiarlo."
+              "Si quieres otro tipo, escógelo antes en Parámetros asociados.",
+              "Elige Piquete.",
+              "Toca la línea donde lo quieres, o un piquete ya puesto para cambiarlo."
             ],
-            nota: "Sale perpendicular a la línea y hacia adentro de la pieza. Si no hay punto en ese lugar, Modaris lo crea solo."
+            nota: "Siempre sale a 90° de la línea y apuntando hacia dentro. Si en ese lugar no había punto, se crea uno automáticamente."
           },
           {
             nombre: "Orientación", atajo: "Alt + u",
-            sirve: "Cambia la dirección de un piquete. Puedes dirigirlo hacia un punto para que lo siga si ese punto se mueve.",
+            sirve: "Cambia hacia dónde apunta un piquete. Si lo diriges a un punto, el piquete lo seguirá cuando ese punto se mueva.",
             pasos: [
-              "Activa Orientación.",
-              "Haz clic en el piquete: aparece una línea que gira libre.",
-              "Gírala y haz clic para fijarla… o haz clic en un punto para que apunte hacia él."
+              "Elige Orientación.",
+              "Toca el piquete; aparece una línea que puedes girar.",
+              "Gírala y da clic para dejarla, o toca un punto para que apunte hacia él."
             ],
-            nota: "Con Restricción máxima el piquete queda amarrado al punto; con Magnetismo solo se orienta; con Ninguna restricción quedan independientes."
+            nota: "Lo que pase después depende de la restricción: con Restricción máxima queda atado al punto, con Magnetismo solo toma su dirección y con Ninguna restricción no guardan relación."
           },
           {
             nombre: "Forzar proyección",
             manual: "Forzar proyección de piquetes",
-            sirve: "Elige hacia qué lado se proyecta el piquete (por defecto Modaris lo proyecta hacia la línea de corte más cercana).",
+            sirve: "Decide de qué lado se proyecta el piquete. Si no haces nada, va hacia la línea de corte que tenga más cerca.",
             pasos: [
-              "Activa Forzar proyección.",
-              "Haz clic en el piquete y mantén presionado.",
-              "Presiona Espacio para cambiar de lado.",
-              "Suelta el botón cuando esté en el lado correcto."
+              "Elige Forzar proyección.",
+              "Presiona el piquete sin soltar.",
+              "Cambia de lado con Espacio.",
+              "Suelta cuando quede del lado que buscas."
             ],
-            nota: "Al pasar el cursor, una flecha muestra el lado forzado. Si después lo reorientas (Orientación, Bisectriz o Perpendicular) se pierde."
+            nota: "Al pasar el cursor, una flechita indica el lado elegido. Si luego lo vuelves a orientar (con Orientación, Bisectriz o Perpendicular), este ajuste se borra."
           },
           {
             nombre: "Bisectriz", atajo: "Alt + y",
-            sirve: "Orienta un piquete que está en una esquina para que quede justo a la mitad del ángulo que forman las dos líneas.",
+            sirve: "Para un piquete que está en una esquina: lo acomoda exactamente a la mitad del ángulo entre las dos líneas.",
             pasos: [
-              "Activa Bisectriz.",
-              "Haz clic en el piquete y mantén presionado.",
-              "Lleva el cursor al lado del ángulo que quieres y suelta."
+              "Elige Bisectriz.",
+              "Presiona el piquete sin soltar.",
+              "Mueve el cursor hacia el lado del ángulo que quieres y suelta."
             ]
           },
           {
             nombre: "Perpendicular", atajo: "Alt + h",
-            sirve: "Vuelve a poner un piquete a 90° (perpendicular) de la línea donde está.",
+            sirve: "Regresa un piquete a quedar en ángulo recto con su línea.",
             pasos: [
-              "Activa Perpendicular.",
-              "Haz clic en el piquete y mantén presionado.",
-              "Lleva el cursor hacia el lado que quieres (hay 4 posiciones) y suelta."
+              "Elige Perpendicular.",
+              "Presiona el piquete sin soltar.",
+              "Mueve el cursor hacia la dirección que quieres (hay 4 opciones) y suelta."
             ]
           },
           {
             nombre: "Piquete exterior",
-            sirve: "Pasa uno o varios piquetes hacia afuera de la pieza (o de regreso hacia adentro).",
+            sirve: "Saca uno o varios piquetes hacia la parte de afuera de la pieza, o los regresa adentro.",
             pasos: [
-              "(Recomendado) activa Visualizar › Parte recortada (Alt + F9) para ver el resultado.",
-              "Activa Piquete exterior.",
-              "Haz clic en el piquete."
+              "Para ver bien el cambio, enciende Visualizar › Parte recortada (Alt + F9).",
+              "Elige Piquete exterior.",
+              "Toca el piquete."
             ],
-            nota: "Todo piquete nuevo nace hacia adentro; esta herramienta lo voltea."
+            nota: "Los piquetes siempre se crean hacia dentro; con esta herramienta les das la vuelta."
           },
           {
             nombre: "Marcaje", atajo: "M",
-            sirve: "Marca un punto con una herramienta de corte (taladro '35', '36', '37' o '1') o como punto motivo para acomodar la pieza sobre cuadros o rayas.",
+            sirve: "Le pone a un punto una marca de corte (taladro '35', '36', '37' o '1') o lo convierte en punto motivo para casar cuadros o rayas.",
             pasos: [
-              "Elige el tipo de marca en Parámetros asociados.",
-              "Si es punto motivo: escribe la trama vertical/horizontal y elige la categoría.",
-              "Activa Marcaje.",
-              "Haz clic en el punto que quieres marcar."
+              "Escoge la marca en Parámetros asociados.",
+              "Si es punto motivo, indica la trama vertical u horizontal y la categoría.",
+              "Elige Marcaje.",
+              "Toca el punto."
             ],
             teclas: [
-              ["35 · 36 · 37 · 1", "Tipos de taladro / marca de corte."],
-              ["Motivo horiz.", "Punto motivo respecto a la trama horizontal."],
-              ["Motivo verti.", "Punto motivo respecto a la trama vertical."],
-              ["Motivo vert. hori.", "Punto motivo respecto a ambas tramas."]
+              ["35 · 36 · 37 · 1", "Distintas marcas de taladro o de corte."],
+              ["Motivo horiz.", "Punto motivo que se guía por la trama horizontal."],
+              ["Motivo verti.", "Punto motivo que se guía por la trama vertical."],
+              ["Motivo vert. hori.", "Punto motivo que se guía por las dos tramas."]
             ],
-            nota: "La orden «Paso de marca» quita la marca elegida. Si dejas una marca elegida, los puntos Relativos que crees saldrán marcados."
+            nota: "Para quitar la marca usa la orden «Paso de marca». Ojo: mientras tengas una marca escogida, los puntos que hagas con Relativo saldrán con ella."
           },
           {
             nombre: "Marca DF TR",
-            sirve: "Pone un punto motivo justo donde se cruzan el hilo recto y el través de la pieza. Sirve para acomodarla sobre cuadros o rayas.",
+            sirve: "Pone un punto motivo en el cruce del hilo recto con el través, para casar la pieza con cuadros o rayas.",
             pasos: [
-              "(Opcional) elige la marca motivo y la categoría en Parámetros asociados.",
-              "Activa Marca DF TR.",
-              "Haz clic en el hilo recto o en el través."
+              "Si quieres, antes escoge la marca y la categoría en Parámetros asociados.",
+              "Elige Marca DF TR.",
+              "Toca el hilo recto o el través."
             ],
-            nota: "Necesita los dos ejes. Si no se cruzan, la marca va donde se cruzarían al alargarlos."
+            nota: "La pieza debe tener los dos ejes. Si no llegan a cruzarse, la marca se pone donde se encontrarían al prolongarlos."
           }
         ]
       },
@@ -453,29 +453,29 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "Sym x",
-            sirve: "Voltea en espejo todo lo que hay en la hoja de arriba hacia abajo (respecto al eje X).",
-            pasos: ["Activa Sym x: el cambio es inmediato."]
+            sirve: "Refleja todo el contenido de la hoja de arriba hacia abajo, usando el eje X como espejo.",
+            pasos: ["Elige Sym x; el cambio se ve al instante."]
           },
           {
             nombre: "Sym y",
-            sirve: "Voltea en espejo todo lo que hay en la hoja de izquierda a derecha (respecto al eje Y).",
-            pasos: ["Activa Sym y: el cambio es inmediato."]
+            sirve: "Refleja todo el contenido de la hoja de izquierda a derecha, usando el eje Y como espejo.",
+            pasos: ["Elige Sym y; el cambio se ve al instante."]
           },
           {
             nombre: "Rotar hoja",
             manual: "Rotación de la geometría de una hoja",
-            sirve: "Gira todo lo que hay en la hoja un ángulo fijo.",
+            sirve: "Da vuelta a todo lo de la hoja con uno de estos ángulos fijos:",
             lista: ["30°", "45°", "90°", "180°", "-90°", "-45°", "-30°"],
-            pasos: ["Activa el botón del ángulo que quieres: el giro es inmediato."],
-            nota: "Los ángulos positivos giran contra las manecillas del reloj."
+            pasos: ["Elige el botón del ángulo; gira al instante."],
+            nota: "Con números positivos gira al contrario de las manecillas del reloj."
           },
           {
             nombre: "Rotación 2 puntos",
-            sirve: "Gira todo lo de la hoja para que dos puntos queden en la misma línea horizontal.",
+            sirve: "Gira todo lo de la hoja hasta que dos puntos queden a la misma altura.",
             pasos: [
-              "Activa Rotación 2 puntos.",
-              "Clic en el 1.er punto (es el centro del giro).",
-              "Clic en el 2.º punto: queda alineado en horizontal con el primero."
+              "Elige Rotación 2 puntos.",
+              "Toca el primer punto; alrededor de él se hace el giro.",
+              "Toca el segundo; quedará en horizontal con el primero."
             ]
           }
         ]
@@ -487,67 +487,67 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "Rectángulo", atajo: "T",
-            sirve: "Crea una pieza base rectangular, con un punto en cada esquina.",
+            sirve: "Arma una pieza base de cuatro lados, con un punto en cada esquina.",
             pasos: [
-              "Activa Rectángulo.",
-              "Clic en el punto de inicio: se abre la ventana de ancho, altura y rotación.",
-              "Escribe las medidas y presiona Enter… o estíralo a mano y haz clic."
+              "Elige Rectángulo.",
+              "Da clic donde empieza; se abre una ventana para ancho, alto y rotación.",
+              "Escribe las medidas y da Enter, o estíralo con el ratón y da clic."
             ],
             teclas: [
-              ["Shift (⇧)", "Mientras trazas: cuadrado perfecto."],
-              ["Q W A S / moleta", "Mientras trazas: girar el rectángulo."]
+              ["Shift (⇧)", "Mientras lo dibujas, lo vuelve cuadrado."],
+              ["Q W A S / moleta", "Mientras lo dibujas, lo gira."]
             ],
-            nota: "Las medidas son iguales en todas las tallas."
+            nota: "Sus medidas no cambian de una talla a otra."
           },
           {
             nombre: "Círculo",
-            sirve: "Crea un círculo dando su diámetro o trazándolo a mano.",
+            sirve: "Dibuja un círculo, ya sea con un diámetro exacto o a mano.",
             pasos: [
-              "Activa Círculo.",
-              "Clic en el centro: se abre la ventana del diámetro.",
-              "Escribe el diámetro y presiona Enter… o estíralo a mano y haz clic."
+              "Elige Círculo.",
+              "Da clic en el centro; se abre la ventana del diámetro.",
+              "Escríbelo y da Enter, o estíralo con el ratón y da clic."
             ],
-            nota: "Crea 5 puntos: el centro, 2 extremos y 2 puntos de curva. Mide igual en todas las tallas."
+            nota: "Quedan 5 puntos: el centro, dos en las orillas y dos de curva. Su tamaño es el mismo en todas las tallas."
           },
           {
             nombre: "Óvalo",
-            sirve: "Crea un óvalo a partir de dos círculos: el primero, la distancia entre ellos, el segundo y la altura.",
+            sirve: "Forma un óvalo con dos círculos: defines el primero, la separación, el segundo y la altura.",
             pasos: [
-              "Activa Óvalo y señala dónde empieza.",
-              "Clic sostenido: arrastra hasta el tamaño del 1.er círculo y suelta.",
-              "Sin presionar, mueve el ratón hasta donde va el 2.º círculo.",
-              "Clic sostenido: arrastra el tamaño del 2.º círculo y suelta.",
-              "Ajusta la altura con Q W A S o la moleta y haz clic para validar."
+              "Elige Óvalo y marca dónde empieza.",
+              "Presiona sin soltar, arrastra hasta el tamaño del primer círculo y suelta.",
+              "Sin presionar nada, lleva el ratón a donde va el segundo círculo.",
+              "Presiona sin soltar, dale tamaño al segundo círculo y suelta.",
+              "Cambia la altura con Q W A S o la moleta y da clic para terminar."
             ],
-            nota: "También puedes escribir 1.er radio, 2.º radio y altura, presionar Enter y luego solo estirarlo y orientarlo."
+            nota: "Otra forma: escribe el primer radio, el segundo radio y la altura, da Enter y solo estíralo y gíralo."
           },
           {
             nombre: "Arco_f",
-            sirve: "Crea un arco indicando su flecha (qué tan alto se curva).",
+            sirve: "Dibuja un arco diciendo qué tan alto sube (su flecha).",
             pasos: [
-              "Activa Arco_f.",
-              "Clic en el punto inicial: se abre la ventana Flecha.",
-              "Escribe la flecha y presiona Enter, luego orienta el arco, dale largo y haz clic… o trázalo a mano ajustando la flecha con Q W A S o la moleta."
+              "Elige Arco_f.",
+              "Da clic en el inicio; se abre la ventana Flecha.",
+              "Escribe la flecha y da Enter; luego gíralo, dale largo y da clic. También puedes dibujarlo a mano y cambiar la flecha con Q W A S o la moleta."
             ],
-            nota: "Flecha = distancia del centro de la cuerda a lo más alto del arco."
+            nota: "La flecha es la distancia entre el centro de la cuerda y la parte más alta del arco."
           },
           {
             nombre: "Arco_r",
-            sirve: "Crea un arco entre dos puntos indicando su radio.",
+            sirve: "Dibuja un arco entre dos puntos a partir de su radio.",
             pasos: [
-              "Activa Arco_r.",
-              "Clic en el punto de salida: se abre la ventana Radio.",
-              "Escribe el radio y presiona Enter, orienta el arco y haz clic… o trázalo a mano ajustando el radio con Q W A S o la moleta."
+              "Elige Arco_r.",
+              "Da clic en el punto de salida; se abre la ventana Radio.",
+              "Escribe el radio y da Enter, gíralo y da clic. También puedes dibujarlo a mano y cambiar el radio con Q W A S o la moleta."
             ]
           },
           {
             nombre: "Tang. 2 círculos",
-            sirve: "Traza dos círculos y te propone las 4 rectas tangentes posibles entre ellos para que elijas una.",
+            sirve: "Dibujas dos círculos y te muestra las cuatro rectas que pueden tocarlos a ambos; tú escoges una.",
             pasos: [
-              "Activa Tang. 2 círculos.",
-              "Escribe el radio de cada círculo (Enter) o trázalos a mano.",
-              "Presiona Espacio para ver cada tangente.",
-              "Haz clic en la tangente que quieres."
+              "Elige Tang. 2 círculos.",
+              "Escribe el radio de cada círculo y da Enter, o dibújalos a mano.",
+              "Con Espacio vas viendo cada recta.",
+              "Da clic en la que quieras."
             ]
           }
         ]
@@ -559,18 +559,18 @@ const HERRAMIENTAS = {
      F3 · MODIFICACIÓN
      ================================================================ */
   F3: {
-    descripcion: "Herramientas para corregir lo que ya trazaste: mover, estirar o alargar líneas, cortar y unir curvas, fijar puntos con chinchetas y amarrar valores a medidas.",
+    descripcion: "Para arreglar lo que ya dibujaste: mover, estirar o cambiar el largo de las líneas, cortar y juntar curvas, fijar puntos con chinchetas y ligar valores a medidas.",
 
     glosario: [
-      ["Chincheta", "Punto «clavado»: se queda fijo cuando mueves o estiras lo demás."],
-      ["Homotecia", "Agrandar o achicar una forma conservando sus proporciones."],
-      ["Gradación / leyes de evolución", "Cómo cambia cada punto de una talla a otra."],
-      ["Talla base", "La talla en la que trazas; las demás se calculan a partir de ella."],
-      ["Punto de extremo", "Punto donde empieza o termina una línea."],
-      ["Punto constante", "Punto que está a una distancia fija sobre la línea (ver F1)."],
-      ["Medida MCM", "Medida guardada en la tabla de medidas de Modaris; se puede amarrar a puntos o paralelas."],
-      ["Parámetros asociados", "Menú con las opciones de la herramienta; elígelas antes de usarla."],
-      ["~", "En los atajos de Modaris: ~ = tecla Alt."]
+      ["Chincheta", "Un punto «clavado»: no se mueve aunque desplaces o estires lo que está alrededor."],
+      ["Homotecia", "Hacer una forma más grande o más chica sin que cambien sus proporciones."],
+      ["Gradación / leyes de evolución", "Las reglas que dicen cuánto se mueve cada punto al pasar de una talla a otra."],
+      ["Talla base", "La talla con la que dibujas; de ella salen las demás."],
+      ["Punto de extremo", "Donde una línea comienza o acaba."],
+      ["Punto constante", "Punto puesto a una medida fija sobre la línea (lo ves en F1)."],
+      ["Medida MCM", "Una medida guardada en la tabla de medidas; puedes ligarla a puntos o paralelas."],
+      ["Parámetros asociados", "El menú de opciones de cada herramienta; ajústalo antes de usarla."],
+      ["~", "En los atajos, ~ quiere decir Alt."]
     ],
 
     grupos: [
@@ -580,84 +580,84 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "Desplazar", atajo: "D",
-            sirve: "Mueve un punto junto con todo lo que está unido a él (líneas, otros puntos). La forma se acomoda sola entre los puntos con chincheta.",
+            sirve: "Mueve un punto y arrastra con él lo que tiene conectado (líneas y otros puntos). Entre las chinchetas, la forma se reacomoda sola.",
             pasos: [
-              "(Opcional) elige las opciones de movimiento en Parámetros asociados.",
-              "(Opcional) pon chinchetas en los puntos que no quieres que se muevan.",
-              "Activa Desplazar y haz clic en el punto a mover.",
-              "Escribe Desfase x, Desfase y, Rotación o dl y presiona Enter… o muévelo a mano y haz clic."
+              "Si lo necesitas, ajusta cómo se mueve en Parámetros asociados.",
+              "Si hay puntos que no deben moverse, ponles chincheta.",
+              "Elige Desplazar y toca el punto.",
+              "Escribe Desfase x, Desfase y, Rotación o dl y da Enter, o llévalo con el ratón y da clic."
             ],
             lista: [
-              "Talla base: mueve la talla base y elige si la gradación se queda igual, gira o gira y se escala.",
-              "Talla por talla: mueve una sola talla sin tocar las demás.",
-              "Todas tallas / Selección de tallas / Todos tipos esc.: a qué tallas o tipos de escalado se aplica."
+              "Talla base: mueves la talla base y decides si el escalado no cambia, gira, o gira y cambia de tamaño.",
+              "Talla por talla: cambias solo una talla y las demás quedan igual.",
+              "Todas tallas / Selección de tallas / Todos tipos esc.: eliges a qué tallas o tipos de escalado afecta."
             ],
-            nota: "Atajo alterno: Ctrl + botón 2 del ratón. La posición original queda marcada como «huella» (se quita en Visualizar › Trazar)."
+            nota: "También funciona con Ctrl + botón 2. Donde estaba el punto queda una «huella», que puedes ocultar en Visualizar › Trazar."
           },
           {
             nombre: "Estirar", atajo: "Alt + p",
-            sirve: "Gira y agranda o achica una parte de la pieza tomando un punto como pivote, como si la estiraras.",
+            sirve: "Toma un punto como eje de giro y desde ahí gira y agranda o achica una parte de la pieza, como si la jalaras.",
             pasos: [
-              "(Opcional) elige las opciones de movimiento en Parámetros asociados.",
-              "Activa Estirar.",
-              "Clic en el 1.er punto (el pivote, no se mueve).",
-              "Clic en el 2.º punto (el que vas a estirar).",
-              "Escribe los valores (Desfase, Rotación, x, y, dl o Escala) y presiona Enter… o estíralo a mano y haz clic."
+              "Si lo necesitas, ajusta cómo se mueve en Parámetros asociados.",
+              "Elige Estirar.",
+              "Toca el primer punto: será el eje y no se mueve.",
+              "Toca el segundo punto: es el que vas a jalar.",
+              "Escribe Desfase, Rotación, x, y, dl o Escala y da Enter, o jálalo con el ratón y da clic."
             ],
-            nota: "Usa las mismas opciones de movimiento que Desplazar."
+            nota: "Las opciones de movimiento son las mismas que en Desplazar."
           },
           {
             nombre: "Alargar", atajo: "$",
-            sirve: "Cambia el largo de una curva entre dos puntos a una medida exacta, sin cambiar su forma.",
+            sirve: "Le da a una curva, entre dos puntos, un largo exacto sin deformarla.",
             pasos: [
-              "Activa Alargar.",
-              "Clic en el 1.er extremo de la curva.",
-              "Clic sostenido en el 2.º extremo (Espacio si hay dudas de qué curva es).",
-              "Escribe el largo total o lo que quieres agregar o quitar (dl) y presiona Enter."
+              "Elige Alargar.",
+              "Toca un extremo de la curva.",
+              "Presiona el otro extremo sin soltar (si no se distingue la curva, usa Espacio).",
+              "Escribe el largo final o cuánto quieres sumar o restar (dl) y da Enter."
             ]
           },
           {
             nombre: "Ajustar 2 líneas",
-            sirve: "Alarga o recorta una línea hasta que toque otra línea de referencia.",
+            sirve: "Hace que una línea crezca o se recorte justo hasta topar con otra.",
             pasos: [
-              "Activa Ajustar 2 líneas.",
-              "Clic en la línea que quieres alargar o recortar.",
-              "Clic en la línea de referencia."
+              "Elige Ajustar 2 líneas.",
+              "Toca la línea que se va a alargar o recortar.",
+              "Toca la línea que hará de tope."
             ],
-            nota: "La primera línea es la que cambia; la segunda no se mueve. Con «Suprimir el último punto» se borra el extremo viejo."
+            nota: "Solo cambia la primera línea; la segunda se queda igual. Si marcas «Suprimir el último punto», el extremo anterior se borra."
           },
           {
             nombre: "Al. Línea", atajo: "-",
             manual: "Alargar línea",
-            sirve: "Prolonga una línea en línea recta desde uno de sus extremos.",
+            sirve: "Continúa una línea en recta a partir de una de sus puntas.",
             pasos: [
-              "Activa Al. Línea.",
-              "Clic en la línea, cerca del extremo que quieres alargar.",
-              "Muévela hasta el largo deseado y haz clic… o escribe el dl, Enter y clic."
+              "Elige Al. Línea.",
+              "Toca la línea cerca de la punta que quieres prolongar.",
+              "Llévala hasta el largo que buscas y da clic, o escribe el dl, da Enter y clic."
             ],
-            nota: "El extremo desde donde se alarga se vuelve punto característico (esquina)."
+            nota: "La punta desde donde creció pasa a ser punto de esquina."
           },
           {
             nombre: "Retiro",
             manual: "Retiro efectivo (retracción)",
-            sirve: "Agranda o reduce una pieza (o parte de ella) por porcentaje. Sirve para compensar el encogimiento de la tela.",
+            sirve: "Hace una pieza (o un pedazo de ella) más grande o más chica en porcentaje. Se usa para compensar lo que encoge la tela.",
             pasos: [
-              "Marca o desmarca «Retracción todas las tallas».",
-              "Para una parte: selecciona sus puntos y haz clic en el punto de origen. Para toda la pieza: clic en cualquier lugar de la hoja.",
-              "Activa Retiro.",
-              "Escribe el porcentaje en x y en y y presiona Enter."
+              "Decide si marcas «Retracción todas las tallas».",
+              "Para un pedazo: selecciona sus puntos y toca el punto de origen. Para la pieza completa: da clic en cualquier parte de la hoja.",
+              "Elige Retiro.",
+              "Escribe el porcentaje en x y en y y da Enter."
             ],
-            nota: "Sin «todas las tallas» se usa el valor de la talla base para todas; con él, se calcula según cada talla. En piezas dependientes, selecciona toda la pieza primero o se aplica a todo el patrón."
+            nota: "Sin la casilla «todas las tallas», todas usan el valor de la talla base; con ella, se calcula talla por talla. Si la pieza depende de otra, selecciónala completa antes; si no, el cambio alcanza a todo el patrón."
           },
           {
             nombre: "Simplificado", atajo: "Alt + s",
-            sirve: "Suaviza una curva quitándole puntos de más.",
+            sirve: "Deja más suave una curva eliminando los puntos que sobran.",
             pasos: [
-              "Activa Simplificado.",
-              "Clic en la curva (o en una selección de curvas).",
-              "Escribe el desvío permitido y presiona Enter."
+              "Elige Simplificado.",
+              "Toca la curva (o una de las que tengas seleccionadas).",
+              "Escribe cuánto se puede apartar de la forma original (desvío) y da Enter."
             ],
-            nota: "Entre más grande el desvío, más puntos quita y más simple queda la curva."
+            nota: "Mientras mayor sea el desvío, más puntos se quitan y más sencilla queda la curva."
           }
         ]
       },
@@ -668,77 +668,77 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "Modificar", atajo: "r",
-            sirve: "Cambia la posición de un punto o línea ya creados: alargar, acortar o «excavar» una línea, o mover un punto deslizante, constante o relativo.",
+            sirve: "Corrige un punto o una línea que ya existen: hacerla más larga o más corta, «ahuecarla», o recorrer un punto deslizante, constante o relativo.",
             pasos: [
-              "Activa Modificar.",
-              "Clic en el objeto.",
-              "Escribe los valores y presiona Enter… o muévelo a mano y haz clic."
+              "Elige Modificar.",
+              "Toca lo que quieres cambiar.",
+              "Escribe los valores y da Enter, o muévelo con el ratón y da clic."
             ],
-            nota: "También sirve para mover los «ganchos» (tangentes) de las curvas Bézier."
+            nota: "Con ella también mueves los «ganchos» (tangentes) de las curvas Bézier."
           },
           {
             nombre: "Sección",
-            sirve: "Corta una curva en un punto: quedan dos líneas unidas por ese punto.",
+            sirve: "Parte una curva en un punto; así quedan dos líneas que se tocan ahí.",
             pasos: [
-              "Activa Sección.",
-              "Clic en el punto donde quieres cortar."
+              "Elige Sección.",
+              "Toca el punto donde la quieres partir."
             ],
-            nota: "El punto se vuelve punto de extremo de las dos líneas nuevas."
+            nota: "Ese punto pasa a ser la punta de las dos líneas nuevas."
           },
           {
             nombre: "Fusión curvas",
-            sirve: "Une dos líneas que comparten un punto en una sola línea.",
+            sirve: "Convierte en una sola línea dos líneas que comparten un punto.",
             pasos: [
-              "Activa Fusión curvas.",
-              "Si son 2 líneas: clic en su punto común.",
-              "Si el punto toca más de 2 líneas: clic sostenido en la 1.ª línea, arrastra hasta la 2.ª y suelta."
+              "Elige Fusión curvas.",
+              "Si solo hay dos líneas, toca el punto donde se juntan.",
+              "Si llegan más de dos líneas a ese punto, presiona la primera sin soltar, arrastra hasta la segunda y suelta."
             ],
-            nota: "Las curvas Bézier solo se fusionan con otras Bézier (actívalas en Visualizar › Bézier para reconocerlas)."
+            nota: "Una Bézier solo se junta con otra Bézier. Para distinguirlas, enciende Visualizar › Bézier."
           },
           {
             nombre: "Unido", atajo: "Alt + 5",
-            sirve: "Junta dos puntos en uno solo. Si son de líneas distintas, quedan conectadas por ese punto.",
+            sirve: "Convierte dos puntos en uno. Si eran de líneas diferentes, esas líneas quedan conectadas.",
             pasos: [
-              "Activa Unido.",
-              "Clic en el 1.er punto.",
-              "Clic en el 2.º punto."
+              "Elige Unido.",
+              "Toca el primer punto.",
+              "Toca el segundo punto."
             ]
           },
           {
             nombre: "Separado", atajo: "Alt + 6",
-            sirve: "Lo contrario de Unido: suelta una línea (o una marca) de un punto que compartía.",
+            sirve: "Hace lo opuesto a Unido: despega una línea (o una marca) del punto que compartía con otra.",
             pasos: [
-              "Activa Separado.",
-              "Clic en el punto común.",
-              "Clic para confirmar."
+              "Elige Separado.",
+              "Toca el punto compartido.",
+              "Da clic para aceptar."
             ],
-            nota: "Quedan dos puntos encimados, uno para cada línea."
+            nota: "Quedan dos puntos uno encima del otro, cada uno con su línea."
           },
           {
             nombre: "Insertar punto", atajo: "Alt + 7",
-            sirve: "Convierte un punto deslizante, constante o de intersección en un punto característico de la línea.",
+            sirve: "Vuelve un punto deslizante, constante o de cruce en un punto de esquina que forma parte de la línea.",
             pasos: [
-              "Activa Insertar punto.",
-              "Clic en el punto."
+              "Elige Insertar punto.",
+              "Toca el punto."
             ]
           },
           {
             nombre: "Suprimir restricción",
-            sirve: "Quita la dependencia de un objeto (simétrico, paralelo, deslizante, constante o relativo) para que quede libre.",
+            sirve: "Suelta un objeto de aquello de lo que dependía (simétrico, paralelo, deslizante, constante o relativo) y lo deja independiente.",
             pasos: [
-              "Activa Suprimir restricción.",
-              "Clic en el objeto (o en uno de la selección)."
+              "Elige Suprimir restricción.",
+              "Toca el objeto (o uno de los seleccionados)."
             ],
-            nota: "Los puntos deslizantes y constantes se vuelven puntos característicos."
+            nota: "Los puntos deslizantes y constantes pasan a ser puntos de esquina."
           },
           {
             nombre: "Supresión", atajo: "Supr",
-            sirve: "Borra cualquier objeto: puntos, líneas, marcas…",
+            sirve: "Elimina lo que toques: puntos, líneas, marcas, etc.",
             pasos: [
-              "Activa Supresión.",
-              "Clic en el objeto (o en uno de la selección)."
+              "Elige Supresión.",
+              "Toca el objeto (o uno de los seleccionados)."
             ],
-            nota: "Para borrar todos los puntos de una línea, mantén Shift (⇧) al hacer clic. Si otros objetos dependen de él, Modaris te avisa antes de borrar."
+            nota: "Si mantienes Shift (⇧) al tocar una línea, se borran todos sus puntos. Cuando algo depende de lo que vas a borrar, Modaris te avisa primero."
           }
         ]
       },
@@ -749,32 +749,32 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "Asociar", atajo: "=",
-            sirve: "Hace que varios puntos constantes, pliegues o paralelas dependientes compartan el mismo valor: si cambias uno, cambian todos.",
+            sirve: "Liga entre sí puntos constantes, pliegues o paralelas dependientes para que tengan el mismo valor: cambias uno y cambian todos.",
             lista: [
-              "Punto constante con otro punto constante o con una paralela dependiente.",
-              "Paralela dependiente con otra paralela o con un punto constante.",
-              "También sirve para quitar la asociación."
+              "Un punto constante con otro punto constante o con una paralela dependiente.",
+              "Una paralela dependiente con otra paralela o con un punto constante.",
+              "Con la misma herramienta deshaces la liga."
             ],
-            nota: "Solo funciona con objetos que no estén restringidos por una medida."
+            nota: "No funciona con objetos que ya estén restringidos a una medida."
           },
           {
             nombre: "Asociar a medida", atajo: "Alt + n",
-            sirve: "Amarra un punto constante, pliegue o paralela dependiente a una medida: si cambias la medida cambia el objeto, y al revés.",
+            sirve: "Liga un punto constante, pliegue o paralela dependiente con una medida: lo que cambies en uno se refleja en el otro.",
             lista: [
-              "Añadir a baremo: agrega la medida a la tabla MCM.",
-              "Nombrar la medida: te deja ponerle nombre (si no, se llama «Medida 10», «Medida 11»…).",
-              "Restringir / Limitar a la tabla: solo muestra medidas de la tabla abierta."
+              "Añadir a baremo: suma la medida a la tabla MCM.",
+              "Nombrar la medida: le pones tu propio nombre (si no, se numera sola: «Medida 10», «Medida 11»…).",
+              "Restringir / Limitar a la tabla: muestra solo las medidas de la tabla abierta."
             ],
-            nota: "El objeto asociado se ve resaltado (brillante). Cada objeto solo puede tener una medida."
+            nota: "Lo que está ligado se ve iluminado. Un objeto solo admite una medida."
           },
           {
             nombre: "Restricción por medida", atajo: "n",
-            sirve: "Hace que un punto constante, pliegue o paralela dependiente siga una medida, una fórmula o una medida MCM. Ya no se puede mover ni escalar a mano.",
+            sirve: "Obliga a un punto constante, pliegue o paralela dependiente a seguir una medida, una fórmula o una medida MCM. Después ya no lo puedes mover ni escalar a mano.",
             lista: [
-              "Restringir a una medida, a otro objeto, a un valor o a una fórmula.",
-              "También sirve para quitar la restricción."
+              "Lo puedes atar a una medida, a otro objeto, a un valor o a una fórmula.",
+              "Con la misma herramienta quitas la restricción."
             ],
-            nota: "El objeto restringido se ve en amarillo dorado. Al pasar el cursor ves su nombre, la medida entre corchetes y el valor, ej. Point 27 [1/4 bassin] 250.00 mm."
+            nota: "Se distingue porque se pinta de amarillo dorado. Al pasar el cursor muestra su nombre, la medida entre corchetes y el valor; por ejemplo: Point 27 [1/4 bassin] 250.00 mm."
           }
         ]
       },
@@ -785,33 +785,33 @@ const HERRAMIENTAS = {
         herramientas: [
           {
             nombre: "Chincheta", atajo: "Alt + e",
-            sirve: "Clava uno o varios puntos para que no se muevan al desplazar o estirar. Si el punto ya tiene chincheta, se la quita.",
+            sirve: "Fija uno o varios puntos para que se queden quietos al desplazar o estirar. Si el punto ya estaba fijo, lo libera.",
             pasos: [
-              "Activa Chincheta.",
-              "Clic en el punto (o en uno de la selección)."
+              "Elige Chincheta.",
+              "Toca el punto (o uno de los seleccionados)."
             ]
           },
           {
             nombre: "Ch. Pts. Escalado", atajo: "h",
-            sirve: "Clava de una vez todos los puntos escalados de la hoja.",
-            pasos: ["Activa Ch. Pts. Escalado: el cambio es inmediato."]
+            sirve: "Fija en un solo paso todos los puntos de la hoja que tienen escalado.",
+            pasos: ["Elige Ch. Pts. Escalado; se aplica al momento."]
           },
           {
             nombre: "Ch. Pts. Caract.",
-            sirve: "Clava de una vez todos los puntos característicos (esquinas) de la hoja, incluidas las piezas unidas.",
-            pasos: ["Activa Ch. Pts. Caract.: el cambio es inmediato."]
+            sirve: "Fija en un solo paso todos los puntos de esquina de la hoja, también los de las piezas unidas.",
+            pasos: ["Elige Ch. Pts. Caract.; se aplica al momento."]
           },
           {
             nombre: "Ch. Extremidad", atajo: "f",
-            sirve: "Clava de una vez todos los puntos de extremo de las líneas de la hoja.",
-            pasos: ["Activa Ch. Extremidad: el cambio es inmediato."]
+            sirve: "Fija en un solo paso todas las puntas de las líneas de la hoja.",
+            pasos: ["Elige Ch. Extremidad; se aplica al momento."]
           },
           {
             nombre: "Quit. Ch.", atajo: "e",
             manual: "Quitar chinchetas",
-            sirve: "Quita todas las chinchetas de la hoja de una vez.",
-            pasos: ["Activa Quit. Ch.: el cambio es inmediato."],
-            nota: "Los extremos de una línea suelta siempre quedan clavados automáticamente."
+            sirve: "Libera de golpe todos los puntos fijos de la hoja.",
+            pasos: ["Elige Quit. Ch.; se aplica al momento."],
+            nota: "Las puntas de una línea que está sola siempre quedan fijas, aunque las quites."
           }
         ]
       }
