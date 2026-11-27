@@ -103,6 +103,32 @@
     .fa-matriz th.jug { text-align: right; text-transform: none; letter-spacing: 0; font-size: .78rem; color: var(--texto); }
     .fa-matriz .paso-col { position: sticky; left: 0; background: #fff; z-index: 1; }
     #fa-filtro { font: inherit; }
+
+    /* Editor de funciones */
+    .fn-barra { position: sticky; top: 0; z-index: 5; background: var(--fondo); padding: 10px 0; margin: 10px 0 6px;
+                display: flex; gap: 8px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--borde); }
+    .fn-estado { font-size: .85rem; color: var(--texto-2); margin-right: auto; }
+    .fn-estado.sucio { color: #b45309; font-weight: 700; }
+    .btn-mini.guardar { background: #15803d; border-color: #15803d; color: #fff; }
+    .btn-mini:disabled { opacity: .45; cursor: default; }
+    .fn-caja { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 14px 16px; margin-top: 14px; }
+    .fn-caja h3 { font-size: 1rem; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .fn-campo { display: grid; gap: 4px; margin-top: 10px; font-size: .8rem; font-weight: 700; color: var(--texto-2); }
+    .fn-campo small { font-weight: 400; }
+    .fn-campo textarea, .fn-campo input[type=text], .fn-grupo-nombre {
+      font: inherit; font-size: .92rem; font-weight: 400; color: var(--texto); width: 100%; padding: 8px 10px;
+      border: 1px solid #d5dde8; border-radius: 10px; background: #fff; line-height: 1.5; }
+    .fn-campo textarea { resize: vertical; min-height: 2.6em; field-sizing: content; }
+    .fn-campo input[readonly] { background: #f1f5f9; color: var(--texto-2); }
+    .fn-grupo-nombre { font-weight: 700; font-size: 1rem; max-width: 360px; }
+    .fn-dos { display: grid; gap: 0 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    details.fn-herr { border: 1px solid var(--borde); border-radius: 12px; margin-top: 8px; background: #fbfcfe; }
+    details.fn-herr[open] { background: #fff; }
+    details.fn-herr summary { cursor: pointer; padding: 10px 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    details.fn-herr .fn-cuerpo { padding: 0 14px 14px; }
+    .fn-marca { font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: #e6f6ff; color: #075985; }
+    .fn-marca.gris { background: #eef2f6; color: var(--texto-2); }
+    .fn-fila-final { display: flex; justify-content: flex-end; margin-top: 12px; }
   </style>
 </head>
 <body>
@@ -138,6 +164,15 @@
         <button class="pestana-admin" data-tab="probador">👗 Probador</button>
         <button class="pestana-admin" data-tab="respuestas">✅ Respuestas de actividades</button>
         <button class="pestana-admin" data-tab="falda">✂ Práctica falda</button>
+        <button class="pestana-admin" data-tab="funciones">📝 Funciones</button>
+      </div>
+
+      <!-- ===== EDITAR EL TEXTO DE CADA FUNCIÓN ===== -->
+      <div id="tab-funciones" class="tab-panel" hidden>
+        <p class="subtitulo">Aquí cambias el texto que ven los jugadores en cada función. Escribe, quita o agrega lo que quieras y pulsa <b>Guardar</b>: la app lo muestra en cuanto alguien la abre o la recarga.</p>
+        <div class="fila-botones" id="fn-menus"></div>
+        <div class="fn-barra" id="fn-barra"></div>
+        <div id="fn-contenido"></div>
       </div>
 
       <!-- ===== RESULTADOS DE LA PRÁCTICA DE LA FALDA (con ayuda / sin ayuda) ===== -->
@@ -225,6 +260,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script src="js/datos.js"></script>
+  <script src="js/contenido.js"></script>
   <script src="js/closet.js"></script>
   <script src="js/falda.js"></script>
   <script>
@@ -235,6 +271,7 @@
       if (b.dataset.tab === "probador") pintarProbador();
       if (b.dataset.tab === "respuestas") pintarRespuestas();
       if (b.dataset.tab === "falda") pintarFaldaAdmin();
+      if (b.dataset.tab === "funciones") pintarFunciones();
     }));
 
     /* =================== PROBADOR (todo desbloqueado) =================== */
@@ -383,7 +420,7 @@
       pintar();
     }));
 
-    async function abrirPanel() { mostrar("panel"); await cargar(); clearInterval(refresco); refresco = setInterval(cargar, 30000); }
+    async function abrirPanel() { mostrar("panel"); if (typeof fnCargar === "function") fnCargar(); await cargar(); clearInterval(refresco); refresco = setInterval(cargar, 30000); }
 
     async function cargar() {
       const { data, error } = await db.from("xilovha_perfiles")
@@ -683,6 +720,225 @@
     });
 
     iniciar();
+  </script>
+  <script>
+    /* =================== PESTAÑA «FUNCIONES»: editar el texto de cada herramienta =================== */
+    const FN_ORDEN = ["Inicio", ...Object.keys(Contenido.original).filter(k => k !== "Inicio")];
+    let fnFilas = null, fnError = "", fnMenu = "F1", fnTrabajo = null, fnSucio = false, fnGuardando = false;
+
+    const fnNombreMenu = k => k === "Inicio" ? "Antes de empezar" : `${k} · ${(MENUS.find(m => m.tecla === k) || {}).nombre || ""}`;
+    const fnLineas = t => String(t || "").split("\n").map(s => s.trim()).filter(Boolean);
+    const fnPares = t => fnLineas(t).map(s => { const i = s.indexOf("|"); return i < 0 ? [s, ""] : [s.slice(0, i).trim(), s.slice(i + 1).trim()]; });
+    const fnDePares = arr => (arr || []).map(p => p[1] ? `${p[0]} | ${p[1]}` : p[0]).join("\n");
+    const fnNombresOriginales = menu => new Set(Contenido.original[menu].grupos.flatMap(g => g.herramientas.map(h => h.nombre)));
+
+    let fnCargando = null;
+    function fnCargar() { return fnCargando || (fnCargando = fnDescargar().finally(() => fnCargando = null)); }
+    async function fnDescargar() {
+      const { data, error } = await db.from("xilovha_contenido").select("menu,datos,actualizado");
+      if (error) { fnError = error.message; fnFilas = {}; }
+      else {
+        fnError = ""; fnFilas = {};
+        data.forEach(f => fnFilas[f.menu] = f);
+        Contenido.aplicar(data);            // así «Respuestas de actividades» también muestra el texto editado
+        try { localStorage.setItem("xilovha-contenido", JSON.stringify(data.map(f => ({ menu: f.menu, datos: f.datos })))); } catch (e) {}
+      }
+      if (!fnSucio) fnTrabajo = null;
+      if (!$("tab-funciones").hidden) pintarFunciones();
+    }
+
+    function fnActual() {
+      const f = fnFilas && fnFilas[fnMenu];
+      return Contenido.copia(f && Contenido.valido(f.datos) ? f.datos : Contenido.original[fnMenu]);
+    }
+
+    function pintarFunciones() {
+      if (!fnFilas) { $("fn-contenido").innerHTML = `<p class="nota-admin">Cargando…</p>`; fnCargar(); return; }
+      if (!fnTrabajo) fnTrabajo = fnActual();
+      $("fn-menus").innerHTML = FN_ORDEN.map(k =>
+        `<button class="btn-mini ${k === fnMenu ? "activo" : ""}" data-fn-menu="${k}">${fnMarcaMenu(k)}${esc(fnNombreMenu(k))}</button>`).join("");
+      pintarBarraFn();
+      if (fnError) {
+        $("fn-contenido").innerHTML = `<div class="fn-caja"><b>⚠ Todavía no se puede guardar.</b>
+          <p class="nota-admin">Falta crear la tabla de textos en Supabase: abre Supabase › SQL Editor, pega el archivo <b>sql/xilovha-contenido.sql</b> y pulsa Run. Después recarga esta página.<br><small>Detalle: ${esc(fnError)}</small></p></div>`;
+        return;
+      }
+      const d = fnTrabajo, originales = fnNombresOriginales(fnMenu);
+      let html = `<div class="fn-caja"><h3>Presentación del menú</h3>
+        <label class="fn-campo">Descripción <small>(el texto que sale arriba, debajo del título del menú)</small>
+          <textarea data-fn-campo="descripcion">${esc(d.descripcion)}</textarea></label>
+        <label class="fn-campo">📖 Términos que vas a ver <small>(uno por renglón, así: Término | Explicación)</small>
+          <textarea data-fn-campo="glosario" rows="6">${esc(fnDePares(d.glosario))}</textarea></label></div>`;
+      d.grupos.forEach((g, gi) => {
+        html += `<div class="fn-caja"><h3>Grupo: <input class="fn-grupo-nombre" type="text" value="${esc(g.nombre)}" data-fn-grupo="${gi}" aria-label="Nombre del grupo">
+          <small style="font-weight:400;color:var(--texto-2)">${g.herramientas.length} herramientas</small></h3>`;
+        g.herramientas.forEach((h, hi) => {
+          const at = `data-g="${gi}" data-h="${hi}"`, fija = originales.has(h.nombre) && !h._nueva;
+          html += `<details class="fn-herr" ${h._abierta ? "open" : ""} ${at}>
+            <summary><span data-fn-titulo>${esc(h.nombre || "(sin nombre)")}</span>${h.atajo ? `<kbd>${esc(h.atajo)}</kbd>` : ""}
+              ${h.pendiente ? `<span class="fn-marca gris">Sin información todavía</span>` : ""}${fnCambiada(h) ? `<span class="fn-marca">✏️ Editada</span>` : ""}</summary>
+            <div class="fn-cuerpo">
+              <div class="fn-dos">
+                <label class="fn-campo">Nombre ${fija ? `<small>(es el nombre del menú de Modaris; no se cambia para no perder su video y su práctica)</small>` : ""}
+                  <input type="text" ${at} data-c="nombre" value="${esc(h.nombre)}" ${fija ? "readonly" : ""}></label>
+                <label class="fn-campo">Atajo <small>(tecla rápida, opcional)</small><input type="text" ${at} data-c="atajo" value="${esc(h.atajo || "")}"></label>
+                <label class="fn-campo">También se llama <small>(opcional)</small><input type="text" ${at} data-c="manual" value="${esc(h.manual || "")}"></label>
+              </div>
+              <label class="fn-campo">Para qué sirve<textarea ${at} data-c="sirve">${esc(h.sirve)}</textarea></label>
+              <label class="fn-campo">Pasos <small>(uno por renglón, en orden)</small><textarea ${at} data-c="pasos">${esc((h.pasos || []).join("\n"))}</textarea></label>
+              <label class="fn-campo">Opciones <small>(lista simple, una por renglón; opcional)</small><textarea ${at} data-c="lista">${esc((h.lista || []).join("\n"))}</textarea></label>
+              <label class="fn-campo">Teclas <small>(una por renglón, así: Tecla | Qué hace; opcional)</small><textarea ${at} data-c="teclas">${esc(fnDePares(h.teclas))}</textarea></label>
+              <label class="fn-campo">Dato importante / tip<textarea ${at} data-c="nota">${esc(h.nota || "")}</textarea></label>
+              <label class="fn-campo" style="display:flex;gap:8px;align-items:center;font-weight:400">
+                <input type="checkbox" ${at} data-c="pendiente" ${h.pendiente ? "checked" : ""}> Todavía no tiene información completa (no sale en los juegos)</label>
+              <div class="fn-fila-final"><button class="btn-mini peligro" data-fn-quitar ${at}>🗑 Quitar esta herramienta</button></div>
+            </div></details>`;
+        });
+        html += `<div class="fn-fila-final"><button class="btn-mini" data-fn-agregar="${gi}">＋ Agregar herramienta a «${esc(g.nombre)}»</button></div></div>`;
+      });
+      $("fn-contenido").innerHTML = html;
+    }
+    const fnMarcaMenu = k => fnFilas && fnFilas[k] ? "✏️ " : "";
+
+    // ¿Esta herramienta es distinta a la del texto original?
+    function fnCambiada(h) {
+      const o = Contenido.original[fnMenu].grupos.flatMap(g => g.herramientas).find(x => x.nombre === h.nombre);
+      if (!o) return true;
+      const limpio = x => JSON.stringify(fnLimpiarHerr(x));
+      return limpio(o) !== limpio(h);
+    }
+
+    function pintarBarraFn() {
+      const fila = fnFilas && fnFilas[fnMenu];
+      const estado = fnSucio ? "● Tienes cambios sin guardar"
+        : fila ? `Texto editado · guardado el ${new Date(fila.actualizado).toLocaleString("es-MX", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}`
+        : "Mostrando el texto original";
+      $("fn-barra").innerHTML = `<span class="fn-estado ${fnSucio ? "sucio" : ""}">${estado}</span>
+        <button class="btn-mini" data-fn-accion="abrir">Abrir todas</button>
+        <button class="btn-mini" data-fn-accion="cerrar">Cerrar todas</button>
+        <button class="btn-mini" data-fn-accion="copiar" title="Para pegarlo en un detector de plagio o en Word">📋 Copiar todo el texto</button>
+        <button class="btn-mini" data-fn-accion="descartar" ${fnSucio ? "" : "disabled"}>Descartar cambios</button>
+        <button class="btn-mini peligro" data-fn-accion="original" ${fila && !fnError ? "" : "disabled"}>Volver al texto original</button>
+        <button class="btn-mini guardar" data-fn-accion="guardar" ${fnSucio && !fnGuardando && !fnError ? "" : "disabled"}>${fnGuardando ? "Guardando…" : "💾 Guardar"}</button>`;
+    }
+
+    function fnMarcarSucio() { if (!fnSucio) { fnSucio = true; pintarBarraFn(); } }
+
+    function fnLimpiarHerr(h) {
+      const t = v => String(v || "").trim();
+      const r = { ...h, nombre: t(h.nombre), sirve: t(h.sirve) };
+      delete r._nueva; delete r._abierta;
+      ["atajo", "manual", "nota"].forEach(k => { if (t(r[k])) r[k] = t(r[k]); else delete r[k]; });
+      ["pasos", "lista", "teclas"].forEach(k => { if (!r[k] || !r[k].length) delete r[k]; });
+      if (!r.pendiente) delete r.pendiente;
+      const orden = ["nombre", "atajo", "manual", "pendiente", "sirve", "lista", "pasos", "teclas", "nota"];
+      const o = {};
+      orden.forEach(k => { if (k in r) o[k] = r[k]; });
+      Object.keys(r).forEach(k => { if (!(k in o)) o[k] = r[k]; });
+      return o;
+    }
+
+    function fnTexto(d) {
+      let s = `${fnNombreMenu(fnMenu)}\n\n${d.descripcion}\n`;
+      if (d.glosario && d.glosario.length) s += `\nTérminos:\n` + d.glosario.map(([a, b]) => `${a}: ${b}`).join("\n") + "\n";
+      d.grupos.forEach(g => {
+        s += `\n${g.nombre.toUpperCase()}\n`;
+        g.herramientas.forEach(h => {
+          s += `\n${h.nombre}${h.atajo ? ` (${h.atajo})` : ""}\n${h.sirve}\n`;
+          if (h.lista) s += h.lista.map(x => `- ${x}`).join("\n") + "\n";
+          if (h.pasos) s += h.pasos.map((p, i) => `${i + 1}. ${p}`).join("\n") + "\n";
+          if (h.teclas) s += h.teclas.map(([a, b]) => `${a}: ${b}`).join("\n") + "\n";
+          if (h.nota) s += `Tip: ${h.nota}\n`;
+        });
+      });
+      return s;
+    }
+
+    // Escribir en cualquier cajita actualiza la copia de trabajo (sin repintar, para no perder el cursor)
+    $("fn-contenido").addEventListener("input", e => {
+      const el = e.target, d = fnTrabajo;
+      if (el.dataset.fnCampo === "descripcion") d.descripcion = el.value;
+      else if (el.dataset.fnCampo === "glosario") { const p = fnPares(el.value); if (p.length) d.glosario = p; else delete d.glosario; }
+      else if (el.dataset.fnGrupo !== undefined) d.grupos[+el.dataset.fnGrupo].nombre = el.value;
+      else if (el.dataset.c) {
+        const h = d.grupos[+el.dataset.g].herramientas[+el.dataset.h], c = el.dataset.c;
+        if (c === "pasos" || c === "lista") h[c] = fnLineas(el.value);
+        else if (c === "teclas") h[c] = fnPares(el.value);
+        else if (c === "pendiente") h[c] = el.checked;
+        else h[c] = el.value;
+        if (c === "nombre") el.closest("details").querySelector("[data-fn-titulo]").textContent = el.value || "(sin nombre)";
+      } else return;
+      fnMarcarSucio();
+    });
+    $("fn-contenido").addEventListener("toggle", e => {
+      const det = e.target; if (!det.matches || !det.matches("details.fn-herr")) return;
+      fnTrabajo.grupos[+det.dataset.g].herramientas[+det.dataset.h]._abierta = det.open;
+    }, true);
+
+    $("fn-contenido").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.fnAgregar !== undefined) {
+        const g = fnTrabajo.grupos[+b.dataset.fnAgregar];
+        g.herramientas.push({ nombre: "Herramienta nueva", sirve: "", pasos: [], _nueva: true, _abierta: true });
+        fnMarcarSucio(); pintarFunciones();
+      }
+      if (b.hasAttribute("data-fn-quitar")) {
+        const lista = fnTrabajo.grupos[+b.dataset.g].herramientas, h = lista[+b.dataset.h];
+        if (!confirm(`¿Quitar «${h.nombre}» de ${fnMenu}? Se borra cuando pulses Guardar (y siempre puedes volver al texto original).`)) return;
+        lista.splice(+b.dataset.h, 1);
+        fnMarcarSucio(); pintarFunciones();
+      }
+    });
+
+    $("fn-menus").addEventListener("click", e => {
+      const b = e.target.closest("[data-fn-menu]"); if (!b || b.dataset.fnMenu === fnMenu) return;
+      if (fnSucio && !confirm("Tienes cambios sin guardar en " + fnNombreMenu(fnMenu) + ". ¿Salir sin guardarlos?")) return;
+      fnMenu = b.dataset.fnMenu; fnSucio = false; fnTrabajo = null; pintarFunciones();
+    });
+
+    $("fn-barra").addEventListener("click", async e => {
+      const b = e.target.closest("[data-fn-accion]"); if (!b || b.disabled) return;
+      const a = b.dataset.fnAccion;
+      if (a === "abrir" || a === "cerrar") {
+        document.querySelectorAll("details.fn-herr").forEach(det => det.open = a === "abrir");
+      }
+      if (a === "copiar") {
+        const d = Contenido.copia(fnTrabajo); d.grupos.forEach(g => g.herramientas = g.herramientas.map(fnLimpiarHerr));
+        try { await navigator.clipboard.writeText(fnTexto(d)); b.textContent = "✅ Copiado"; }
+        catch (err) { b.textContent = "No se pudo copiar"; }
+        setTimeout(pintarBarraFn, 1800);
+      }
+      if (a === "descartar" && confirm("¿Descartar los cambios que no has guardado?")) { fnSucio = false; fnTrabajo = null; pintarFunciones(); }
+      if (a === "original") {
+        if (!confirm(`¿Volver al texto original de ${fnNombreMenu(fnMenu)}? Se borra todo lo que editaste en este menú.`)) return;
+        const { error } = await db.from("xilovha_contenido").delete().eq("menu", fnMenu);
+        if (error) { alert("No se pudo: " + error.message); return; }
+        fnSucio = false; fnTrabajo = null; await fnCargar();
+      }
+      if (a === "guardar") {
+        const d = Contenido.copia(fnTrabajo);
+        d.descripcion = String(d.descripcion || "").trim();
+        d.grupos.forEach(g => { g.nombre = g.nombre.trim(); g.herramientas = g.herramientas.map(fnLimpiarHerr); });
+        const nombres = d.grupos.flatMap(g => g.herramientas.map(h => h.nombre));
+        if (nombres.some(n => !n)) { alert("Hay una herramienta sin nombre. Ponle nombre o quítala antes de guardar."); return; }
+        const rep = nombres.find((n, i) => nombres.indexOf(n) !== i);
+        if (rep) { alert(`Hay dos herramientas llamadas «${rep}». Cambia el nombre de una antes de guardar.`); return; }
+        if (!Contenido.valido(d)) { alert("Algo no quedó bien; revisa que cada herramienta tenga nombre."); return; }
+        fnGuardando = true; pintarBarraFn();
+        const { error } = await db.from("xilovha_contenido").upsert({ menu: fnMenu, datos: d });
+        fnGuardando = false;
+        if (error) { pintarBarraFn(); alert("No se pudo guardar: " + error.message); return; }
+        // Las herramientas que estaban abiertas siguen abiertas
+        const abiertas = new Set(fnTrabajo.grupos.flatMap(g => g.herramientas.filter(h => h._abierta).map(h => h.nombre)));
+        fnSucio = false; fnTrabajo = null;
+        await fnCargar();
+        fnTrabajo = fnTrabajo || fnActual();
+        fnTrabajo.grupos.forEach(g => g.herramientas.forEach(h => { if (abiertas.has(h.nombre)) h._abierta = true; }));
+        pintarFunciones();
+      }
+    });
+
+    window.addEventListener("beforeunload", e => { if (fnSucio) { e.preventDefault(); e.returnValue = ""; } });
   </script>
 </body>
 </html>
